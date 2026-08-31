@@ -220,7 +220,7 @@
   var KOTAK = { w: 22, h: 14, offsetY: -10 };
 
   var kamera = { x: 0, y: 0, diinisialisasi: false };
-  var skala = 2, dpr = 1, lebarCss = 0, tinggiCss = 0;
+  var skala = 1, dpr = 1, lebarCss = 0, tinggiCss = 0;
   var zonaAktif = null;
   var waktuTotal = 0;
   var dikunjungi = {};
@@ -239,14 +239,11 @@
     el.kanvas.style.width = lebarCss + "px";
     el.kanvas.style.height = tinggiCss + "px";
 
-    // Zoom Stardew Valley: luas pandang ideal dari atas (~14 petak mendatar, ~11 petak menurun)
-    // Sasaran: sekitar 11 petak melintang, 16 petak menurun - bidikan tegak,
-    // sama seperti tema tropis. Sasaran lama (14 melintang, 11 menurun)
-    // berbentuk melebar, sehingga di layar ponsel yang menjulang suku tinggi
-    // selalu menang dan memaksa perbesaran: yang tampak tinggal 5 petak
-    // melintang dan karakter memenuhi hampir seperempat layar.
-    skala = Math.max(lebarCss / (11.0 * TILE), tinggiCss / (16.0 * TILE));
-    skala = Math.max(1.0, Math.min(2.4, skala));
+    // Zoom Stardew Valley: pandangan luas dari atas seperti tema tropis.
+    // Tema tropis (PETAK 48) mematok 11×16 petak = 528×768 px dunia.
+    // Dengan TILE 32, setara ~16.5×24 petak agar proporsi pandang identik.
+    skala = Math.max(lebarCss / (16.5 * TILE), tinggiCss / (24.0 * TILE));
+    skala = Math.max(0.7, Math.min(1.8, skala));
     ctx.imageSmoothingEnabled = false;
 
     gradasiVignet = ctx.createRadialGradient(
