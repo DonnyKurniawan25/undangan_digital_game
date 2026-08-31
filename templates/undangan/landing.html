@@ -1,0 +1,362 @@
+{% load static aset %}<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1a2418">
+<title>Undangan Pernikahan Interaktif — Game 2D Bernuansa Adat Indonesia</title>
+<meta name="description" content="Buat undangan pernikahan digital yang unik! Tamu menjelajahi taman 2D bergaya pixel art bernuansa adat Indonesia untuk menemukan info acara, galeri, RSVP, dan amplop digital.">
+<meta name="keywords" content="undangan digital, undangan pernikahan, undangan game, pixel art, undangan interaktif, wedding invitation">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <a href="#" class="nav-brand">Undangan<span>Game</span></a>
+    <div class="nav-links" id="nav-links">
+      <a href="#fitur">Fitur</a>
+      <a href="#cara-kerja">Cara Kerja</a>
+      <a href="#preview">Preview</a>
+      <a href="#keunggulan">Keunggulan</a>
+      <a href="{% url 'undangan:beranda' %}" class="nav-cta">Lihat Demo</a>
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="hero">
+  <div class="hero-ornament hero-ornament--tl"></div>
+  <div class="hero-ornament hero-ornament--tr"></div>
+  <div class="hero-ornament hero-ornament--bl"></div>
+  <div class="hero-ornament hero-ornament--br"></div>
+  <div class="hero-particles" aria-hidden="true"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">✨ Undangan Digital Interaktif</div>
+    <h1 class="hero-title">
+      Undangan Pernikahan<br>
+      Berbentuk <span class="accent">Game 2D</span>
+    </h1>
+    <p class="hero-subtitle">
+      Tamu Anda menjelajahi taman pixel art bernuansa adat Indonesia.
+      Dekati objek untuk membuka info acara, galeri foto, RSVP, dan amplop digital.
+    </p>
+    <div class="hero-buttons">
+      <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" id="btn-demo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Demo Tema 1 (Taman Jawa)
+      </a>
+      <a href="{% url 'undangan:beranda_lombok' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #2ba8a8 0%, #ab4430 100%);" id="btn-demo-lombok">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Demo Tema 2 (Pantai Lombok)
+      </a>
+      <a href="#fitur" class="btn btn-secondary" id="btn-fitur">
+        Jelajahi Fitur
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 16l-6-6h12z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint" aria-hidden="true">
+    <span>SCROLL</span>
+    <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
+  </div>
+</section>
+
+<!-- ================= FITUR ================= -->
+<section class="features" id="fitur">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-label">Fitur Lengkap</span>
+      <h2 class="section-title">Semua Isi Undangan dalam Satu Dunia Game</h2>
+      <p class="section-desc">
+        Tamu memilih karakter, berjalan di taman, dan mendekati objek untuk membuka berbagai informasi pernikahan Anda.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">
+          <img src="{% static 'game/pelaminan.png' %}" alt="Pelaminan" loading="lazy">
+        </div>
+        <h3>Biodata Mempelai</h3>
+        <p>Pelaminan gebyok jati berukir menampilkan foto dan biodata lengkap kedua mempelai beserta kutipan doa.</p>
+      </div>
+
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">
+          <img src="{% static 'game/galeri.png' %}" alt="Galeri" loading="lazy">
+        </div>
+        <h3>Galeri Prewedding</h3>
+        <p>Papan lukis berisi galeri foto prewedding yang bisa digeser dan diperbesar. Abadikan momen terindah Anda.</p>
+      </div>
+
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">
+          <img src="{% static 'game/papan.png' %}" alt="Papan Acara" loading="lazy">
+        </div>
+        <h3>Rangkaian Acara</h3>
+        <p>Papan kayu menampilkan jadwal lengkap acara, hitung mundur otomatis, dan tautan langsung ke Google Maps.</p>
+      </div>
+
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">
+          <img src="{% static 'game/buku_tamu.png' %}" alt="Buku Tamu" loading="lazy">
+        </div>
+        <h3>Buku Tamu & RSVP</h3>
+        <p>Meja buku tamu tempat mengirim ucapan doa dan mengonfirmasi kehadiran. Semua masuk ke dashboard admin.</p>
+      </div>
+
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">
+          <img src="{% static 'game/hadiah.png' %}" alt="Amplop Digital" loading="lazy">
+        </div>
+        <h3>Amplop Digital</h3>
+        <p>Kotak angpao bermotif batik kawung berisi nomor rekening dan QRIS. Salin nomor dengan satu ketukan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CARA KERJA ================= -->
+<section class="how-it-works" id="cara-kerja">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-label">Sangat Mudah</span>
+      <h2 class="section-title">Tiga Langkah Untuk Tamu Anda</h2>
+      <p class="section-desc">
+        Pengalaman yang unik dan menyenangkan — tamu akan terkesan sejak pertama kali membuka undangan.
+      </p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal reveal-delay-1">
+        <div class="step-number">1</div>
+        <h3>Pilih Karakter</h3>
+        <p>Tamu memilih karakter pria atau wanita berbusana adat Indonesia, lalu menekan "Buka Undangan".</p>
+      </div>
+
+      <div class="step reveal reveal-delay-2">
+        <div class="step-number">2</div>
+        <h3>Jelajahi Taman</h3>
+        <p>Gunakan analog virtual atau WASD untuk berjalan. Buka peta untuk berjalan otomatis ke lokasi tujuan.</p>
+      </div>
+
+      <div class="step reveal reveal-delay-3">
+        <div class="step-number">3</div>
+        <h3>Buka Isi Undangan</h3>
+        <p>Dekati objek bertanda seru dan tekan tombol aksi untuk membuka biodata, galeri, acara, RSVP, atau amplop.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PREVIEW ================= -->
+<section class="preview" id="preview">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-label">Pilihan Tema</span>
+      <h2 class="section-title">Dua Nuansa Adat Istimewa</h2>
+      <p class="section-desc">
+        Pilih nuansa adat favorit Anda — dari Taman Tradisional Jawa yang asri hingga Pantai Sasak Lombok yang eksotis.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; margin-bottom: 36px;" class="reveal">
+      <!-- Tema 1 Card -->
+      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .15); border-radius: 20px; overflow: hidden; padding: 18px;">
+        <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
+          <img src="{% static 'img/preview_game.png' %}" alt="Tema 1: Taman Tradisional Jawa" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+        </div>
+        <h3 style="font-family: var(--serif); font-size: 1.4rem; color: #fff; margin-bottom: 6px;">🌿 Tema 1: Taman Tradisional Jawa</h3>
+        <p style="font-size: .88rem; color: rgba(255,255,255,.65); line-height: 1.6; margin-bottom: 16px;">
+          Pelaminan gebyok jati berukir, gunungan, janur kuning, dan busana beskap/kebaya Jawa klasik.
+        </p>
+        <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
+          Buka Demo Tema Jawa
+        </a>
+      </div>
+
+      <!-- Tema 2 Card -->
+      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(43, 168, 168, .4); border-radius: 20px; overflow: hidden; padding: 18px;">
+        <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
+          <img src="{% static 'img/preview_lombok.png' %}" alt="Tema 2: Pantai Sasak Lombok" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+        </div>
+        <h3 style="font-family: var(--serif); font-size: 1.4rem; color: #fff; margin-bottom: 6px;">🏖️ Tema 2: Pantai Sasak Lombok</h3>
+        <p style="font-size: .88rem; color: rgba(255,255,255,.65); line-height: 1.6; margin-bottom: 16px;">
+          Bale Lumbung Sasak atap perahu, Candi Bentar bata merah, obor bambu, laut turquoise, dan mahkota Lambung emas.
+        </p>
+        <a href="{% url 'undangan:beranda_lombok' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #2ba8a8 0%, #ab4430 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
+          Buka Demo Tema Lombok
+        </a>
+      </div>
+    </div>
+
+    <div class="pixel-strip reveal">
+      <div class="pixel-item">
+        <img src="{% static 'game/pelaminan.png' %}" alt="Pelaminan">
+        <span>Pelaminan</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% static 'game/gerbang.png' %}" alt="Gerbang">
+        <span>Gapura</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% static 'game/kembar_mayang.png' %}" alt="Kembar Mayang">
+        <span>Kembar Mayang</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% static 'game/meja_tumpeng.png' %}" alt="Tumpeng">
+        <span>Tumpeng</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% static 'game/umbul_umbul.png' %}" alt="Umbul-umbul">
+        <span>Umbul-umbul</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% static 'game/pohon_palem.png' %}" alt="Pohon Palem">
+        <span>Palem</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% static 'game/air_mancur.png' %}" alt="Air Mancur">
+        <span>Air Mancur</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% static 'game/pengantin_pria.png' %}" alt="Pengantin Pria">
+        <span>Mempelai</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KEUNGGULAN ================= -->
+<section class="advantages" id="keunggulan">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-label">Keunggulan</span>
+      <h2 class="section-title">Mengapa Memilih Undangan Game?</h2>
+      <p class="section-desc">
+        Bukan sekadar undangan digital biasa — ini adalah pengalaman interaktif yang tak terlupakan.
+      </p>
+    </div>
+
+    <div class="advantages-grid">
+      <div class="advantage-card reveal reveal-delay-1">
+        <div class="advantage-icon">🎨</div>
+        <h3>Nuansa Adat Indonesia</h3>
+        <p>Pelaminan gebyok, janur kuning, kebaya, batik, tumpeng — semua digambar dengan detail bernuansa adat.</p>
+      </div>
+
+      <div class="advantage-card reveal reveal-delay-2">
+        <div class="advantage-icon">🕹️</div>
+        <h3>Interaktif & Menyenangkan</h3>
+        <p>Tamu tidak hanya scroll — mereka bermain dan menjelajahi taman, menjadikan undangan Anda tak terlupakan.</p>
+      </div>
+
+      <div class="advantage-card reveal reveal-delay-3">
+        <div class="advantage-icon">📱</div>
+        <h3>Responsif di Semua Perangkat</h3>
+        <p>Analog virtual di HP, keyboard di komputer. Tampil sempurna di layar berapa pun ukurannya.</p>
+      </div>
+
+      <div class="advantage-card reveal reveal-delay-4">
+        <div class="advantage-icon">🔗</div>
+        <h3>Link Personal per Tamu</h3>
+        <p>Setiap tamu mendapat link unik yang menyebut nama mereka. Lacak siapa saja yang sudah membuka undangan.</p>
+      </div>
+
+      <div class="advantage-card reveal reveal-delay-1">
+        <div class="advantage-icon">🗺️</div>
+        <h3>Navigasi Mudah</h3>
+        <p>Minimap, panah penunjuk, papan nama, dan peta interaktif — tamu tidak akan tersesat di taman.</p>
+      </div>
+
+      <div class="advantage-card reveal reveal-delay-2">
+        <div class="advantage-icon">🎵</div>
+        <h3>Musik Latar</h3>
+        <p>Tambahkan lagu favorit Anda sebagai musik latar yang mengiringi perjalanan tamu di taman.</p>
+      </div>
+
+      <div class="advantage-card reveal reveal-delay-3">
+        <div class="advantage-icon">📊</div>
+        <h3>Dashboard Admin</h3>
+        <p>Kelola semua isi undangan lewat panel admin — mempelai, acara, galeri, tamu, ucapan, rekening.</p>
+      </div>
+
+      <div class="advantage-card reveal reveal-delay-4">
+        <div class="advantage-icon">✏️</div>
+        <h3>100% Kustomisasi</h3>
+        <p>Semua aset pixel art bisa diubah warna dan bentuknya. Denah taman pun bisa disesuaikan sesuka hati.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="stats" id="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-number" data-counter data-target="5">0</div>
+        <div class="stat-label">Titik Interaktif</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-number" data-counter data-target="23">0</div>
+        <div class="stat-label">Aset Pixel Art</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-number" data-counter data-target="{{ jumlah_tamu|default:'0' }}" data-suffix="+">0</div>
+        <div class="stat-label">Tamu Terdaftar</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-4">
+        <div class="stat-number" data-counter data-target="{{ jumlah_ucapan|default:'0' }}">0</div>
+        <div class="stat-label">Ucapan Masuk</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta" id="cta">
+  <div class="cta-ornament cta-ornament--1"></div>
+  <div class="cta-ornament cta-ornament--2"></div>
+  <div class="cta-content container reveal">
+    <span class="section-label">Siap Membuat Undangan?</span>
+    <h2 class="section-title">Buat Undangan Unik<br>untuk Hari Spesial Anda</h2>
+    <p class="cta-desc">
+      Berikan pengalaman tak terlupakan bagi tamu Anda dengan undangan pernikahan interaktif berbentuk game.
+    </p>
+    <div class="hero-buttons">
+      <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" id="btn-cta-demo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Coba Demo Sekarang
+      </a>
+      <a href="{% url 'admin:index' %}" class="btn btn-secondary" id="btn-cta-admin">
+        Panel Admin
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.6 7.4 13.2 12l-4.6 4.6L10 18l6-6z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <p class="footer-brand">Undangan<span>Game</span></p>
+    <div class="footer-divider"></div>
+    <p>Undangan pernikahan digital interaktif bergaya game 2D pixel art.</p>
+    <p>Dibuat dengan ❤️ menggunakan Django & Canvas.</p>
+  </div>
+</footer>
+
+<script src="{% static 'js/landing.js' %}"></script>
+</body>
+</html>

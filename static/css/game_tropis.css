@@ -1,0 +1,164 @@
+@charset "UTF-8";
+/* ==========================================================================
+   Tema "Taman Tropis" (isometrik).
+   Dimuat SETELAH game.css: gaya popup dipakai bersama, berkas ini hanya
+   mengganti palet, layar sampul, dan HUD (D-pad bundar + peta lingkaran).
+   ========================================================================== */
+
+:root {
+  --krem: #f4ead6;
+  --kertas: #fffdf6;
+  --tinta: #3a2f24;
+  --tinta-lembut: #7a6752;
+  --sage: #4e8f3f;
+  --sage-gelap: #35702c;
+  --emas: #c08a3e;
+  --blush: #c9483f;
+  --garis: #e0cfae;
+  --kayu: #7d5330;
+  --kayu-tua: #5a3a1f;
+  --kayu-muda: #d8b483;
+  --daun: #2f6b30;
+}
+
+html, body { background: #234a20; }
+
+/* ============================ Layar sampul ============================ */
+#sampul {
+  background:
+    radial-gradient(circle at 50% 8%, rgba(255, 255, 255, .5), transparent 55%),
+    linear-gradient(168deg, #dff0c8 0%, #b6d99a 46%, #8cbf72 100%);
+}
+.hias-sampul { border-color: rgba(125, 83, 48, .4); }
+.hias-sampul::before,
+.hias-sampul::after { border-color: rgba(125, 83, 48, .6); }
+.pra-judul { color: var(--kayu); }
+.nama-pasangan span { color: var(--emas); }
+.tanggal-sampul::before,
+.tanggal-sampul::after { color: var(--emas); }
+.kartu-tamu {
+  background: rgba(255, 253, 246, .78);
+  border-color: rgba(125, 83, 48, .28);
+}
+.karakter-opsi { background: rgba(255, 253, 246, .7); }
+/* Lembar sprite Stardew Valley 192x320 (4x4 frame 48x80); tampilkan satu frame. */
+.pratinjau {
+  width: 72px;
+  height: 120px;
+  background-size: 288px 480px;
+}
+.karakter-opsi { flex-basis: 86px; }
+
+.karakter-opsi.dipilih {
+  border-color: var(--kayu);
+  box-shadow: 0 4px 14px rgba(90, 58, 31, .3);
+  color: var(--kayu-tua);
+}
+.tombol-utama {
+  background: linear-gradient(160deg, #9c6a38 0%, #6b4726 100%);
+  box-shadow: 0 6px 18px rgba(90, 58, 31, .42);
+}
+.tombol-utama:hover { box-shadow: 0 9px 22px rgba(90, 58, 31, .5); }
+
+/* ============================== Permainan ============================== */
+.tirai { background: #234a20; color: #e8f2d8; }
+.bar-muat span { background: linear-gradient(90deg, #7cc25a, #e6c16a); }
+
+#hud { background: linear-gradient(180deg, rgba(18, 40, 16, .6), rgba(18, 40, 16, .1) 62%, transparent); }
+.chip-lokasi {
+  color: #fffdf6;
+  background: rgba(90, 58, 31, .88);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+}
+.tombol-bulat {
+  color: var(--kayu-tua);
+  background: linear-gradient(180deg, #f6e6c8, #dcc199);
+  border: 3px solid var(--kayu);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .35);
+}
+.tombol-bulat:hover { background: linear-gradient(180deg, #fff2da, #e6cfa8); }
+.tombol-bulat.mati { color: #a89376; }
+
+/* -------- Peta bundar -------- */
+#bingkai-peta-mini {
+  position: relative;
+  width: 124px; height: 124px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 6px solid var(--kayu);
+  border-radius: 50%;
+  background: #3f7a35;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .42), inset 0 0 0 3px rgba(255, 240, 214, .4);
+  cursor: pointer;
+  overflow: visible;
+}
+#peta-mini { display: block; border-radius: 50%; }
+#hud-kemajuan {
+  position: absolute;
+  right: -6px; bottom: 2px;
+  padding: 2px 9px;
+  font: 800 .68rem var(--sans);
+  line-height: 1.5;
+  color: #fffdf6;
+  background: var(--kayu-tua);
+  border: 2px solid #f0dfbb;
+  border-radius: 999px;
+}
+
+/* -------- Analog geser -------- */
+/* Bentuk dasarnya sudah ada di game.css; di sini hanya warnanya
+   diselaraskan dengan kayu dan rotan tema tropis. */
+#analog-alas {
+  background: radial-gradient(circle, rgba(232, 204, 162, .34) 0%, rgba(163, 118, 63, .2) 72%);
+  border: 3px solid rgba(125, 83, 48, .8);
+  box-shadow: inset 0 0 0 2px rgba(255, 244, 220, .22);
+  width: 128px; height: 128px;
+  margin: -64px 0 0 -64px;
+  opacity: .85;
+}
+#analog-tombol {
+  width: 62px; height: 62px;
+  margin: -31px 0 0 -31px;
+  background: radial-gradient(circle at 36% 30%, #f4e2bd 0%, #c69a63 100%);
+  box-shadow: inset 0 0 0 3px rgba(107, 71, 38, .55), 0 4px 14px rgba(0, 0, 0, .42);
+}
+#analog.aktif #analog-alas { opacity: 1; }
+
+/* -------- Tombol aksi -------- */
+#tombol-aksi {
+  border: 3px solid #fdf0d2;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .42);
+}
+
+#pemberitahuan { background: rgba(42, 34, 22, .9); }
+
+/* ================================ Popup ================================ */
+.popup { border-top: 5px solid var(--kayu); }
+@media (min-width: 640px) { .popup { border: 5px solid var(--kayu); } }
+.judul-popup::after { background: var(--kayu); }
+.tombol-tutup { background: var(--krem); color: var(--kayu-tua); }
+.tombol-kecil { color: var(--kayu-tua); border-color: var(--kayu); }
+.tombol-kecil:hover { background: var(--kayu); color: #fffdf6; }
+.hashtag, .sumber-quote { color: var(--kayu); }
+.ucapan { border-left-color: var(--kayu); }
+.badge.hadir { background: #dcecc9; color: var(--sage-gelap); }
+.kartu-acara h3 { color: var(--kayu-tua); }
+.kartu-rekening { background: linear-gradient(150deg, #fdf5e6, #f0e0c2); }
+.bingkai-foto { border-radius: 14px; border-color: #fffdf6; }
+#form-ucapan input:focus,
+#form-ucapan textarea:focus,
+#form-ucapan select:focus { outline-color: var(--kayu); }
+
+.bingkai-peta {
+  background: #3f7a35;
+  border: 3px solid var(--kayu);
+}
+.lokasi { background: var(--krem); border-color: var(--garis); }
+.lokasi:hover { box-shadow: 0 4px 14px rgba(90, 58, 31, .18); }
+
+@media (max-width: 380px) {
+  #analog-alas { width: 112px; height: 112px; margin: -56px 0 0 -56px; }
+  #analog-tombol { width: 54px; height: 54px; margin: -27px 0 0 -27px; }
+  #bingkai-peta-mini { width: 104px; height: 104px; }
+}

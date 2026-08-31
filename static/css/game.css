@@ -154,11 +154,11 @@ kbd {
   color: var(--sage-gelap);
   box-shadow: 0 4px 14px rgba(125, 144, 112, .28);
 }
-/* Potong 1 frame (36x56) dari lembar sprite 144x224, diperbesar 2x. */
+/* Potong 1 frame (48x80) dari lembar sprite 192x320, skala 1.5x (72x120px). */
 .pratinjau {
   width: 72px;
-  height: 112px;
-  background-size: 288px 448px;
+  height: 120px;
+  background-size: 288px 480px;
   background-position: 0 0;
   background-repeat: no-repeat;
   image-rendering: pixelated;

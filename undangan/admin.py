@@ -6,7 +6,7 @@ from .models import Acara, FotoGaleri, Pengantin, Pengaturan, Rekening, Tamu, Uc
 
 @admin.register(Pengaturan)
 class PengaturanAdmin(admin.ModelAdmin):
-    list_display = ["judul", "hashtag"]
+    list_display = ["judul", "tema", "hashtag"]
 
     def has_add_permission(self, request):
         return not Pengaturan.objects.exists()

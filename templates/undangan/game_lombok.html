@@ -1,0 +1,299 @@
+{% load static aset %}<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#f5e6ca">
+<title>{% if pria and wanita %}{{ pria.nama_panggilan }} &amp; {{ wanita.nama_panggilan }} — Pantai Sasak Lombok{% else %}{{ pengaturan.judul }} — Pantai Lombok{% endif %}</title>
+<meta name="description" content="Undangan pernikahan interaktif tema Pantai Sasak Lombok. Jelajahi pantai dan lumbung pelaminan bersama karakter Anda.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% aset 'css/game_lombok.css' %}">
+</head>
+<body>
+
+<!-- ================= LAYAR SAMPUL ================= -->
+<section id="sampul">
+  <div class="hias-sampul" aria-hidden="true"></div>
+  <div class="sampul-isi">
+    <p class="pra-judul">The Wedding Of — Sasak Beach</p>
+    <h1 class="nama-pasangan">
+      {{ pria.nama_panggilan|default:"Mempelai Pria" }}
+      <span>&amp;</span>
+      {{ wanita.nama_panggilan|default:"Mempelai Wanita" }}
+    </h1>
+    {% if acara_utama %}
+      <p class="tanggal-sampul">{{ acara_utama.waktu_mulai|date:"l, j F Y" }}</p>
+    {% endif %}
+
+    {% if tamu %}
+      <div class="kartu-tamu">
+        <p class="label-tamu">Kepada Yth.</p>
+        <p class="nama-tamu">{{ tamu.sapaan_lengkap }}</p>
+        {% if tamu.jumlah_undangan > 1 %}
+          <p class="label-tamu">beserta keluarga ({{ tamu.jumlah_undangan }} orang)</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="pemilih-karakter">
+      <p class="label-pilih">Pilih karakter Anda (Adat Sasak)</p>
+      <div class="daftar-karakter">
+        <button type="button" class="karakter-opsi dipilih" data-karakter="pria" aria-pressed="true">
+          <span class="pratinjau" style="background-image:url('{% aset 'game_lombok/karakter_pria.png' %}')"></span>
+          <span>Pria Sasak</span>
+        </button>
+        <button type="button" class="karakter-opsi" data-karakter="wanita" aria-pressed="false">
+          <span class="pratinjau" style="background-image:url('{% aset 'game_lombok/karakter_wanita.png' %}')"></span>
+          <span>Wanita Sasak</span>
+        </button>
+      </div>
+    </div>
+
+    <button type="button" id="tombol-buka" class="tombol-utama">Buka Undangan</button>
+    <p class="petunjuk-sampul">Jelajahi pantai dengan analog di HP (atau WASD di komputer), atau buka peta untuk langsung ke lokasi</p>
+  </div>
+</section>
+
+<!-- ================= PERMAINAN ================= -->
+<main id="permainan" aria-hidden="true">
+  <canvas id="kanvas"></canvas>
+
+  <div id="memuat" class="tirai">
+    <p class="teks-muat">Menyiapkan Pantai Sasak Lombok…</p>
+    <div class="bar-muat"><span id="isi-muat"></span></div>
+  </div>
+
+  <header id="hud">
+    <div class="hud-kiri">
+      <p class="hud-judul">{{ pria.nama_panggilan|default:"Mempelai" }} &amp; {{ wanita.nama_panggilan|default:"Mempelai" }}</p>
+      <p class="chip-lokasi"><span id="hud-lokasi">Pantai Sasak Lombok</span></p>
+    </div>
+    <div class="hud-kanan">
+      <div class="baris-tombol">
+        <button type="button" id="tombol-peta" class="tombol-bulat" title="Peta lokasi" aria-label="Buka peta lokasi">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3 3 5.4v15.1l6-2.4 6 2.4 6-2.4V2.9l-6 2.4L9 3Zm0 2.2 6 2.4v11.1l-6-2.4V5.2ZM5 6.8l2-.8v11.2l-2 .8V6.8Zm14 0v11.2l-2 .8V7.6l2-.8Z"/></svg>
+        </button>
+        <button type="button" id="tombol-musik" class="tombol-bulat" title="Musik" aria-label="Nyalakan atau matikan musik">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3 9 5.2v10.3A4 4 0 1 0 11 19V9.1l7-1.4v5.6a4 4 0 1 0 2 3.5V3Z"/></svg>
+        </button>
+        <button type="button" id="tombol-petunjuk" class="tombol-bulat" title="Cara bermain" aria-label="Buka cara bermain">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm.1 15.6a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 5.6c2.3 0 4 1.5 4 3.6 0 1.6-.8 2.4-2 3.2-.9.6-1.1.9-1.1 1.7v.4h-2v-.7c0-1.5.6-2.2 1.7-3 .9-.6 1.3-1 1.3-1.7 0-.9-.8-1.6-1.9-1.6-1.2 0-2 .7-2.1 1.9H8c.1-2.2 1.7-3.8 4-3.8Z"/></svg>
+        </button>
+      </div>
+      <button type="button" id="bingkai-peta-mini" aria-label="Perbesar peta">
+        <canvas id="peta-mini"></canvas>
+        <span id="hud-kemajuan">0/5</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="analog" aria-hidden="true">
+    <div id="analog-alas"><div id="analog-tombol"></div></div>
+  </div>
+
+  <div id="pemberitahuan" role="status"></div>
+
+  <button type="button" id="tombol-aksi" class="tersembunyi">
+    <span id="label-aksi">Lihat</span>
+  </button>
+</main>
+
+<!-- ================= POPUP ================= -->
+<div id="lapis-popup" hidden>
+  <div class="tirai-popup" data-tutup></div>
+
+  <!-- Peta lokasi -->
+  <section class="popup" id="popup-peta" hidden aria-labelledby="j-peta">
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 id="j-peta" class="judul-popup">Peta Pantai Lombok</h2>
+    <p class="catatan">Ketuk titik di peta atau pilih dari daftar — karakter Anda akan berjalan ke sana.</p>
+    <div class="bingkai-peta"><canvas id="peta-besar"></canvas></div>
+    <div id="daftar-lokasi" class="daftar-lokasi"></div>
+  </section>
+
+  <!-- Mempelai -->
+  <section class="popup" id="popup-pengantin" hidden aria-labelledby="j-pengantin">
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 id="j-pengantin" class="judul-popup">Mempelai</h2>
+    <p class="quote-popup">{{ pengaturan.quote }}</p>
+    {% if pengaturan.sumber_quote %}<p class="sumber-quote">— {{ pengaturan.sumber_quote }} —</p>{% endif %}
+    <div class="kartu-mempelai">
+      {% for orang in mempelai %}
+        <article class="mempelai">
+          <div class="bingkai-foto">
+            {% if orang.foto %}<img src="{{ orang.foto.url }}" alt="Foto {{ orang.nama_panggilan }}" loading="lazy">
+            {% else %}<span class="foto-kosong">Foto belum diunggah</span>{% endif %}
+          </div>
+          <h3>{{ orang.nama_lengkap }}</h3>
+          {% if orang.anak_ke %}<p class="peran">{{ orang.anak_ke }} dari</p>{% endif %}
+          {% if orang.nama_ayah or orang.nama_ibu %}
+            <p class="ortu">Bapak {{ orang.nama_ayah }}<br>&amp; Ibu {{ orang.nama_ibu }}</p>
+          {% endif %}
+          {% if orang.instagram %}
+            <a class="tombol-kecil" href="https://instagram.com/{{ orang.instagram }}" target="_blank" rel="noopener">@{{ orang.instagram }}</a>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+    {% if pengaturan.hashtag %}<p class="hashtag">{{ pengaturan.hashtag }}</p>{% endif %}
+  </section>
+
+  <!-- Galeri -->
+  <section class="popup" id="popup-galeri" hidden aria-labelledby="j-galeri">
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 id="j-galeri" class="judul-popup">Galeri Pantai</h2>
+    {% if galeri %}
+      <div class="galeri-gulir">
+        {% for foto in galeri %}
+          <figure class="galeri-item">
+            <img src="{{ foto.gambar.url }}" alt="{{ foto.keterangan|default:'Foto prewedding' }}" loading="lazy" data-perbesar>
+            {% if foto.keterangan %}<figcaption>{{ foto.keterangan }}</figcaption>{% endif %}
+          </figure>
+        {% endfor %}
+      </div>
+      <p class="catatan">Geser ke samping untuk melihat foto lain. Ketuk foto untuk memperbesar.</p>
+    {% else %}
+      <p class="kosong">Foto galeri belum diunggah. Tambahkan lewat halaman admin.</p>
+    {% endif %}
+  </section>
+
+  <!-- Acara -->
+  <section class="popup" id="popup-acara" hidden aria-labelledby="j-acara">
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 id="j-acara" class="judul-popup">Rangkaian Acara</h2>
+    {% if acara_utama %}
+      <div id="hitung-mundur" data-target="{{ acara_utama.waktu_mulai|date:'c' }}">
+        <div><b data-satuan="hari">0</b><span>Hari</span></div>
+        <div><b data-satuan="jam">0</b><span>Jam</span></div>
+        <div><b data-satuan="menit">0</b><span>Menit</span></div>
+        <div><b data-satuan="detik">0</b><span>Detik</span></div>
+      </div>
+    {% endif %}
+    {% for acara in acara_list %}
+      <article class="kartu-acara">
+        <h3>{{ acara.nama }}</h3>
+        <p class="waktu">{{ acara.waktu_mulai|date:"l, j F Y" }}<br>
+          Pukul {{ acara.waktu_mulai|date:"H:i" }}{% if acara.waktu_selesai %} – {{ acara.waktu_selesai|date:"H:i" }}{% endif %} WITA / WIB</p>
+        <p class="tempat"><b>{{ acara.nama_tempat }}</b>{% if acara.alamat %}<br>{{ acara.alamat|linebreaksbr }}{% endif %}</p>
+        {% if acara.url_maps %}
+          <a class="tombol-kecil" href="{{ acara.url_maps }}" target="_blank" rel="noopener">Buka Google Maps</a>
+        {% endif %}
+      </article>
+    {% empty %}
+      <p class="kosong">Detail acara belum diisi. Tambahkan lewat halaman admin.</p>
+    {% endfor %}
+    {% if pengaturan.catatan_penutup %}<p class="penutup">{{ pengaturan.catatan_penutup }}</p>{% endif %}
+  </section>
+
+  <!-- Buku tamu -->
+  <section class="popup" id="popup-ucapan" hidden aria-labelledby="j-ucapan">
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 id="j-ucapan" class="judul-popup">Buku Tamu</h2>
+    <p class="catatan">Tinggalkan doa restu &amp; konfirmasi kehadiran Anda.</p>
+
+    <form id="form-ucapan" autocomplete="off">
+      {% csrf_token %}
+      <label>Nama
+        <input type="text" name="nama" maxlength="120" required value="{% if tamu %}{{ tamu.nama }}{% endif %}">
+      </label>
+      <label>Ucapan &amp; doa
+        <textarea name="pesan" rows="3" maxlength="1000" required placeholder="Selamat menempuh hidup baru…"></textarea>
+      </label>
+      <div class="baris-form">
+        <label>Kehadiran
+          <select name="kehadiran">
+            <option value="hadir">Insya Allah hadir</option>
+            <option value="tidak">Maaf, tidak dapat hadir</option>
+            <option value="ragu">Masih ragu</option>
+          </select>
+        </label>
+        <label>Jumlah orang
+          <input type="number" name="jumlah_orang" min="1" max="20" value="{% if tamu %}{{ tamu.jumlah_undangan }}{% else %}1{% endif %}">
+        </label>
+      </div>
+      <button type="submit" class="tombol-utama kecil">Kirim Ucapan</button>
+      <p id="status-ucapan" role="status"></p>
+    </form>
+
+    <h3 class="sub-judul">Ucapan yang masuk (<span id="jumlah-ucapan">{{ ucapan_list|length }}</span>)</h3>
+    <div id="daftar-ucapan">
+      {% for u in ucapan_list %}
+        <article class="ucapan">
+          <p class="nama">{{ u.nama }} <span class="badge {{ u.kehadiran }}">{{ u.get_kehadiran_display }}</span></p>
+          <p class="pesan">{{ u.pesan|linebreaksbr }}</p>
+          <p class="waktu">{{ u.dibuat|date:"j M Y, H:i" }}</p>
+        </article>
+      {% empty %}
+        <p class="kosong" id="ucapan-kosong">Belum ada ucapan. Jadilah yang pertama!</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Hadiah -->
+  <section class="popup" id="popup-hadiah" hidden aria-labelledby="j-hadiah">
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 id="j-hadiah" class="judul-popup">Amplop Digital</h2>
+    <p class="catatan">Doa restu Anda sudah lebih dari cukup. Namun bila ingin memberi tanda kasih, berikut informasinya.</p>
+    {% for rek in rekening_list %}
+      <article class="kartu-rekening">
+        <p class="bank">{{ rek.nama_bank }}</p>
+        <p class="nomor">{{ rek.nomor }}</p>
+        <p class="atas-nama">a.n. {{ rek.atas_nama }}</p>
+        {% if rek.qr %}<img class="qr" src="{{ rek.qr.url }}" alt="QR {{ rek.nama_bank }}" loading="lazy">{% endif %}
+        <button type="button" class="tombol-kecil" data-salin="{{ rek.nomor }}">Salin nomor</button>
+      </article>
+    {% empty %}
+      <p class="kosong">Informasi hadiah belum diisi. Tambahkan lewat halaman admin.</p>
+    {% endfor %}
+  </section>
+
+  <!-- Petunjuk -->
+  <section class="popup" id="popup-petunjuk" hidden aria-labelledby="j-petunjuk">
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 id="j-petunjuk" class="judul-popup">Cara Bermain</h2>
+    <ul class="petunjuk">
+      <li><b>Berjalan</b> — geser analog di kiri bawah layar, atau pakai tombol <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / panah di komputer.</li>
+      <li><b>Langsung ke lokasi</b> — buka peta lewat tombol di kanan atas, lalu pilih tempat yang dituju. Karakter berjalan sendiri ke sana.</li>
+      <li><b>Berinteraksi</b> — dekati objek bertanda <span class="tanda">!</span>, lalu tekan tombol di kanan bawah atau <kbd>Spasi</kbd>.</li>
+      <li><b>Papan nama</b> — setiap tempat punya papan nama di atasnya. Tanda <span class="tanda centang">✓</span> berarti sudah Anda kunjungi.</li>
+    </ul>
+  </section>
+
+  <!-- Lightbox foto -->
+  <div id="lightbox" hidden><img alt=""><button class="tombol-tutup" data-tutup-lightbox aria-label="Tutup">&times;</button></div>
+</div>
+
+{% if pengaturan.musik %}<audio id="musik" loop preload="none" src="{{ pengaturan.musik.url }}"></audio>{% endif %}
+
+<script id="data-undangan" type="application/json">
+{
+  "slug": "{{ tamu.slug|default:'' }}",
+  "aset": {
+    "tileset": "{% aset 'game_lombok/tileset.png' %}",
+    "tepi": "{% aset 'game_lombok/tepi.png' %}",
+    "karakter_pria": "{% aset 'game_lombok/karakter_pria.png' %}",
+    "karakter_wanita": "{% aset 'game_lombok/karakter_wanita.png' %}",
+    "pelaminan": "{% aset 'game_lombok/pelaminan.png' %}",
+    "pengantin_pria": "{% aset 'game_lombok/pengantin_pria.png' %}",
+    "pengantin_wanita": "{% aset 'game_lombok/pengantin_wanita.png' %}",
+    "bale_saji": "{% aset 'game_lombok/bale_saji.png' %}",
+    "galeri": "{% aset 'game_lombok/galeri.png' %}",
+    "buku_tamu": "{% aset 'game_lombok/buku_tamu.png' %}",
+    "papan": "{% aset 'game_lombok/papan.png' %}",
+    "hadiah": "{% aset 'game_lombok/hadiah.png' %}",
+    "gerbang": "{% aset 'game_lombok/gerbang.png' %}",
+    "pohon_kelapa": "{% aset 'game_lombok/pohon_kelapa.png' %}",
+    "pohon_pandan": "{% aset 'game_lombok/pohon_pandan.png' %}",
+    "obor_bambu": "{% aset 'game_lombok/obor_bambu.png' %}",
+    "penari_sasak": "{% aset 'game_lombok/penari_sasak.png' %}",
+    "pemusik_gendang": "{% aset 'game_lombok/pemusik_gendang.png' %}",
+    "perahu_jukung": "{% aset 'game_lombok/perahu_jukung.png' %}",
+    "bangku": "{% aset 'game_lombok/bangku.png' %}"
+  }
+}
+</script>
+<script src="{% aset 'js/game_lombok.js' %}"></script>
+</body>
+</html>

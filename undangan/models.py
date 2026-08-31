@@ -6,6 +6,21 @@ from django.utils.text import slugify
 class Pengaturan(models.Model):
     """Pengaturan global undangan. Cukup buat satu baris saja."""
 
+    TEMA_KLASIK = "klasik"
+    TEMA_TROPIS = "tropis"
+    TEMA_LOMBOK = "lombok"
+    TEMA = [
+        (TEMA_KLASIK, "Taman Pixel Jawa - tampak atas"),
+        (TEMA_TROPIS, "Taman Tropis - isometrik"),
+        (TEMA_LOMBOK, "Pantai Lombok Sasak Wedding"),
+    ]
+
+    tema = models.CharField(
+        max_length=20,
+        choices=TEMA,
+        default=TEMA_KLASIK,
+        help_text="Tampilan undangan. Tema lain bisa dicoba lewat parameter tema pada URL.",
+    )
     judul = models.CharField(max_length=120, default="Undangan Pernikahan")
     hashtag = models.CharField(max_length=60, blank=True, help_text="Contoh: #RinaDanBudi")
     quote = models.TextField(

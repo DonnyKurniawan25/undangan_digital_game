@@ -249,10 +249,10 @@
     berjalan: false,
     lembar: "karakter_pria"
   };
-  var LEBAR_SPRITE = 36, TINGGI_SPRITE = 56;
-  var KOTAK = { w: 18, h: 12, offsetY: -10 };
+  var LEBAR_SPRITE = 48, TINGGI_SPRITE = 80;
+  var KOTAK = { w: 22, h: 14, offsetY: -10 };
 
-  var kamera = { x: 0, y: 0 };
+  var kamera = { x: 0, y: 0, diinisialisasi: false };
   var skala = 2, dpr = 1, lebarCss = 0, tinggiCss = 0;
   var berjalanTerus = false;
   var zonaAktif = null;
@@ -274,11 +274,9 @@
     el.kanvas.style.width = lebarCss + "px";
     el.kanvas.style.height = tinggiCss + "px";
 
-    // Zoom dipilih dari sisi yang paling menuntut: layar lebar dibatasi
-    // ~11,5 petak melintang, layar tinggi (HP) dibatasi ~18 petak menurun,
-    // supaya karakter tidak mengecil di ponsel.
-    skala = Math.max(lebarCss / (11.5 * TILE), tinggiCss / (18 * TILE));
-    skala = Math.max(1, Math.min(3.2, skala));
+    // Zoom Stardew Valley: luas pandang ideal dari atas (~14 petak mendatar, ~11 petak menurun)
+    skala = Math.max(lebarCss / (14.0 * TILE), tinggiCss / (11.0 * TILE));
+    skala = Math.max(1.5, Math.min(3.2, skala));
     ctx.imageSmoothingEnabled = false;
 
     gradasiVignet = ctx.createRadialGradient(
@@ -589,7 +587,7 @@
     pemain.y = Math.max(TILE, Math.min(TINGGI_DUNIA - TILE * 0.5, pemain.y));
 
     perbaruiZona();
-    perbaruiKamera();
+    perbaruiKamera(dt);
     perbaruiKelopak(dt);
   }
 
@@ -627,15 +625,25 @@
     }
   }
 
-  function perbaruiKamera() {
+  function perbaruiKamera(dt) {
     var lebarTampak = lebarCss / skala;
     var tinggiTampak = tinggiCss / skala;
-    kamera.x = lebarTampak >= LEBAR_DUNIA
+    var targetX = lebarTampak >= LEBAR_DUNIA
       ? (LEBAR_DUNIA - lebarTampak) / 2
       : Math.max(0, Math.min(LEBAR_DUNIA - lebarTampak, pemain.x - lebarTampak / 2));
-    kamera.y = tinggiTampak >= TINGGI_DUNIA
+    var targetY = tinggiTampak >= TINGGI_DUNIA
       ? (TINGGI_DUNIA - tinggiTampak) / 2
-      : Math.max(0, Math.min(TINGGI_DUNIA - tinggiTampak, pemain.y - tinggiTampak / 2));
+      : Math.max(0, Math.min(TINGGI_DUNIA - tinggiTampak, pemain.y - tinggiTampak * 0.52));
+
+    if (!kamera.diinisialisasi) {
+      kamera.x = targetX;
+      kamera.y = targetY;
+      kamera.diinisialisasi = true;
+    } else {
+      var lajuLerp = 1 - Math.exp(-12 * (dt || 0.016));
+      kamera.x += (targetX - kamera.x) * lajuLerp;
+      kamera.y += (targetY - kamera.y) * lajuLerp;
+    }
   }
 
   function keLayarX(wx) { return (wx - kamera.x) * skala; }
@@ -762,9 +770,9 @@
   }
 
   function gambarBayangan(x, y, lebar) {
-    ctx.fillStyle = "rgba(40, 46, 36, .22)";
+    ctx.fillStyle = "rgba(28, 22, 18, .28)";
     ctx.beginPath();
-    ctx.ellipse(x, y - 2, lebar / 2, lebar / 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y - 2, lebar / 2, lebar / 3.8, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -784,18 +792,18 @@
   function gambarObjek(o) {
     var img = gambar[o.gambar];
     if (!img || !img.width) return;
-    gambarBayangan(o.x * TILE, o.y * TILE, Math.min(img.width * 0.7, 40));
+    gambarBayangan(o.x * TILE, o.y * TILE, Math.min(img.width * 0.7, 44));
     ctx.drawImage(img, Math.round(o.x * TILE - img.width / 2), Math.round(o.y * TILE - img.height));
   }
 
   function gambarPemain() {
     var lembar = gambar[pemain.lembar];
     if (!lembar || !lembar.width) return;
-    gambarBayangan(pemain.x, pemain.y, 20);
+    gambarBayangan(pemain.x, pemain.y, 26);
     ctx.drawImage(
       lembar,
       pemain.frame * LEBAR_SPRITE, pemain.arah * TINGGI_SPRITE, LEBAR_SPRITE, TINGGI_SPRITE,
-      Math.round(pemain.x - LEBAR_SPRITE / 2), Math.round(pemain.y - TINGGI_SPRITE + 6),
+      Math.round(pemain.x - LEBAR_SPRITE / 2), Math.round(pemain.y - TINGGI_SPRITE + 8),
       LEBAR_SPRITE, TINGGI_SPRITE
     );
   }
