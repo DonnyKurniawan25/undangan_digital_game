@@ -824,15 +824,16 @@ def main():
     KELUARAN.mkdir(parents=True, exist_ok=True)
     nama_tile = buat_tileset()
     nama_tepi = buat_tepi()
-    buat_karakter_sasak("karakter_pria", PALET_PRIA_SASAK, wanita=False)
-    buat_karakter_sasak("karakter_wanita", PALET_WANITA_SASAK, wanita=True)
+    # Karakter TIDAK dibuat di sini. Berkas ini menggambar bingkai 18x28,
+    # sedangkan mesin permainan memotong lembar sprite per 48x80. Sumber
+    # tunggal karakter untuk semua tema: tools/buat_karakter_stardew.py.
     for nama, fungsi in PROPERTI_LOMBOK.items():
         perbesar(fungsi()).save(KELUARAN / f"{nama}.png")
 
     print("=== Sukses Membuat Aset Tema 2: Pantai Lombok ===")
     print("Tileset :", ", ".join(f"{i}={n}" for i, n in enumerate(nama_tile)))
     print("Tepi    :", ", ".join(f"{i}={n}" for i, n in enumerate(nama_tepi)))
-    print("Karakter: karakter_pria.png, karakter_wanita.png")
+    print("Karakter: dilewati - lihat tools/buat_karakter_stardew.py")
     print("Properti:", ", ".join(PROPERTI_LOMBOK.keys()))
     print("Disimpan di:", KELUARAN)
 

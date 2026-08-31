@@ -118,7 +118,11 @@
   function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(function (a) {
       a.addEventListener("click", function (e) {
-        var target = document.querySelector(a.getAttribute("href"));
+        // href="#" murni bukan pemilih yang sah; querySelector("#") melempar
+        // SyntaxError dan menghentikan penanganan klik berikutnya.
+        var tujuan = a.getAttribute("href");
+        if (!tujuan || tujuan === "#") return;
+        var target = document.querySelector(tujuan);
         if (target) {
           e.preventDefault();
           target.scrollIntoView({ behavior: "smooth", block: "start" });

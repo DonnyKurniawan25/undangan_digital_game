@@ -101,6 +101,33 @@ def undangan_lombok(request, slug=None):
     return render(request, "undangan/game_lombok.html", konteks)
 
 
+def undangan_tropis(request, slug=None):
+    tamu = None
+    if slug:
+        tamu = get_object_or_404(Tamu, slug=slug)
+        tamu.catat_kunjungan()
+
+    pengaturan = Pengaturan.ambil()
+    acara_list = list(Acara.objects.all())
+    pria = Pengantin.objects.filter(peran=Pengantin.PRIA).first()
+    wanita = Pengantin.objects.filter(peran=Pengantin.WANITA).first()
+
+    konteks = {
+        "pengaturan": pengaturan,
+        "tamu": tamu,
+        "pria": pria,
+        "wanita": wanita,
+        "mempelai": [orang for orang in (pria, wanita) if orang],
+        "acara_list": acara_list,
+        "acara_utama": acara_list[0] if acara_list else None,
+        "galeri": FotoGaleri.objects.all(),
+        "rekening_list": Rekening.objects.all(),
+        "ucapan_list": Ucapan.objects.filter(disetujui=True)[:BATAS_UCAPAN_TAMPIL],
+        "jumlah_hadir": Ucapan.objects.filter(disetujui=True, kehadiran=Ucapan.HADIR).count(),
+    }
+    return render(request, "undangan/game_tropis.html", konteks)
+
+
 @require_http_methods(["GET", "POST"])
 def api_ucapan(request):
     if request.method == "GET":

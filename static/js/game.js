@@ -275,8 +275,13 @@
     el.kanvas.style.height = tinggiCss + "px";
 
     // Zoom Stardew Valley: luas pandang ideal dari atas (~14 petak mendatar, ~11 petak menurun)
-    skala = Math.max(lebarCss / (14.0 * TILE), tinggiCss / (11.0 * TILE));
-    skala = Math.max(1.5, Math.min(3.2, skala));
+    // Sasaran: sekitar 11 petak melintang, 16 petak menurun - bidikan tegak,
+    // sama seperti tema tropis. Sasaran lama (14 melintang, 11 menurun)
+    // berbentuk melebar, sehingga di layar ponsel yang menjulang suku tinggi
+    // selalu menang dan memaksa perbesaran: yang tampak tinggal 5 petak
+    // melintang dan karakter memenuhi hampir seperempat layar.
+    skala = Math.max(lebarCss / (11.0 * TILE), tinggiCss / (16.0 * TILE));
+    skala = Math.max(1.0, Math.min(2.4, skala));
     ctx.imageSmoothingEnabled = false;
 
     gradasiVignet = ctx.createRadialGradient(

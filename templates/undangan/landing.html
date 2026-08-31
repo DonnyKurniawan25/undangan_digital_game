@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+<link rel="stylesheet" href="{% aset 'css/landing.css' %}">
 </head>
 <body>
 
@@ -58,6 +58,10 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
         Demo Tema 2 (Pantai Lombok)
       </a>
+      <a href="{% url 'undangan:beranda_tropis' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #4da43a 0%, #9c6a38 100%);" id="btn-demo-tropis">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Demo Tema 3 (Taman Tropis)
+      </a>
       <a href="#fitur" class="btn btn-secondary" id="btn-fitur">
         Jelajahi Fitur
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 16l-6-6h12z"/></svg>
@@ -85,7 +89,7 @@
     <div class="features-grid">
       <div class="feature-card reveal reveal-delay-1">
         <div class="feature-icon">
-          <img src="{% static 'game/pelaminan.png' %}" alt="Pelaminan" loading="lazy">
+          <img src="{% aset 'game/pelaminan.png' %}" alt="Pelaminan" loading="lazy">
         </div>
         <h3>Biodata Mempelai</h3>
         <p>Pelaminan gebyok jati berukir menampilkan foto dan biodata lengkap kedua mempelai beserta kutipan doa.</p>
@@ -93,7 +97,7 @@
 
       <div class="feature-card reveal reveal-delay-2">
         <div class="feature-icon">
-          <img src="{% static 'game/galeri.png' %}" alt="Galeri" loading="lazy">
+          <img src="{% aset 'game/galeri.png' %}" alt="Galeri" loading="lazy">
         </div>
         <h3>Galeri Prewedding</h3>
         <p>Papan lukis berisi galeri foto prewedding yang bisa digeser dan diperbesar. Abadikan momen terindah Anda.</p>
@@ -101,7 +105,7 @@
 
       <div class="feature-card reveal reveal-delay-3">
         <div class="feature-icon">
-          <img src="{% static 'game/papan.png' %}" alt="Papan Acara" loading="lazy">
+          <img src="{% aset 'game/papan.png' %}" alt="Papan Acara" loading="lazy">
         </div>
         <h3>Rangkaian Acara</h3>
         <p>Papan kayu menampilkan jadwal lengkap acara, hitung mundur otomatis, dan tautan langsung ke Google Maps.</p>
@@ -109,7 +113,7 @@
 
       <div class="feature-card reveal reveal-delay-1">
         <div class="feature-icon">
-          <img src="{% static 'game/buku_tamu.png' %}" alt="Buku Tamu" loading="lazy">
+          <img src="{% aset 'game/buku_tamu.png' %}" alt="Buku Tamu" loading="lazy">
         </div>
         <h3>Buku Tamu & RSVP</h3>
         <p>Meja buku tamu tempat mengirim ucapan doa dan mengonfirmasi kehadiran. Semua masuk ke dashboard admin.</p>
@@ -117,7 +121,7 @@
 
       <div class="feature-card reveal reveal-delay-2">
         <div class="feature-icon">
-          <img src="{% static 'game/hadiah.png' %}" alt="Amplop Digital" loading="lazy">
+          <img src="{% aset 'game/hadiah.png' %}" alt="Amplop Digital" loading="lazy">
         </div>
         <h3>Amplop Digital</h3>
         <p>Kotak angpao bermotif batik kawung berisi nomor rekening dan QRIS. Salin nomor dengan satu ketukan.</p>
@@ -163,74 +167,98 @@
 <section class="preview" id="preview">
   <div class="container">
     <div class="text-center reveal">
-      <span class="section-label">Pilihan Tema</span>
-      <h2 class="section-title">Dua Nuansa Adat Istimewa</h2>
+      <span class="section-label">Pilihan Tema Game</span>
+      <h2 class="section-title">Tiga Nuansa Adat &amp; Alam Istimewa</h2>
       <p class="section-desc">
-        Pilih nuansa adat favorit Anda — dari Taman Tradisional Jawa yang asri hingga Pantai Sasak Lombok yang eksotis.
+        Pilih nuansa favorit Anda — dari Taman Tradisional Jawa, Pantai Sasak Lombok yang eksotis, hingga Taman Tropis Rimbun bergaya Stardew Valley.
       </p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; margin-bottom: 36px;" class="reveal">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-bottom: 36px;" class="reveal">
       <!-- Tema 1 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .15); border-radius: 20px; overflow: hidden; padding: 18px;">
-        <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-          <img src="{% static 'img/preview_game.png' %}" alt="Tema 1: Taman Tradisional Jawa" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .15); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
+            <img src="{% aset 'img/preview_game.png' %}" alt="Tema 1: Taman Tradisional Jawa" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+          </div>
+          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🌿 Tema 1: Taman Tradisional Jawa</h3>
+          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
+            Pelaminan gebyok jati berukir, gunungan, janur kuning, dan busana beskap/kebaya Jawa klasik.
+          </p>
         </div>
-        <h3 style="font-family: var(--serif); font-size: 1.4rem; color: #fff; margin-bottom: 6px;">🌿 Tema 1: Taman Tradisional Jawa</h3>
-        <p style="font-size: .88rem; color: rgba(255,255,255,.65); line-height: 1.6; margin-bottom: 16px;">
-          Pelaminan gebyok jati berukir, gunungan, janur kuning, dan busana beskap/kebaya Jawa klasik.
-        </p>
         <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
           Buka Demo Tema Jawa
         </a>
       </div>
 
       <!-- Tema 2 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(43, 168, 168, .4); border-radius: 20px; overflow: hidden; padding: 18px;">
-        <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-          <img src="{% static 'img/preview_lombok.png' %}" alt="Tema 2: Pantai Sasak Lombok" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(43, 168, 168, .4); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
+            <img src="{% aset 'img/preview_lombok.png' %}" alt="Tema 2: Pantai Sasak Lombok" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+          </div>
+          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🏖️ Tema 2: Pantai Sasak Lombok</h3>
+          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
+            Bale Lumbung Sasak atap perahu, Candi Bentar bata merah, obor bambu pantai, laut turquoise, dan mahkota Lambung emas.
+          </p>
         </div>
-        <h3 style="font-family: var(--serif); font-size: 1.4rem; color: #fff; margin-bottom: 6px;">🏖️ Tema 2: Pantai Sasak Lombok</h3>
-        <p style="font-size: .88rem; color: rgba(255,255,255,.65); line-height: 1.6; margin-bottom: 16px;">
-          Bale Lumbung Sasak atap perahu, Candi Bentar bata merah, obor bambu, laut turquoise, dan mahkota Lambung emas.
-        </p>
         <a href="{% url 'undangan:beranda_lombok' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #2ba8a8 0%, #ab4430 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
           Buka Demo Tema Lombok
+        </a>
+      </div>
+
+      <!-- Tema 3 Card -->
+      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(110, 196, 80, .4); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
+            <img src="{% aset 'img/preview_tropis.png' %}" alt="Tema 3: Taman Tropis Rimbun" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+          </div>
+          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🌴 Tema 3: Taman Tropis Rimbun</h3>
+          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
+            Pelaminan ukir jati emas, kolam air mancur dengan jembatan melengkung &amp; teratai, umbul-umbul, serta rimbun pohon pisang &amp; palem.
+          </p>
+        </div>
+        <a href="{% url 'undangan:beranda_tropis' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #4da43a 0%, #9c6a38 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
+          Buka Demo Tema Tropis
         </a>
       </div>
     </div>
 
     <div class="pixel-strip reveal">
       <div class="pixel-item">
-        <img src="{% static 'game/pelaminan.png' %}" alt="Pelaminan">
+        <img src="{% aset 'game/pelaminan.png' %}" alt="Pelaminan">
         <span>Pelaminan</span>
       </div>
       <div class="pixel-item">
-        <img src="{% static 'game/gerbang.png' %}" alt="Gerbang">
-        <span>Gapura</span>
+        <img src="{% aset 'game_tropis/gapura.png' %}" alt="Gapura Janur">
+        <span>Gapura Janur</span>
       </div>
       <div class="pixel-item">
-        <img src="{% static 'game/kembar_mayang.png' %}" alt="Kembar Mayang">
-        <span>Kembar Mayang</span>
+        <img src="{% aset 'game_tropis/jembatan.png' %}" alt="Jembatan Kolam">
+        <span>Jembatan</span>
       </div>
       <div class="pixel-item">
-        <img src="{% static 'game/meja_tumpeng.png' %}" alt="Tumpeng">
-        <span>Tumpeng</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% static 'game/umbul_umbul.png' %}" alt="Umbul-umbul">
-        <span>Umbul-umbul</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% static 'game/pohon_palem.png' %}" alt="Pohon Palem">
-        <span>Palem</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% static 'game/air_mancur.png' %}" alt="Air Mancur">
+        <img src="{% aset 'game_tropis/air_mancur.png' %}" alt="Air Mancur">
         <span>Air Mancur</span>
       </div>
       <div class="pixel-item">
-        <img src="{% static 'game/pengantin_pria.png' %}" alt="Pengantin Pria">
+        <img src="{% aset 'game_tropis/teratai.png' %}" alt="Bunga Teratai">
+        <span>Teratai</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% aset 'game_tropis/umbul_kuning.png' %}" alt="Umbul-umbul">
+        <span>Umbul-umbul</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% aset 'game_lombok/pelaminan.png' %}" alt="Bale Lumbung">
+        <span>Bale Lumbung</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% aset 'game_lombok/obor_bambu.png' %}" alt="Obor Pantai">
+        <span>Obor Pantai</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% aset 'game/pengantin_pria.png' %}" alt="Pengantin Pria">
         <span>Mempelai</span>
       </div>
     </div>
@@ -357,6 +385,6 @@
   </div>
 </footer>
 
-<script src="{% static 'js/landing.js' %}"></script>
+<script src="{% aset 'js/landing.js' %}"></script>
 </body>
 </html>

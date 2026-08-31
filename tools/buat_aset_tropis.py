@@ -221,6 +221,35 @@ def petak_tanah(seed=4, bedeng=False):
     return petak(gambar, dasar)
 
 
+def petak_tepi_kolam(seed=9):
+    """Tepian kolam: batu kali basah bercampur pasir. Bisa dipijak, dan
+    sengaja TIDAK menyerupai air supaya pemain tidak terlihat berjalan di
+    atas kolam."""
+    def gambar(d):
+        r = random.Random(seed)
+        for _ in range(9):
+            x, y = r.randrange(0, UKURAN_PETAK), r.randrange(0, UKURAN_PETAK)
+            d.ellipse([x, y, x + r.randint(10, 18), y + r.randint(6, 11)], fill=(126, 118, 108, 255))
+        for _ in range(7):
+            x, y = r.randrange(0, UKURAN_PETAK), r.randrange(0, UKURAN_PETAK)
+            d.ellipse([x, y, x + r.randint(8, 14), y + r.randint(5, 8)], fill=(176, 166, 150, 255))
+        # batu kali
+        for _ in range(16):
+            x, y = r.randrange(0, UKURAN_PETAK), r.randrange(0, UKURAN_PETAK)
+            lebar, tinggi = r.randint(5, 9), r.randint(4, 7)
+            d.ellipse([x, y, x + lebar, y + tinggi], fill=BATU_PEKAT)
+            d.ellipse([x, y, x + lebar - 1, y + tinggi - 1], fill=BATU)
+            d.ellipse([x + 1, y + 1, x + lebar - 3, y + tinggi - 3], fill=BATU_TERANG)
+        # lumut tipis di sela batu
+        for _ in range(10):
+            x, y = r.randrange(0, UKURAN_PETAK), r.randrange(0, UKURAN_PETAK)
+            d.point((x, y), fill=(96, 132, 76, 255))
+            d.point((x + 1, y), fill=(76, 110, 60, 255))
+        _bintik(d, r, 30, (150, 142, 130, 255))
+
+    return petak(gambar, (152, 144, 132, 255))
+
+
 def petak_air(seed=5, fase=0, tepi=False):
     """Air kolam. Tiga fase riak dipakai bergantian untuk animasi."""
     def gambar(d):
@@ -257,7 +286,7 @@ URUTAN_PETAK = [
     ("air1", lambda: petak_air(31, 0)),
     ("air2", lambda: petak_air(31, 1)),
     ("air3", lambda: petak_air(31, 2)),
-    ("tepi_air", lambda: petak_air(33, 0, tepi=True)),
+    ("tepi_air", petak_tepi_kolam),
     ("bedeng", lambda: petak_tanah(41, bedeng=True)),
     ("rimba", lambda: petak_rumput(51, gelap=True)),
 ]
@@ -342,12 +371,19 @@ def _kepala(d, arah, p, gy, hiasan=None):
     hx0, hx1 = 14, 29
     hy0, hy1 = 5 + gy, 25 + gy
 
+    # kubah kecil di atas supaya ubun-ubun membulat, tidak rata
+    d.ellipse([hx0 + 2, hy0 - 4, hx1 - 2, hy0 + 6], fill=rambut[1])
     d.ellipse([hx0 - 1, hy0 - 1, hx1 + 1, hy1 - 2], fill=rambut[1])
-    d.ellipse([hx0 + 1, hy0, hx1 - 4, hy0 + 8], fill=rambut[0])
+    d.point((hx0 - 1, hy0 - 1), fill=(0, 0, 0, 0))
+    d.point((hx1 + 1, hy0 - 1), fill=(0, 0, 0, 0))
+    d.ellipse([hx0 + 1, hy0 - 2, hx1 - 4, hy0 + 8], fill=rambut[0])
 
     if arah == "atas":
+        d.ellipse([hx0 + 2, hy0 - 4, hx1 - 2, hy0 + 6], fill=rambut[1])
         d.ellipse([hx0 - 1, hy0 - 1, hx1 + 1, hy1], fill=rambut[1])
-        d.ellipse([hx0 + 1, hy0, hx1 - 4, hy0 + 9], fill=rambut[0])
+        d.point((hx0 - 1, hy0 - 1), fill=(0, 0, 0, 0))
+        d.point((hx1 + 1, hy0 - 1), fill=(0, 0, 0, 0))
+        d.ellipse([hx0 + 1, hy0 - 2, hx1 - 4, hy0 + 9], fill=rambut[0])
         for x in range(hx0 + 2, hx1 - 1, 4):
             d.line([(x, hy0 + 2), (x, hy1 - 2)], fill=rambut[2])
         d.rectangle([hx0 + 5, hy1 - 1, hx1 - 5, hy1 + 2], fill=kulit[2])
@@ -405,74 +441,74 @@ def _kepala(d, arah, p, gy, hiasan=None):
 def _badan(d, arah, p, gy, ayun, sabuk=True):
     """Badan, tungkai, dan lengan.
 
-    gy dipertahankan di tanda tangan agar pemanggil lama tetap jalan, tetapi
-    badan sengaja TIDAK ikut naik-turun: hanya kaki dan lengan yang bergerak.
-    Naik-turun badan tiap frame membuat sprite terlihat seperti berbayang.
+    Mengikuti siluet sprite RPG tampak atas: atasan panjang menutup pinggul,
+    lengan lurus di sisi badan sewarna atasan, tungkai pendek dengan sepatu
+    kecil. Badan sengaja tidak ikut naik-turun tiap frame supaya tidak
+    terlihat berbayang; hanya kaki dan lengan yang bergerak.
     """
     kulit, baju, bawah, alas = p["kulit"], p["baju"], p["bawahan"], p["alas"]
     rok = p["rok"]
-    ty0, ty1 = 26, 47
+    ty0, ty1 = 26, 52
 
-    # ---- kaki: dua tungkai dengan celah jelas, satu terangkat ----
+    # ---- tungkai ----
     if rok:
         for x0, maju in ((16, ayun > 0), (24, ayun < 0)):
             atas = 60
-            bwh = 68 - (2 if maju else 0)
+            bwh = 67 - (2 if maju else 0)
             _kapsul(d, x0, atas, x0 + 3, bwh, kulit[1])
             _kapsul(d, x0 - 1, bwh - 2, x0 + 4, bwh + 2, alas[0])
     else:
+        # Kedua telapak selalu menyentuh tanah; yang berubah hanya renggang
+        # tungkai dan beda tinggi 1 px, supaya tidak terlihat melayang.
         for x0, maju in ((15, ayun > 0), (24, ayun < 0)):
-            atas = ty1 - 2
-            bwh = 68 - (3 if maju else 0)
-            _kapsul(d, x0, atas, x0 + 4, bwh, bawah[1])
-            d.line([(x0, atas + 2), (x0, bwh - 2)], fill=bawah[0])
-            d.line([(x0 + 4, atas + 2), (x0 + 4, bwh - 2)], fill=bawah[2])
-            _kapsul(d, x0 - 1, bwh - 2, x0 + 5, bwh + 2, alas[0])
-            d.line([(x0, bwh + 1), (x0 + 4, bwh + 1)], fill=alas[1])
-        # celah gelap antara kedua tungkai
-        d.line([(21, ty1), (21, 66)], fill=bawah[2])
-        d.line([(22, ty1), (22, 66)], fill=bawah[2])
+            x = x0 + (-1 if (maju and x0 == 15) else (1 if maju else 0))
+            atas = ty1 - 4
+            bwh = 66 - (1 if maju else 0)
+            _kapsul(d, x, atas, x + 4, bwh, bawah[1])
+            d.line([(x, atas + 2), (x, bwh - 2)], fill=bawah[0])
+            d.line([(x + 4, atas + 2), (x + 4, bwh - 2)], fill=bawah[2])
+            _kapsul(d, x - 1, bwh - 1, x + 5, bwh + 3, alas[0])
+            d.line([(x, bwh + 2), (x + 4, bwh + 2)], fill=alas[1])
+        d.line([(21, ty1 - 2), (21, 63)], fill=bawah[2])
+        d.line([(22, ty1 - 2), (22, 63)], fill=bawah[2])
 
-    # ---- badan ----
+    # ---- kain panjang untuk yang berkebaya ----
     if rok:
-        d.polygon([(14, 41), (30, 41), (34, 64), (10, 64)], fill=bawah[1])
-        d.polygon([(23, 41), (30, 41), (34, 64), (25, 64)], fill=bawah[2])
-        d.polygon([(14, 41), (18, 41), (14, 64), (10, 64)], fill=bawah[0])
-        for yy in range(46, 64, 5):
-            for xx in range(13, 32, 6):
+        d.polygon([(14, 44), (30, 44), (34, 63), (10, 63)], fill=bawah[1])
+        d.polygon([(23, 44), (30, 44), (34, 63), (25, 63)], fill=bawah[2])
+        d.polygon([(14, 44), (17, 44), (14, 63), (10, 63)], fill=bawah[0])
+        for yy in range(49, 62, 6):
+            for xx in range(14, 31, 7):
                 d.point((xx, yy), fill=p["motif"])
-                d.point((xx + 1, yy + 1), fill=p["motif"])
-        ty1 = 43
+        ty1 = 46
 
+    # ---- atasan panjang ----
     _kapsul(d, 13, ty0, 30, ty1, baju[1])
     d.rectangle([13, ty0 + 5, 15, ty1 - 3], fill=baju[0])
     d.rectangle([28, ty0 + 5, 30, ty1 - 3], fill=baju[2])
+    d.line([(14, ty1 - 2), (29, ty1 - 2)], fill=baju[2])   # kelim bawah
     if not rok:
-        for yy in range(ty0 + 5, ty1 - 6, 5):
-            for xx in range(16, 28, 5):
+        for yy in range(ty0 + 6, ty1 - 5, 7):
+            for xx in range(17, 28, 7):
                 d.point((xx, yy), fill=p["motif"])
 
-    # ---- ikat pinggang: satu garis gelap dengan gesper kecil ----
-    if sabuk:
-        d.line([(14, ty1 - 4), (29, ty1 - 4)], fill=baju[2])
-        d.rectangle([20, ty1 - 5, 23, ty1 - 3], fill=p["sabuk"][1])
-        d.point((21, ty1 - 4), fill=p["sabuk"][0])
-
+    # ---- kerah ----
     if arah != "atas":
         d.polygon([(18, ty0), (21, ty0 + 5), (25, ty0)], fill=baju[2])
+        d.point((21, ty0 + 2), fill=baju[0])
 
-    # ---- lengan di sisi badan, dipisah garis gelap, telapak di bawah ----
+    # ---- lengan lurus di sisi badan ----
     for x0, sisi in ((9, -1), (31, 1)):
         ayunL = -ayun * sisi
         atas = ty0 + 3 + (1 if ayunL > 0 else 0) - (1 if ayunL < 0 else 0)
-        bawahL = ty1 - 2 + (1 if ayunL > 0 else 0) - (1 if ayunL < 0 else 0)
+        bawahL = ty1 - 4 + (1 if ayunL > 0 else 0) - (1 if ayunL < 0 else 0)
         _kapsul(d, x0, atas, x0 + 3, bawahL, baju[1])
-        d.line([(x0, atas + 2), (x0, bawahL - 2)], fill=baju[0] if sisi < 0 else baju[2])
-        # celah gelap agar lengan terbaca terpisah dari badan
+        d.line([(x0, atas + 2), (x0, bawahL - 3)], fill=baju[0] if sisi < 0 else baju[2])
         pemisah = x0 + 4 if sisi < 0 else x0 - 1
-        d.line([(pemisah, atas + 1), (pemisah, bawahL - 1)], fill=baju[2])
-        d.ellipse([x0, bawahL, x0 + 3, bawahL + 4], fill=kulit[1])
-        d.point((x0 + 3, bawahL + 3), fill=kulit[2])
+        d.line([(pemisah, atas + 1), (pemisah, bawahL - 4)], fill=baju[2])
+        # telapak kecil yang menumpuk ujung lengan, bukan bola terpisah
+        d.rectangle([x0 + 1, bawahL - 2, x0 + 3, bawahL], fill=kulit[1])
+        d.point((x0 + 3, bawahL), fill=kulit[2])
     return ty0
 
 
@@ -529,12 +565,12 @@ def prop_pengantin(pria):
     ty0 = _badan(d, "bawah", p, 0, 0)
     if pria:
         # keris terselip di pinggang
-        d.line([(30, ty0 + 18), (34, ty0 + 9)], fill=_w(208, 170, 86))
-        d.ellipse([32, ty0 + 6, 36, ty0 + 11], fill=_w(248, 216, 138))
+        d.line([(29, ty0 + 22), (33, ty0 + 12)], fill=_w(208, 170, 86))
+        d.ellipse([31, ty0 + 9, 35, ty0 + 14], fill=_w(248, 216, 138))
     else:
         # untaian melati di depan kebaya
-        for y in range(ty0 + 6, ty0 + 18, 4):
-            d.ellipse([20, y, 23, y + 3], fill=_w(252, 250, 244))
+        for y in range(ty0 + 7, ty0 + 19, 4):
+            d.ellipse([20, y, 22, y + 2], fill=_w(252, 250, 244))
     _kepala(d, "bawah", p, 0, hiasan="blangkon" if pria else "sanggul")
     return garis_luar(img, GARIS_TAMU)
 
@@ -987,17 +1023,15 @@ PROPERTI = {
 def main():
     KELUARAN.mkdir(parents=True, exist_ok=True)
     nama_petak = buat_tileset()
-    buat_karakter("karakter_pria", PALET_TAMU_PRIA)
-    buat_karakter("karakter_wanita", PALET_TAMU_WANITA)
-    # Mempelai digambar pada resolusi akhir seperti karakter, jadi tidak
-    # ikut diperbesar seperti properti lain.
-    prop_pengantin(True).save(KELUARAN / "pengantin_pria.png")
-    prop_pengantin(False).save(KELUARAN / "pengantin_wanita.png")
+    # Karakter dan mempelai TIDAK dibuat di sini. Berkas ini menggambar
+    # bingkai 44x76, sedangkan ketiga mesin permainan memotong lembar sprite
+    # per 48x80. Menjalankannya dulu membuat potongan bingkai meleset satu
+    # sama lain sehingga karakter tampak cacat. Sumber tunggal karakter untuk
+    # SEMUA tema sekarang tools/buat_karakter_stardew.py.
     for nama, fungsi in PROPERTI.items():
         perbesar(fungsi()).save(KELUARAN / f"{nama}.png")
     print("Petak    :", ", ".join(f"{i}={n}" for i, n in enumerate(nama_petak)))
-    print("Karakter : karakter_pria.png, karakter_wanita.png (44x76 per frame)")
-    print("Mempelai : pengantin_pria.png, pengantin_wanita.png (44x76)")
+    print("Karakter : dilewati - lihat tools/buat_karakter_stardew.py")
     print("Properti :", ", ".join(PROPERTI))
     print("Tersimpan di", KELUARAN)
 

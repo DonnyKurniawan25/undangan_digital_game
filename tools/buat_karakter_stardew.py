@@ -111,9 +111,9 @@ PALET_WANITA_JAWA = {
     "rambut_sorot": (68, 54, 56, 255),
     "paes": (32, 26, 28, 255),
     "paes_emas": EMAS["terang"],
-    "kebaya_sorot": (255, 246, 240, 255),
-    "kebaya_dasar": (242, 226, 218, 255),
-    "kebaya_gelap": (208, 186, 178, 255),
+    "kebaya_sorot": (252, 250, 252, 255),
+    "kebaya_dasar": (232, 232, 240, 255),
+    "kebaya_gelap": (176, 176, 196, 255),
     "kebaya_renda": (255, 255, 255, 255),
     "kemben": (180, 54, 72, 255),
     "bros": EMAS["terang"],
@@ -179,275 +179,329 @@ PALET_WANITA_SASAK = {
 # DETAIL PENGGAMBARAN SPRITE (Stardew Valley Quality)
 # ==============================================================================
 
+# ==============================================================================
+# PENGGAMBARAN SPRITE — proporsi asli Stardew Valley
+#
+# Stardew menggambar karakter pada kanvas kecil lalu memperbesarnya dengan
+# NEAREST. Perbandingan yang membuatnya khas: kepala kira-kira 43% dari tinggi
+# badan, mata besar tiga piksel, garis luar tegas, dan bayangan cuma dua
+# tingkat. Menggambar halus di resolusi besar tidak akan pernah terlihat sama,
+# jadi seluruh karakter di sini digambar pada 24x40 lalu diperbesar 2x.
+#
+#   y 2..17  kepala (rambut + wajah)
+#   y 18..29 badan dan lengan
+#   y 30..38 tungkai dan alas kaki
+# ==============================================================================
+KEPALA_ATAS = 2
+WAJAH_ATAS, WAJAH_BAWAH = 5, 17
+BADAN_ATAS, BADAN_BAWAH = 18, 29
+KAKI_ATAS, KAKI_BAWAH = 30, 38
+
+
 def gambar_mata_stardew(d, x, y, arah="bawah", alis_tinggi=0):
-    """Mata khas RPG/Stardew Valley dengan iris berwarna, pupil, dan catchlight."""
-    # Alis
-    d.line([(x, y - 2 + alis_tinggi), (x + 2, y - 2 + alis_tinggi)], fill=MATA["alis"])
-    # Putih mata & iris
+    """Sepasang piksel mata bergaya sama dengan karakter utama. Dipakai oleh
+    properti penari dan pemusik yang digambar terpisah."""
     d.rectangle([x, y, x + 2, y + 2], fill=MATA["putih"])
     d.rectangle([x + 1, y, x + 2, y + 2], fill=MATA["iris_cokelat"])
-    d.point((x + 1, y + 1), fill=MATA["pupil"])
-    # Catchlight glint putih di sudut atas
+    d.rectangle([x + 1, y + 1, x + 1, y + 2], fill=MATA["pupil"])
     d.point((x, y), fill=MATA["kilau"])
-    # Garis kelopak atas
-    d.line([(x, y - 1), (x + 2, y - 1)], fill=(70, 50, 54, 255))
+
+
+# ==============================================================================
+# PENGGAMBARAN SPRITE — proporsi asli Stardew Valley
+#
+# Stardew menggambar karakter pada kanvas kecil lalu memperbesarnya dengan
+# NEAREST; itu sumber siluet chunky dan garis tegasnya. Yang membuat proporsinya
+# khas: kepala kira-kira 44% dari tinggi badan, badan hanya sekitar 55% lebar
+# bingkai (bukan selebar bingkai), mata tiga piksel, dan bayangan cuma dua
+# tingkat.
+#
+# Semua digambar pada 24x40 lalu diperbesar 2x menjadi 48x80.
+#
+#   x 5..18  batas terluar siluet (termasuk lengan)
+#   y 2..17  kepala (rambut + wajah)
+#   y 18..27 badan dan lengan
+#   y 28..37 tungkai dan alas kaki
+# ==============================================================================
+KEPALA_ATAS = 2
+WAJAH_ATAS, WAJAH_BAWAH = 6, 17
+BADAN_ATAS, BADAN_BAWAH = 18, 27
+KAKI_ATAS, KAKI_BAWAH = 28, 37
+
+
+def _kosongkan(d, titik):
+    for t in titik:
+        d.point(t, fill=(0, 0, 0, 0))
+
+
+def _batas(arah, bagian):
+    """Batas kiri-kanan tiap bagian. Dari samping badan sedikit lebih ramping."""
+    samping = arah in ("kiri", "kanan")
+    if bagian == "kepala":
+        return (7, 16) if samping else (6, 17)
+    return (8, 15) if samping else (7, 16)
+
+
+def _warna_atasan(p):
+    """Tiga tingkat warna atasan, apa pun jenis busananya."""
+    for kunci in ("beskap", "kebaya", "baju", "lambung"):
+        if f"{kunci}_dasar" in p:
+            return (p.get(f"{kunci}_sorot", p[f"{kunci}_dasar"]),
+                    p[f"{kunci}_dasar"],
+                    p.get(f"{kunci}_gelap", p[f"{kunci}_dasar"]))
+    return ((90, 80, 90, 255), (60, 52, 60, 255), (40, 34, 40, 255))
+
+
+def _warna_bawahan(p):
+    """Warna kain bawah: jarik, dodot, songket, atau celana polos."""
+    for kunci in ("jarik", "dodot", "songket"):
+        if f"{kunci}_dasar" in p:
+            return (p.get(f"{kunci}_sorot", p[f"{kunci}_dasar"]),
+                    p[f"{kunci}_dasar"], p.get(f"{kunci}_motif"))
+    dasar = p.get("celana_dasar", (48, 42, 48, 255))
+    return (dasar, dasar, None)
+
+
+# ------------------------------------------------------------------ kepala
+def _kepala(d, p, arah, is_wanita):
+    """Wajah lalu rambut, supaya poni menutup dahi dan bukan sebaliknya."""
+    rambut = p["rambut"]
+    sorot_rambut = p.get(
+        "rambut_sorot", tuple(min(255, c + 30) for c in rambut[:3]) + (255,))
+    kiri, kanan = _batas(arah, "kepala")
+
+    # ---- wajah ----
+    if arah != "atas":
+        d.rectangle([kiri, WAJAH_ATAS, kanan, WAJAH_BAWAH], fill=KULIT["dasar"])
+        d.rectangle([kanan, WAJAH_ATAS, kanan, WAJAH_BAWAH], fill=KULIT["bayang"])
+        d.rectangle([kiri, WAJAH_BAWAH, kanan, WAJAH_BAWAH], fill=KULIT["bayang"])
+        # dagu meruncing
+        _kosongkan(d, [(kiri, WAJAH_BAWAH), (kanan, WAJAH_BAWAH)])
+        if arah == "kiri":
+            d.point((kiri - 1, 12), fill=KULIT["dasar"])          # hidung
+
+    # ---- rambut: kubah bertingkat supaya ubun-ubun membulat ----
+    dasar_rambut = 16 if arah == "atas" else 10
+    d.rectangle([kiri, 4, kanan, dasar_rambut], fill=rambut)
+    d.rectangle([kiri + 1, KEPALA_ATAS, kanan - 1, 4], fill=rambut)
+    d.rectangle([kiri + 1, 4, kanan - 3, 6], fill=sorot_rambut)
+    d.rectangle([kiri + 2, KEPALA_ATAS, kanan - 3, 4], fill=sorot_rambut)
+    _kosongkan(d, [(kiri + 1, KEPALA_ATAS), (kanan - 1, KEPALA_ATAS)])
+
+    if arah == "bawah":
+        d.rectangle([kiri, 10, kiri, 14], fill=rambut)            # cambang
+        d.rectangle([kanan, 10, kanan, 14], fill=rambut)
+        if is_wanita:
+            d.rectangle([kiri - 1, 11, kiri, BADAN_ATAS], fill=rambut)
+            d.rectangle([kanan, 11, kanan + 1, BADAN_ATAS], fill=rambut)
+    elif arah == "kiri":
+        d.rectangle([kanan - 2, 4, kanan, 14], fill=rambut)       # belakang kepala
+        if is_wanita:
+            d.rectangle([kanan, 11, kanan + 1, BADAN_ATAS], fill=rambut)
+    else:                                                          # tampak belakang
+        d.rectangle([kiri, 4, kanan, 16], fill=sorot_rambut)
+        d.rectangle([kiri + 1, KEPALA_ATAS, kanan - 1, 4], fill=sorot_rambut)
+        d.line([(kiri, 15), (kanan, 15)], fill=rambut)   # tengkuk
+        d.line([(kiri, 16), (kanan, 16)], fill=rambut)
+        _kosongkan(d, [(kiri, 16), (kanan, 16),
+                       (kiri + 1, KEPALA_ATAS), (kanan - 1, KEPALA_ATAS)])
+        if is_wanita:
+            d.rectangle([kiri - 1, 11, kanan + 1, BADAN_ATAS], fill=rambut)
+        # garis bahu supaya kepala gelap tidak menyatu dengan baju gelap
+        d.line([(kiri, BADAN_ATAS - 1), (kanan, BADAN_ATAS - 1)], fill=GARIS)
+        return
+
+    # ---- mata: tiga piksel, kilau putih di sudut luar ----
+    mata = [(8, 10)] if arah == "kiri" else [(8, 10), (13, 15)]
+    for mx0, mx1 in mata:
+        d.rectangle([mx0, 11, mx1, 13], fill=MATA["putih"])
+        d.rectangle([mx0 + 1, 11, mx1, 13], fill=MATA["iris_cokelat"])
+        d.rectangle([mx0 + 1, 12, mx1 - 1, 13], fill=MATA["pupil"])
+        d.point((mx0, 11), fill=MATA["kilau"])
+
+    # ---- mulut dan rona pipi ----
+    if arah == "kiri":
+        d.point((9, 15), fill=KULIT["gelap"])
+    else:
+        d.rectangle([11, 15, 12, 15], fill=KULIT["gelap"])
+        if is_wanita:
+            d.point((kiri + 1, 14), fill=KULIT["blush"])
+            d.point((kanan - 1, 14), fill=KULIT["blush"])
+
+
+# --------------------------------------------------------- hiasan kepala
+def _hiasan_kepala(d, p, arah):
+    """Penutup kepala dibuat rendah dan menempel batok, bukan kotak besar,
+    supaya kepala tetap terbaca sebagai kepala."""
+    jenis = p["tipe"]
+    kiri, kanan = _batas(arah, "kepala")
+
+    if jenis == "jawa_pria":                       # blangkon
+        d.rectangle([kiri, 3, kanan, 7], fill=p["blangkon_dasar"])
+        d.rectangle([kiri + 1, KEPALA_ATAS, kanan - 1, 3], fill=p["blangkon_dasar"])
+        d.rectangle([kiri, 3, kanan - 3, 5], fill=p["blangkon_motif"])
+        d.line([(kiri, 7), (kanan, 7)], fill=p["blangkon_lis"])
+        _kosongkan(d, [(kiri + 1, KEPALA_ATAS), (kanan - 1, KEPALA_ATAS)])
+        if arah != "bawah":                        # mondholan di belakang
+            d.rectangle([kanan, 5, kanan + 1, 8], fill=p["blangkon_dasar"])
+
+    elif jenis == "sasak_pria":                    # sapuk
+        d.rectangle([kiri, 3, kanan, 7], fill=p["sapuk_dasar"])
+        d.rectangle([kiri + 1, KEPALA_ATAS, kanan - 1, 3], fill=p["sapuk_dasar"])
+        d.rectangle([kiri, 4, kanan, 5], fill=p["sapuk_songket"])
+        d.polygon([(kiri, 4), (kiri, 0), (kiri + 4, 3)], fill=p["sapuk_dasar"])
+        d.line([(kiri + 1, 1), (kiri + 1, 3)], fill=p["sapuk_emas"])
+        d.line([(kiri, 6), (kanan, 6)], fill=p["sapuk_emas"])
+        _kosongkan(d, [(kiri + 1, KEPALA_ATAS), (kanan - 1, KEPALA_ATAS)])
+
+    elif jenis == "jawa_wanita":                   # sanggul + cunduk mentul
+        d.rectangle([kiri + 2, 2, kanan - 2, 5], fill=p["rambut"])
+        d.rectangle([kiri + 3, 3, kanan - 4, 4], fill=p["rambut_sorot"])
+        _kosongkan(d, [(kiri + 2, 2), (kanan - 2, 2)])
+        for x in (kiri + 3, kanan - 3):            # cunduk mentul
+            d.line([(x, 2), (x, 1)], fill=p["cunduk_batang"])
+            d.point((x, 1), fill=p["cunduk_mentul"])
+        d.point((11, 9), fill=p["paes_emas"])      # jamang tipis di dahi
+        for y in (12, 15):                          # ronce melati di telinga
+            d.point((kiri - 1, y), fill=MELATI["putih"])
+            d.point((kiri - 1, y + 1), fill=MELATI["kuning"])
+
+    elif jenis == "sasak_wanita":                  # mahkota lambung emas
+        d.rectangle([kiri, 4, kanan, 7], fill=p["mahkota_dasar"])
+        d.line([(kiri, 7), (kanan, 7)], fill=p["mahkota_gelap"])
+        d.polygon([(kiri, 4), (kiri + 2, 1), (kiri + 4, 4)], fill=p["mahkota_sorot"])
+        d.polygon([(9, 4), (11, 0), (13, 4)], fill=p["mahkota_sorot"])
+        d.polygon([(kanan - 4, 4), (kanan - 2, 1), (kanan, 4)], fill=p["mahkota_sorot"])
+        d.point((11, 2), fill=p["mahkota_permata"])
+        d.point((kiri + 2, 5), fill=p["mahkota_permata"])
+        d.point((kanan - 2, 5), fill=p["mahkota_permata"])
+        d.point((kiri - 1, 13), fill=p["anting"])
+        d.point((kanan + 1, 13), fill=p["anting"])
+
+
+# ------------------------------------------------------------------ badan
+def _badan(d, p, arah, ayun, is_wanita):
+    sorot, dasar, gelap = _warna_atasan(p)
+    kiri, kanan = _batas(arah, "badan")
+    bawah_atasan = BADAN_BAWAH - (2 if is_wanita else 0)
+
+    d.rectangle([kiri, BADAN_ATAS, kanan, bawah_atasan], fill=dasar)
+    d.rectangle([kiri, BADAN_ATAS, kiri, bawah_atasan], fill=sorot)
+    d.rectangle([kanan - 1, BADAN_ATAS, kanan, bawah_atasan], fill=gelap)
+    d.line([(kiri, BADAN_ATAS), (kanan, BADAN_ATAS)], fill=GARIS)
+
+    if arah == "bawah":
+        if is_wanita:
+            d.line([(10, BADAN_ATAS), (11, BADAN_ATAS + 3)], fill=gelap)
+            d.line([(13, BADAN_ATAS), (12, BADAN_ATAS + 3)], fill=gelap)
+            d.point((11, BADAN_ATAS + 4), fill=p.get("bros", EMAS["terang"]))
+        else:
+            if "kerah_putih" in p:
+                d.polygon([(9, BADAN_ATAS), (11, BADAN_ATAS + 3), (14, BADAN_ATAS)],
+                          fill=p["kerah_putih"])
+            for y in range(BADAN_ATAS + 4, bawah_atasan - 1, 3):
+                d.point((11, y), fill=p.get("kancing", EMAS["terang"]))
+            if "rompi_bordir" in p:
+                d.line([(kiri + 1, BADAN_ATAS + 1), (kiri + 1, bawah_atasan - 1)],
+                       fill=p["rompi_bordir"])
+                d.line([(kanan - 1, BADAN_ATAS + 1), (kanan - 1, bawah_atasan - 1)],
+                       fill=p["rompi_bordir"])
+
+    # sabuk tipis di pinggang, sekadar aksen
+    if "sabuk_dasar" in p:
+        d.line([(kiri, bawah_atasan), (kanan, bawah_atasan)], fill=p["sabuk_dasar"])
+        if arah == "bawah":
+            d.point((11, bawah_atasan), fill=p.get("pending", EMAS["sorot"]))
+
+    # ---- lengan ----
+    # Dari samping hanya lengan terdekat yang tampak, dan diletakkan di TEPI
+    # depan badan; kalau di tengah, telapaknya terbaca sebagai noda di dada.
+    if arah == "kiri":
+        pasangan = [(kiri - 2, -1)]
+    else:
+        pasangan = [(kiri - 2, -1), (kanan + 1, 1)]
+    for x0, sisi in pasangan:
+        dorong = -ayun * sisi
+        geser = 1 if dorong > 0 else (-1 if dorong < 0 else 0)
+        atas = BADAN_ATAS + 1 + geser
+        ujung = BADAN_ATAS + 6 + geser
+        d.rectangle([x0, atas, x0 + 1, ujung], fill=dasar)
+        d.rectangle([x0 + (1 if sisi > 0 else 0), atas,
+                     x0 + (1 if sisi > 0 else 0), ujung], fill=gelap)
+        # telapak menumpuk ujung lengan, bukan bola terpisah
+        d.rectangle([x0, ujung, x0 + 1, ujung + 2], fill=KULIT["dasar"])
+        d.point((x0 + 1, ujung + 2), fill=KULIT["bayang"])
+        # garis pemisah supaya lengan gelap tidak melebur ke badan gelap
+        batas_x = x0 + 2 if sisi < 0 else x0 - 1
+        d.line([(batas_x, atas), (batas_x, ujung + 1)], fill=GARIS)
+
+    # keris terselip di pinggang mempelai pria Jawa
+    if p["tipe"] == "jawa_pria" and arah != "atas":
+        d.line([(kanan, bawah_atasan - 1), (kanan + 2, bawah_atasan - 5)],
+               fill=p["keris_sarung"])
+        d.point((kanan + 2, bawah_atasan - 6), fill=p["keris_gagang"])
+
+
+# ---------------------------------------------------------------- bawahan
+def _bawahan(d, p, arah, ayun, is_wanita):
+    """Tungkai. Kedua telapak selalu menapak garis tanah; yang berubah hanya
+    renggang langkah dan panjang alas kaki, supaya tidak terlihat melayang."""
+    sorot_kain, dasar_kain, motif = _warna_bawahan(p)
+    kiri, kanan = _batas(arah, "badan")
+
+    if is_wanita:
+        # kain panjang sedikit melebar ke bawah
+        d.polygon([(kiri, KAKI_ATAS - 3), (kanan, KAKI_ATAS - 3),
+                   (kanan + 1, KAKI_BAWAH - 1), (kiri - 1, KAKI_BAWAH - 1)],
+                  fill=dasar_kain)
+        d.polygon([(12, KAKI_ATAS - 3), (kanan, KAKI_ATAS - 3),
+                   (kanan + 1, KAKI_BAWAH - 1), (13, KAKI_BAWAH - 1)],
+                  fill=sorot_kain)
+        if motif:
+            for y in (KAKI_ATAS + 2, KAKI_BAWAH - 4):
+                d.line([(kiri, y), (kanan, y)], fill=motif)
+                for x in range(kiri + 1, kanan, 3):
+                    d.point((x, y + 1), fill=motif)
+        # ujung selop mengintip di bawah kain
+        for x0, maju in ((8, ayun > 0), (13, ayun < 0)):
+            x = x0 + (-1 if (maju and x0 == 8) else (1 if maju else 0))
+            d.rectangle([x, KAKI_BAWAH - 1, x + 2, KAKI_BAWAH], fill=p["selop"])
+            d.point((x + 1, KAKI_BAWAH - 1), fill=p["selop_emas"])
+        return
+
+    # ---- tungkai pria ----
+    celana = p.get("celana_dasar", (42, 36, 42, 255))
+    for x0, maju in ((8, ayun > 0), (13, ayun < 0)):
+        x = x0 + (-1 if (maju and x0 == 8) else (1 if maju else 0))
+        d.rectangle([x, KAKI_ATAS, x + 2, KAKI_BAWAH - 2], fill=celana)
+        d.rectangle([x + 2, KAKI_ATAS, x + 2, KAKI_BAWAH - 2],
+                    fill=p.get("beskap_gelap", (24, 20, 24, 255)))
+        # alas kaki: telapak depan sedikit lebih panjang, keduanya tetap menapak
+        panjang = 1 if maju else 0
+        d.rectangle([x - panjang, KAKI_BAWAH - 2, x + 2, KAKI_BAWAH], fill=p["selop"])
+        d.point((x + 1, KAKI_BAWAH - 2), fill=p["selop_emas"])
+
+    # lilitan jarik tipis di pinggul, sekadar penanda busana adat
+    if motif and arah != "atas":
+        d.rectangle([kiri, KAKI_ATAS, kanan, KAKI_ATAS + 1], fill=dasar_kain)
+        d.line([(kiri, KAKI_ATAS + 1), (kanan, KAKI_ATAS + 1)], fill=motif)
+        for x in range(kiri, kanan + 1, 2):
+            d.point((x, KAKI_ATAS), fill=sorot_kain)
 
 
 def render_karakter_frame(tipe_palet, arah, frame_idx):
+    """Satu bingkai. Badan sengaja tidak ikut naik-turun tiap frame; hanya
+    tungkai dan lengan yang bergerak, supaya siluetnya tidak terlihat
+    berbayang saat berjalan."""
     img, d = kanvas(LEBAR_FRAME, TINGGI_FRAME)
     p = tipe_palet
-    jenis = p["tipe"]
-    is_wanita = "wanita" in jenis
-
-    # Walk cycle offsets
-    bob_y = 1 if frame_idx in (1, 3) else 0
+    is_wanita = "wanita" in p["tipe"]
     ayun = [0, 1, 0, -1][frame_idx]
 
-    cx = 12
-    cy_kepala = 11 + bob_y
-    cy_badan = 20 + bob_y
-    cy_kaki = 31
-
-    # --------------------------------------------------------------------------
-    # 1. KAKI & SEPATU
-    # --------------------------------------------------------------------------
-    if is_wanita:
-        x_kaki_kiri = cx - 4
-        x_kaki_kanan = cx + 2
-        y_kaki_kiri = cy_kaki + 4 + (ayun if arah == "bawah" else (-ayun if arah == "atas" else ayun))
-        y_kaki_kanan = cy_kaki + 4 - (ayun if arah == "bawah" else (-ayun if arah == "atas" else ayun))
-
-        if arah in ("bawah", "atas"):
-            d.rectangle([x_kaki_kiri, cy_kaki + 3, x_kaki_kiri + 2, min(37, y_kaki_kiri)], fill=KULIT["bayang"])
-            d.rectangle([x_kaki_kiri, min(37, y_kaki_kiri), x_kaki_kiri + 2, min(38, y_kaki_kiri + 1)], fill=p["selop"])
-            d.point((x_kaki_kiri + 1, min(37, y_kaki_kiri)), fill=p["selop_emas"])
-            d.rectangle([x_kaki_kanan, cy_kaki + 3, x_kaki_kanan + 2, min(37, y_kaki_kanan)], fill=KULIT["bayang"])
-            d.rectangle([x_kaki_kanan, min(37, y_kaki_kanan), x_kaki_kanan + 2, min(38, y_kaki_kanan + 1)], fill=p["selop"])
-            d.point((x_kaki_kanan + 1, min(37, y_kaki_kanan)), fill=p["selop_emas"])
-        else:
-            x_kaki = cx - 1 + ayun * 2
-            d.rectangle([x_kaki, cy_kaki + 3, x_kaki + 3, 37], fill=KULIT["bayang"])
-            d.rectangle([x_kaki, 37, x_kaki + 4, 38], fill=p["selop"])
-            d.point((x_kaki + 1, 37), fill=p["selop_emas"])
-    else:
-        if arah in ("bawah", "atas"):
-            for x0, maju in ((cx - 4, ayun > 0), (cx + 2, ayun < 0)):
-                offset_kaki = 1 if maju else 0
-                d.rectangle([x0, cy_kaki + 2, x0 + 2, 35 - offset_kaki], fill=p.get("celana_dasar", p.get("jarik_dasar", (50, 50, 50, 255))))
-                d.line([(x0, cy_kaki + 2), (x0, 35 - offset_kaki)], fill=p.get("beskap_gelap", p.get("jarik_motif", (30, 30, 30, 255))))
-                d.rectangle([x0 - 1, 36 - offset_kaki, x0 + 3, 38 - offset_kaki], fill=p["selop"])
-                d.point((x0 + 1, 36 - offset_kaki), fill=p["selop_emas"])
-                d.line([(x0 - 1, 38 - offset_kaki), (x0 + 3, 38 - offset_kaki)], fill=GARIS)
-        else:
-            for x0, maju in ((cx - 2 - ayun * 2, ayun > 0), (cx + ayun * 2, ayun < 0)):
-                d.rectangle([x0, cy_kaki + 2, x0 + 3, 35], fill=p.get("celana_dasar", p.get("jarik_dasar", (50, 50, 50, 255))))
-                d.rectangle([x0 - 1, 36, x0 + 4, 38], fill=p["selop"])
-                d.point((x0 + 1, 36), fill=p["selop_emas"])
-
-    # --------------------------------------------------------------------------
-    # 2. ROK / JARIK / DODOT (BAWAHAN)
-    # --------------------------------------------------------------------------
-    if is_wanita:
-        jarik = p.get("jarik_dasar", p.get("songket_dasar"))
-        motif = p.get("jarik_motif", p.get("songket_motif"))
-        sorot = p.get("jarik_sorot", p.get("songket_sorot"))
-
-        d.polygon([(cx - 5, cy_badan + 7), (cx + 5, cy_badan + 7),
-                    (cx + 7, cy_kaki + 4), (cx - 7, cy_kaki + 4)], fill=jarik)
-        for y in range(cy_badan + 8, cy_kaki + 4, 3):
-            d.line([(cx - 4, y), (cx - 4, y + 1)], fill=sorot)
-            d.line([(cx + 1, y), (cx + 1, y + 1)], fill=sorot)
-            for x in (cx - 2, cx + 4):
-                d.point((x, y), fill=motif)
-        if arah == "bawah":
-            d.line([(cx - 1, cy_badan + 7), (cx - 1, cy_kaki + 4)], fill=motif)
-            d.line([(cx, cy_badan + 7), (cx, cy_kaki + 4)], fill=sorot)
-    else:
-        if "jarik_dasar" in p:
-            d.polygon([(cx - 4, cy_badan + 7), (cx + 4, cy_badan + 7),
-                        (cx + 5, cy_kaki + 3), (cx - 5, cy_kaki + 3)], fill=p["jarik_dasar"])
-            for y in range(cy_badan + 8, cy_kaki + 3, 3):
-                d.point((cx - 2, y), fill=p["jarik_motif"])
-                d.point((cx + 2, y), fill=p["jarik_motif"])
-                d.point((cx, y + 1), fill=p["jarik_sorot"])
-            if arah == "bawah":
-                d.line([(cx, cy_badan + 7), (cx, cy_kaki + 3)], fill=p["jarik_motif"])
-        elif "dodot_dasar" in p:
-            d.rectangle([cx - 5, cy_badan + 6, cx + 5, cy_badan + 10], fill=p["dodot_dasar"])
-            d.line([(cx - 5, cy_badan + 8), (cx + 5, cy_badan + 8)], fill=p["dodot_motif"])
-            d.polygon([(cx - 2, cy_badan + 10), (cx + 2, cy_badan + 10), (cx, cy_badan + 13)], fill=p["dodot_dasar"])
-
-    # --------------------------------------------------------------------------
-    # 3. BADAN & BUSANA ATAS
-    # --------------------------------------------------------------------------
-    if is_wanita:
-        baju_dasar = p.get("kebaya_dasar", p.get("lambung_dasar"))
-        baju_sorot = p.get("kebaya_sorot", p.get("lambung_sorot"))
-        baju_gelap = p.get("kebaya_gelap", p.get("lambung_gelap"))
-
-        d.rectangle([cx - 5, cy_badan, cx + 5, cy_badan + 7], fill=baju_dasar)
-        d.line([(cx - 5, cy_badan), (cx - 5, cy_badan + 7)], fill=baju_sorot)
-        d.line([(cx + 5, cy_badan), (cx + 5, cy_badan + 7)], fill=baju_gelap)
-
-        if arah == "bawah":
-            if "kemben" in p:
-                d.rectangle([cx - 2, cy_badan, cx + 2, cy_badan + 2], fill=p["kemben"])
-            d.polygon([(cx - 3, cy_badan), (cx, cy_badan + 4), (cx + 3, cy_badan)], fill=KULIT["dasar"])
-            d.rectangle([cx - 1, cy_badan + 2, cx + 1, cy_badan + 4], fill=p.get("bros", EMAS["terang"]))
-            d.point((cx, cy_badan + 3), fill=p.get("bros_permata", EMAS["sorot"]))
-            if "kalung" in p:
-                d.line([(cx - 2, cy_badan), (cx + 2, cy_badan)], fill=p["kalung"])
-        elif arah == "atas":
-            d.line([(cx, cy_badan), (cx, cy_badan + 7)], fill=baju_gelap)
-
-        d.rectangle([cx - 5, cy_badan + 6, cx + 5, cy_badan + 7], fill=p["sabuk_dasar"])
-        d.point((cx, cy_badan + 6), fill=p["sabuk_sorot"])
-        d.point((cx, cy_badan + 7), fill=EMAS["sorot"])
-    else:
-        baju_dasar = p.get("beskap_dasar", p.get("baju_dasar"))
-        baju_sorot = p.get("beskap_sorot", p.get("baju_sorot"))
-        baju_gelap = p.get("beskap_gelap", p.get("baju_gelap"))
-
-        d.rectangle([cx - 6, cy_badan, cx + 6, cy_badan + 8], fill=baju_dasar)
-        d.line([(cx - 6, cy_badan), (cx - 6, cy_badan + 8)], fill=baju_sorot)
-        d.line([(cx + 6, cy_badan), (cx + 6, cy_badan + 8)], fill=baju_gelap)
-
-        if arah == "bawah":
-            d.rectangle([cx - 2, cy_badan, cx + 2, cy_badan + 2], fill=p["kerah_putih"])
-            d.line([(cx - 3, cy_badan), (cx - 3, cy_badan + 2)], fill=baju_sorot)
-            d.line([(cx + 3, cy_badan), (cx + 3, cy_badan + 2)], fill=baju_gelap)
-            for yk in (cy_badan + 3, cy_badan + 5, cy_badan + 7):
-                d.point((cx, yk), fill=p.get("kancing", EMAS["terang"]))
-            if "kancing_rantai" in p:
-                d.line([(cx - 2, cy_badan + 5), (cx + 2, cy_badan + 5)], fill=p["kancing_rantai"])
-        elif arah == "atas":
-            d.line([(cx, cy_badan + 1), (cx, cy_badan + 7)], fill=baju_gelap)
-            if "keris_gagang" in p:
-                d.line([(cx + 2, cy_badan + 4), (cx + 5, cy_badan + 1)], fill=p["keris_gagang"], width=2)
-                d.point((cx + 5, cy_badan + 1), fill=EMAS["sorot"])
-                d.rectangle([cx + 1, cy_badan + 5, cx + 3, cy_badan + 8], fill=p["keris_sarung"])
-
-        d.rectangle([cx - 5, cy_badan + 7, cx + 5, cy_badan + 8], fill=p["sabuk_dasar"])
-        d.point((cx, cy_badan + 7), fill=p["pending"] if "pending" in p else EMAS["sorot"])
-
-    # --------------------------------------------------------------------------
-    # 4. LENGAN & TANGAN
-    # --------------------------------------------------------------------------
-    warna_lengan = p.get("kebaya_dasar", p.get("beskap_dasar", p.get("baju_dasar", p.get("lambung_dasar"))))
-    warna_lengan_sorot = p.get("kebaya_sorot", p.get("beskap_sorot", p.get("baju_sorot", p.get("lambung_sorot"))))
-
-    if arah in ("bawah", "atas"):
-        for x0, sisi, ayun_lengan in ((cx - 8, -1, -ayun), (cx + 6, 1, ayun)):
-            y_lengan = cy_badan + 1 + ayun_lengan
-            d.rectangle([x0, y_lengan, x0 + 2, y_lengan + 6], fill=warna_lengan)
-            d.point((x0 if sisi == -1 else x0 + 2, y_lengan), fill=warna_lengan_sorot)
-            d.rectangle([x0, y_lengan + 7, x0 + 2, y_lengan + 8], fill=KULIT["dasar"])
-            d.point((x0 + 1, y_lengan + 8), fill=KULIT["sorot"])
-    else:
-        x_lengan = cx - 1 - ayun * 3
-        y_lengan = cy_badan + 1
-        d.rectangle([x_lengan, y_lengan, x_lengan + 3, y_lengan + 6], fill=warna_lengan)
-        d.rectangle([x_lengan, y_lengan + 7, x_lengan + 3, y_lengan + 8], fill=KULIT["dasar"])
-
-    # --------------------------------------------------------------------------
-    # 5. KEPALA & WAJAH
-    # --------------------------------------------------------------------------
-    d.rectangle([cx - 2, cy_kepala + 6, cx + 2, cy_badan], fill=KULIT["bayang"])
-    d.line([(cx - 2, cy_badan), (cx + 2, cy_badan)], fill=KULIT["gelap"])
-
-    d.rectangle([cx - 5, cy_kepala - 4, cx + 5, cy_kepala + 5], fill=KULIT["dasar"])
-    d.line([(cx - 5, cy_kepala - 4), (cx - 5, cy_kepala + 4)], fill=KULIT["sorot"])
-    d.line([(cx + 5, cy_kepala - 4), (cx + 5, cy_kepala + 4)], fill=KULIT["bayang"])
-    d.line([(cx - 4, cy_kepala + 5), (cx + 4, cy_kepala + 5)], fill=KULIT["bayang"])
-
-    if arah == "bawah":
-        d.rectangle([cx - 5, cy_kepala + 2, cx - 3, cy_kepala + 3], fill=KULIT["blush"])
-        d.rectangle([cx + 3, cy_kepala + 2, cx + 5, cy_kepala + 3], fill=KULIT["blush"])
-
-        gambar_mata_stardew(d, cx - 4, cy_kepala, arah="bawah")
-        gambar_mata_stardew(d, cx + 2, cy_kepala, arah="bawah")
-
-        d.point((cx, cy_kepala + 2), fill=KULIT["bayang"])
-        d.line([(cx - 1, cy_kepala + 4), (cx + 1, cy_kepala + 4)], fill=KULIT["bibir"])
-        d.point((cx, cy_kepala + 4), fill=KULIT["sorot"])
-
-        d.rectangle([cx - 6, cy_kepala, cx - 6, cy_kepala + 2], fill=KULIT["dasar"])
-        d.rectangle([cx + 6, cy_kepala, cx + 6, cy_kepala + 2], fill=KULIT["dasar"])
-        if is_wanita:
-            d.point((cx - 6, cy_kepala + 2), fill=p.get("anting", EMAS["sorot"]))
-            d.point((cx + 6, cy_kepala + 2), fill=p.get("anting", EMAS["sorot"]))
-
-    elif arah in ("kiri", "kanan"):
-        mata_x = cx - 3 if arah == "kiri" else cx + 1
-        gambar_mata_stardew(d, mata_x, cy_kepala, arah=arah)
-        hidung_x = cx - 5 if arah == "kiri" else cx + 5
-        d.point((hidung_x, cy_kepala + 2), fill=KULIT["dasar"])
-        bibir_x = cx - 4 if arah == "kiri" else cx + 4
-        d.point((bibir_x, cy_kepala + 4), fill=KULIT["bibir"])
-        telinga_x = cx + 4 if arah == "kiri" else cx - 4
-        d.rectangle([telinga_x, cy_kepala, telinga_x, cy_kepala + 2], fill=KULIT["bayang"])
-        if is_wanita:
-            d.point((telinga_x, cy_kepala + 2), fill=p.get("anting", EMAS["sorot"]))
-
-    # --------------------------------------------------------------------------
-    # 6. HIASAN KEPALA
-    # --------------------------------------------------------------------------
-    if jenis == "jawa_pria":
-        d.polygon([(cx - 6, cy_kepala - 3), (cx, cy_kepala - 7), (cx + 6, cy_kepala - 3)], fill=p["blangkon_dasar"])
-        d.rectangle([cx - 6, cy_kepala - 4, cx + 6, cy_kepala - 2], fill=p["blangkon_dasar"])
-        d.line([(cx - 5, cy_kepala - 2), (cx + 5, cy_kepala - 2)], fill=p["blangkon_lis"])
-        for x in range(cx - 4, cx + 5, 2):
-            d.point((x, cy_kepala - 4), fill=p["blangkon_motif"])
-        if arah in ("atas", "kiri", "kanan"):
-            mx = cx if arah == "atas" else (cx + 5 if arah == "kiri" else cx - 5)
-            d.ellipse([mx - 2, cy_kepala - 2, mx + 2, cy_kepala + 2], fill=p["blangkon_dasar"])
-            d.point((mx, cy_kepala), fill=p["blangkon_motif"])
-
-    elif jenis == "jawa_wanita":
-        d.polygon([(cx - 6, cy_kepala - 3), (cx, cy_kepala - 6), (cx + 6, cy_kepala - 3)], fill=p["rambut"])
-        d.rectangle([cx - 6, cy_kepala - 4, cx + 6, cy_kepala - 2], fill=p["rambut"])
-        d.line([(cx - 4, cy_kepala - 4), (cx + 4, cy_kepala - 4)], fill=p["rambut_sorot"])
-
-        if arah == "bawah":
-            d.polygon([(cx - 4, cy_kepala - 3), (cx - 2, cy_kepala - 1), (cx, cy_kepala - 3),
-                        (cx + 2, cy_kepala - 1), (cx + 4, cy_kepala - 3)], fill=p["paes"])
-            d.point((cx - 2, cy_kepala - 1), fill=p["paes_emas"])
-            d.point((cx + 2, cy_kepala - 1), fill=p["paes_emas"])
-
-        d.ellipse([cx - 4, cy_kepala - 8, cx + 4, cy_kepala - 4], fill=p["rambut"])
-        d.line([(cx - 2, cy_kepala - 6), (cx + 2, cy_kepala - 6)], fill=p["rambut_sorot"])
-
-        for offset_x in (-4, -2, 0, 2, 4):
-            tinggi_mentul = 10 if offset_x == 0 else (9 if abs(offset_x) == 2 else 8)
-            d.line([(cx + offset_x, cy_kepala - 6), (cx + offset_x, cy_kepala - tinggi_mentul)], fill=p["cunduk_batang"])
-            d.point((cx + offset_x, cy_kepala - tinggi_mentul), fill=p["cunduk_mentul"])
-
-        if arah in ("bawah", "kiri", "kanan"):
-            rx = cx + 4 if arah != "kiri" else cx - 4
-            for ym in range(cy_kepala + 2, cy_badan + 7, 2):
-                d.point((rx, ym), fill=MELATI["putih"])
-                d.point((rx + 1, ym), fill=MELATI["kuning"])
-            d.point((rx, cy_badan + 7), fill=MELATI["putih"])
-
-    elif jenis == "sasak_pria":
-        d.rectangle([cx - 6, cy_kepala - 4, cx + 6, cy_kepala - 1], fill=p["sapuk_dasar"])
-        d.line([(cx - 5, cy_kepala - 2), (cx + 5, cy_kepala - 2)], fill=p["sapuk_emas"])
-        d.line([(cx - 5, cy_kepala - 3), (cx + 5, cy_kepala - 3)], fill=p["sapuk_songket"])
-        d.polygon([(cx + 3, cy_kepala - 4), (cx + 7, cy_kepala - 8), (cx + 5, cy_kepala - 2)], fill=p["sapuk_dasar"])
-        d.line([(cx + 4, cy_kepala - 5), (cx + 6, cy_kepala - 7)], fill=p["sapuk_emas"])
-
-    elif jenis == "sasak_wanita":
-        d.rectangle([cx - 6, cy_kepala - 4, cx + 6, cy_kepala - 2], fill=p["mahkota_dasar"])
-        d.polygon([(cx - 5, cy_kepala - 4), (cx, cy_kepala - 9), (cx + 5, cy_kepala - 4)], fill=p["mahkota_sorot"])
-        d.polygon([(cx - 7, cy_kepala - 6), (cx - 4, cy_kepala - 3), (cx - 4, cy_kepala - 7)], fill=p["mahkota_dasar"])
-        d.polygon([(cx + 7, cy_kepala - 6), (cx + 4, cy_kepala - 3), (cx + 4, cy_kepala - 7)], fill=p["mahkota_dasar"])
-        d.point((cx, cy_kepala - 5), fill=p["mahkota_permata"])
-        d.point((cx, cy_kepala - 8), fill=EMAS["sorot"])
-        d.point((cx - 6, cy_kepala - 1), fill=(255, 255, 240, 255))
-        d.point((cx - 5, cy_kepala - 1), fill=(255, 220, 80, 255))
-        d.point((cx + 6, cy_kepala - 1), fill=(255, 255, 240, 255))
-        d.point((cx + 5, cy_kepala - 1), fill=(255, 220, 80, 255))
-
+    _bawahan(d, p, arah, ayun, is_wanita)
+    _badan(d, p, arah, ayun, is_wanita)
+    _kepala(d, p, arah, is_wanita)
+    _hiasan_kepala(d, p, arah)
     return garis_luar(img, GARIS)
 
 
@@ -580,6 +634,9 @@ def main():
     print("\n[3] Tema Tropis:")
     buat_sprite_sheet(PALET_PRIA_JAWA, "karakter_pria.png", dir_tropis)
     buat_sprite_sheet(PALET_WANITA_JAWA, "karakter_wanita.png", dir_tropis)
+    prop_pengantin_duduk(PALET_PRIA_JAWA).save(dir_tropis / "pengantin_pria.png")
+    prop_pengantin_duduk(PALET_WANITA_JAWA).save(dir_tropis / "pengantin_wanita.png")
+    print("  -> Tersimpan pengantin_pria.png & pengantin_wanita.png (Tropis)")
 
     print("\n=== Selesai Membuat Seluruh Karakter Stardew Valley! ===")
 

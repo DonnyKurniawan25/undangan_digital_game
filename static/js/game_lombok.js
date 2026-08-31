@@ -24,36 +24,26 @@
        r  rumput pantai
      --------------------------------------------------------------------- */
   var PETA = [
-    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-    "~~~~~~________________________~~~~~~",
-    "~~~~..wwwwwwwwwwwwwwwwwwwwwwww..~~~~",
-    "~~~...wwwwwwwwwwwwwwwwwwwwwwww...~~~",
-    "~~~...wwwwwwwwwwwwwwwwwwwwwwww...~~~",
-    "~~~...wwwwwwwwwwwwwwwwwwwwwwww...~~~",
-    "~~....wwwwwwwww====wwwwwwwwwww....~~",
-    "~~....,........====..........,....~~",
-    "~~.............====...............~~",
-    "~~...r.........====.........r.....~~",
-    "~~..rrr........====........rrr....~~",
-    "~~..rrr........====........rrr....~~",
-    "~~.............====...............~~",
-    "~~....,........====..........,....~~",
-    "~~....---------====---------......~~",
-    "~~....---------====---------......~~",
-    "~~.............====...............~~",
-    "~~.............====...............~~",
-    "~~...r.........====.........r.....~~",
-    "~~..rrr........====........rrr....~~",
-    "~~.............====...............~~",
-    "~~....,........====..........,....~~",
-    "~~.............====...............~~",
-    "~~.............====...............~~",
-    "~~....,........====..........,....~~",
-    "~~.............====...............~~",
-    "bbbbbbbbbbbbbbb====bbbbbbbbbbbbbbbbb",
-    "bbbbbbbbbbbbbbb====bbbbbbbbbbbbbbbbb",
-    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~__wwwwwwww~~~~~~~~",
+    "~~~~~~_...wwwwwwww._~k~~~~",
+    "~~k~~_....wwwwwwww.._~~~~~",
+    "~~~~_.....ww===www..._~k~~",
+    "~k~~_.r.....===......_~~~~",
+    "~~~_........===.....r._~~~",
+    "~~~_--------===-------._k~",
+    "~k~_.rr.....===.......,_~~",
+    "~~~_.rr.....===.....rr_~~~",
+    "~~~_--------===-------_~k~",
+    "~~_..r......===.....,.._~~",
+    "~~bbbbbbbbbb===bbbbbbbbb~~",
+    "~~bbbbbbbbbb===bbbbbbbbb~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~"
   ];
 
   var INDEKS_TILE = {
@@ -81,78 +71,76 @@
      Objek di peta Tema 2: Pantai Lombok
      --------------------------------------------------------------------- */
   var OBJEK = [
-    // 1. Gerbang Candi Bentar (Pintu masuk di bawah)
-    { gambar: "gerbang", x: 17.5, y: 28.5 },
-
-    // 2. Pelaminan Bale Lumbung Sasak di bagian atas tengah
-    { gambar: "pelaminan", x: 17.5, y: 6.8, padat: [5.2, 1.2], zona: "pengantin" },
-    { gambar: "pengantin_pria",   x: 16.9, y: 7.2, padat: [0.55, 0.3] },
-    { gambar: "pengantin_wanita", x: 18.1, y: 7.2, padat: [0.55, 0.3] },
-
-    // 3. Bale Saji di kanan atas
-    { gambar: "bale_saji", x: 26.5, y: 6.8, padat: [2.2, 1.0] },
-
-    // 4. Titik Interaksi: Galeri, Buku Tamu, Papan Acara, Hadiah
-    { gambar: "galeri",    x: 8.5,  y: 11.5, padat: [1.6, 0.6], zona: "galeri" },
-    { gambar: "buku_tamu", x: 27.5, y: 11.5, padat: [1.3, 0.5], zona: "ucapan" },
-    { gambar: "papan",     x: 10.5, y: 20.5, padat: [1.4, 0.5], zona: "acara" },
-    { gambar: "hadiah",    x: 24.5, y: 20.5, padat: [1.3, 0.5], zona: "hadiah" },
-
-    // 5. Penari Sasak & Pemain Gendang Beleq
-    { gambar: "penari_sasak", x: 15.2, y: 13.6, padat: [0.6, 0.3] },
-    { gambar: "penari_sasak", x: 19.8, y: 13.6, padat: [0.6, 0.3] },
-    { gambar: "pemusik_gendang", x: 29.5, y: 15.5, padat: [1.4, 0.6] },
-    { gambar: "pemusik_gendang", x: 6.5,  y: 15.5, padat: [1.4, 0.6] },
-
-    // 6. Obor Bambu di sepanjang karpet & halaman
-    { gambar: "obor_bambu", x: 15.2, y: 9.8,  padat: [0.4, 0.3] },
-    { gambar: "obor_bambu", x: 19.8, y: 9.8,  padat: [0.4, 0.3] },
-    { gambar: "obor_bambu", x: 15.2, y: 17.5, padat: [0.4, 0.3] },
-    { gambar: "obor_bambu", x: 19.8, y: 17.5, padat: [0.4, 0.3] },
-    { gambar: "obor_bambu", x: 15.2, y: 24.5, padat: [0.4, 0.3] },
-    { gambar: "obor_bambu", x: 19.8, y: 24.5, padat: [0.4, 0.3] },
-
-    // 7. Pohon Kelapa Pantai & Pohon Pandan Laut
-    { gambar: "pohon_pandan", x: 4.8,  y: 6.8,  padat: [1.2, 0.5] },
-    { gambar: "pohon_pandan", x: 31.2, y: 6.8,  padat: [1.2, 0.5] },
-    { gambar: "pohon_kelapa", x: 3.5,  y: 12.8, padat: [0.9, 0.4] },
-    { gambar: "pohon_kelapa", x: 32.5, y: 12.8, padat: [0.9, 0.4] },
-    { gambar: "pohon_kelapa", x: 3.8,  y: 22.8, padat: [0.9, 0.4] },
-    { gambar: "pohon_kelapa", x: 32.2, y: 22.8, padat: [0.9, 0.4] },
-
-    // 8. Bangku Santai Rotan
-    { gambar: "bangku", x: 6.5,  y: 9.5, padat: [1.4, 0.5] },
-    { gambar: "bangku", x: 28.5, y: 9.5, padat: [1.4, 0.5] },
-
-    // 9. Perahu Jukung Tradisional di atas laut
-    { gambar: "perahu_jukung", x: 3.5,  y: 2.2 },
-    { gambar: "perahu_jukung", x: 32.5, y: 2.2 }
-  ];
+    // 1. Gerbang Candi Bentar di depan
+    { gambar: "gerbang", x: 13.5, y: 17.4 },
+    // 2. Bale Lumbung Sasak di panggung tepi air
+    { gambar: "pelaminan", x: 13.5, y: 6.8, padat: [5.2, 1.2], zona: "pengantin" },
+    { gambar: "pengantin_pria", x: 12.9, y: 7.2, padat: [0.55, 0.3] },
+    { gambar: "pengantin_wanita", x: 14.1, y: 7.2, padat: [0.55, 0.3] },
+    { gambar: "bale_saji", x: 19.4, y: 8.4, padat: [2.2, 1.0] },
+    // 3. Titik lokasi
+    { gambar: "galeri", x: 7.5, y: 10.4, padat: [1.6, 0.6], zona: "galeri" },
+    { gambar: "buku_tamu", x: 19.5, y: 10.4, padat: [1.3, 0.5], zona: "ucapan" },
+    { gambar: "papan", x: 7.5, y: 14.4, padat: [1.4, 0.5], zona: "acara" },
+    { gambar: "hadiah", x: 19.5, y: 14.4, padat: [1.3, 0.5], zona: "hadiah" },
+    // 4. Penari Sasak & penabuh gendang beleq
+    { gambar: "penari_sasak", x: 11.6, y: 11.6, padat: [0.6, 0.3] },
+    { gambar: "penari_sasak", x: 15.4, y: 11.6, padat: [0.6, 0.3] },
+    { gambar: "pemusik_gendang", x: 5.6, y: 12.6, padat: [1.4, 0.6] },
+    { gambar: "pemusik_gendang", x: 20.4, y: 12.6, padat: [1.4, 0.6] },
+    // 5. Obor bambu mengapit karpet
+    { gambar: "obor_bambu", x: 11.4, y: 9.6, padat: [0.4, 0.3] },
+    { gambar: "obor_bambu", x: 15.6, y: 9.6, padat: [0.4, 0.3] },
+    { gambar: "obor_bambu", x: 11.4, y: 12.8, padat: [0.4, 0.3] },
+    { gambar: "obor_bambu", x: 15.6, y: 12.8, padat: [0.4, 0.3] },
+    { gambar: "obor_bambu", x: 11.4, y: 15.6, padat: [0.4, 0.3] },
+    { gambar: "obor_bambu", x: 15.6, y: 15.6, padat: [0.4, 0.3] },
+    // 6. Kelapa & pandan laut menyusuri garis pantai
+    { gambar: "pohon_pandan", x: 8.6, y: 6.6, padat: [1.2, 0.5] },
+    { gambar: "pohon_pandan", x: 18.4, y: 6.6, padat: [1.2, 0.5] },
+    { gambar: "pohon_kelapa", x: 5.4, y: 8.6, padat: [0.9, 0.4] },
+    { gambar: "pohon_kelapa", x: 20.6, y: 8.6, padat: [0.9, 0.4] },
+    { gambar: "pohon_kelapa", x: 4.4, y: 11.4, padat: [0.9, 0.4] },
+    { gambar: "pohon_kelapa", x: 21.6, y: 11.4, padat: [0.9, 0.4] },
+    { gambar: "pohon_kelapa", x: 4.4, y: 14.8, padat: [0.9, 0.4] },
+    { gambar: "pohon_kelapa", x: 21.6, y: 14.8, padat: [0.9, 0.4] },
+    // 7. Bangku rotan menghadap laut
+    { gambar: "bangku", x: 6.5, y: 15.4, padat: [1.4, 0.5] },
+    { gambar: "bangku", x: 19.5, y: 15.4, padat: [1.4, 0.5] },
+    // 8. Jukung nelayan di laut lepas
+    { gambar: "perahu_jukung", x: 4.5, y: 2.2 },
+    { gambar: "perahu_jukung", x: 21.5, y: 1.6 },
+    { gambar: "perahu_jukung", x: 13.0, y: 1.1 },
+    { gambar: "perahu_jukung", x: 8.2, y: 3.4 },
+    { gambar: "perahu_jukung", x: 18.0, y: 3.6 },
+    { gambar: "perahu_jukung", x: 7.5, y: 18.8 },
+    { gambar: "perahu_jukung", x: 19.0, y: 19.0 }
+  ];;
 
   var ZONA = {
     pengantin: {
       judul: "Pelaminan Lumbung", aksi: "Lihat Mempelai", radius: 3.4,
-      berdiri: [17, 9], warna: "#ab4430",
+      berdiri: [13, 9], warna: "#ab4430",
       ket: "Foto & biodata kedua mempelai Sasak"
     },
     galeri: {
       judul: "Galeri Pantai", aksi: "Buka Galeri", radius: 2.4,
-      berdiri: [8, 12], warna: "#2ba8a8",
+      berdiri: [7, 11], warna: "#2ba8a8",
       ket: "Koleksi foto prewedding tepi pantai"
     },
     ucapan: {
       judul: "Buku Tamu Sasak", aksi: "Tulis Ucapan", radius: 2.4,
-      berdiri: [27, 12], warna: "#c48832",
+      berdiri: [19, 11], warna: "#c48832",
       ket: "Kirim doa restu & konfirmasi kehadiran"
     },
     acara: {
       judul: "Papan Acara", aksi: "Baca Acara", radius: 2.4,
-      berdiri: [10, 21], warna: "#9c2838",
+      berdiri: [7, 15], warna: "#9c2838",
       ket: "Waktu, lokasi pantai, dan hitung mundur"
     },
     hadiah: {
       judul: "Amplop Digital", aksi: "Kirim Hadiah", radius: 2.4,
-      berdiri: [24, 21], warna: "#a85478",
+      berdiri: [19, 15], warna: "#a85478",
       ket: "Nomor rekening & QRIS"
     }
   };
@@ -220,8 +208,8 @@
      Keadaan permainan
      ===================================================================== */
   var pemain = {
-    x: 17.5 * TILE,
-    y: 26.0 * TILE,
+    x: 13.5 * TILE,
+    y: 13.6 * TILE,
     arah: 3,              // 0 bawah, 1 kiri, 2 kanan, 3 atas
     frame: 0,
     waktuFrame: 0,
@@ -252,8 +240,13 @@
     el.kanvas.style.height = tinggiCss + "px";
 
     // Zoom Stardew Valley: luas pandang ideal dari atas (~14 petak mendatar, ~11 petak menurun)
-    skala = Math.max(lebarCss / (14.0 * TILE), tinggiCss / (11.0 * TILE));
-    skala = Math.max(1.5, Math.min(3.2, skala));
+    // Sasaran: sekitar 11 petak melintang, 16 petak menurun - bidikan tegak,
+    // sama seperti tema tropis. Sasaran lama (14 melintang, 11 menurun)
+    // berbentuk melebar, sehingga di layar ponsel yang menjulang suku tinggi
+    // selalu menang dan memaksa perbesaran: yang tampak tinggal 5 petak
+    // melintang dan karakter memenuhi hampir seperempat layar.
+    skala = Math.max(lebarCss / (11.0 * TILE), tinggiCss / (16.0 * TILE));
+    skala = Math.max(1.0, Math.min(2.4, skala));
     ctx.imageSmoothingEnabled = false;
 
     gradasiVignet = ctx.createRadialGradient(
@@ -283,11 +276,12 @@
     });
   }
 
-  function bentrok(x, y) {
-    var kiri = x - KOTAK.w / 2;
-    var atas = y + KOTAK.offsetY;
-    var kanan = kiri + KOTAK.w;
-    var bawah = atas + KOTAK.h;
+  function bentrok(x, y, longgar) {
+    var m = longgar || 0;
+    var kiri = x - KOTAK.w / 2 - m;
+    var atas = y + KOTAK.offsetY - m;
+    var kanan = kiri + KOTAK.w + m * 2;
+    var bawah = atas + KOTAK.h + m * 2;
 
     var kx0 = Math.floor(kiri / TILE), kx1 = Math.floor((kanan - 0.01) / TILE);
     var ky0 = Math.floor(atas / TILE), ky1 = Math.floor((bawah - 0.01) / TILE);
@@ -306,9 +300,15 @@
   /* =====================================================================
      Pencarian jalur (BFS pada petak)
      ===================================================================== */
+  /* Kelonggaran supaya pencari jalur menolak petak yang terlalu sempit.
+     Tanpa ini ia cuma menguji titik tengah petak, sehingga penghalang tipis
+     yang duduk di batas antar-petak tidak terlihat olehnya: jalur tetap
+     dibuat lalu pemain tersangkut di tengah jalan. */
+  var LONGGAR_PIJAK = 5;          // piksel dunia
+
   function petakBisaDipijak(kx, ky) {
     if (kx < 0 || ky < 0 || kx >= LEBAR_PETA || ky >= TINGGI_PETA) return false;
-    return !bentrok(kx * TILE + TILE / 2, ky * TILE + TILE / 2);
+    return !bentrok(kx * TILE + TILE / 2, ky * TILE + TILE / 2, LONGGAR_PIJAK);
   }
 
   function petakTerdekatYangBisa(kx, ky) {
@@ -756,8 +756,20 @@
   function gambarObjek(o) {
     var img = gambar[o.gambar];
     if (!img || !img.width) return;
+    var kiri = o.x * TILE - img.width / 2;
+    var alas = o.y * TILE;
+    var atas = alas - img.height;
+
+    // Properti jangkung yang berdiri di depan pemain - gerbang, bale, kelapa -
+    // dibuat tembus pandang saat menutupi tubuhnya, supaya karakter tidak
+    // hilang ketika lewat di bawahnya.
+    var tembus = alas > pemain.y && img.height > TILE * 1.2 &&
+                 pemain.x > kiri - 6 && pemain.x < kiri + img.width + 6 &&
+                 pemain.y > atas && pemain.y < alas + 10;
+    if (tembus) ctx.globalAlpha = 0.42;
     gambarBayangan(o.x * TILE, o.y * TILE, Math.min(img.width * 0.7, 44));
-    ctx.drawImage(img, Math.round(o.x * TILE - img.width / 2), Math.round(o.y * TILE - img.height));
+    ctx.drawImage(img, Math.round(kiri), Math.round(atas));
+    if (tembus) ctx.globalAlpha = 1;
   }
 
   function gambarPemain() {

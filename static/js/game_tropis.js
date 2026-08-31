@@ -10,8 +10,8 @@
 
   var DATA = JSON.parse(document.getElementById("data-undangan").textContent);
   var PETAK = 48;                // sisi petak di layar
-  var LAJU = 3.1;                // petak per detik
-  var DURASI_FRAME = 0.135;
+  var LAJU = 2.4;                // petak per detik (~115 px/detik)
+  var JARAK_FRAME = 0.32;        // jarak tempuh (petak) per frame jalan
 
   /* ---------------------------------------------------------------------
      Denah. PETA[ty][tx] — satu huruf per petak.
@@ -65,7 +65,7 @@
 
   var WARNA_PETAK = {
     "#": "#2f6b30", "~": "#4aaad0", ".": "#60aa44", ",": "#74be58",
-    "b": "#98968c", "t": "#b0aea2", "w": "#a5763c", "f": "#8a5c3a", "p": "#926c4a"
+    "b": "#98968c", "t": "#989084", "w": "#a5763c", "f": "#8a5c3a", "p": "#926c4a"
   };
 
   /* ---------------------------------------------------------------------
@@ -102,18 +102,25 @@
     { gambar: "rumpun_bunga", x: 3.4, y: 12.4 }, { gambar: "rumpun_bunga", x: 3.4, y: 22.4 }
   ];
 
-  /* Umbul-umbul berjajar di sepanjang jalan utama. */
+  /* Umbul-umbul berjajar di sepanjang jalan utama.
+
+     Tiang ditanam TEPAT DI LUAR petak jalan. Sebelumnya tiang kanan berdiri
+     di dalam petak jalan dan kotak tabrakannya menjorok 0,005 petak ke jalur
+     - seperempat piksel - yang sudah cukup untuk menahan pemain di setiap
+     baris umbul, baik saat dikendalikan sendiri maupun saat perjalanan
+     otomatis. Jalan tegak ada di petak x 9 dan x 18. */
   var WARNA_UMBUL = ["umbul_merah", "umbul_kuning", "umbul_biru", "umbul_hijau"];
+  var TIANG_UMBUL = [0.25, 0.25];
   (function pasangUmbul() {
     var n = 0;
     for (var ty = 3; ty <= 22; ty += 3) {
-      OBJEK.push({ gambar: WARNA_UMBUL[n % 4], x: 8.1, y: ty, padat: [0.35, 0.35] });
-      OBJEK.push({ gambar: WARNA_UMBUL[(n + 2) % 4], x: 9.9, y: ty, padat: [0.35, 0.35] });
+      OBJEK.push({ gambar: WARNA_UMBUL[n % 4], x: 8.8, y: ty, padat: TIANG_UMBUL });
+      OBJEK.push({ gambar: WARNA_UMBUL[(n + 2) % 4], x: 10.2, y: ty, padat: TIANG_UMBUL });
       n++;
     }
     for (var ty2 = 7; ty2 <= 22; ty2 += 3) {
-      OBJEK.push({ gambar: WARNA_UMBUL[(n + 1) % 4], x: 17.1, y: ty2, padat: [0.35, 0.35] });
-      OBJEK.push({ gambar: WARNA_UMBUL[n % 4], x: 18.9, y: ty2, padat: [0.35, 0.35] });
+      OBJEK.push({ gambar: WARNA_UMBUL[(n + 1) % 4], x: 17.8, y: ty2, padat: TIANG_UMBUL });
+      OBJEK.push({ gambar: WARNA_UMBUL[n % 4], x: 19.2, y: ty2, padat: TIANG_UMBUL });
       n++;
     }
     for (var tx = 11; tx <= 16; tx += 2) {
@@ -285,8 +292,14 @@
   /* =====================================================================
      Pencarian jalur (BFS) untuk fitur "pergi ke lokasi"
      ===================================================================== */
+  /* Kelonggaran kecil supaya pencari jalur menolak petak yang terlalu sempit.
+     Tanpa ini ia hanya menguji titik tengah petak, sehingga penghalang tipis
+     yang duduk di batas antar-petak tidak terlihat olehnya - jalur tetap
+     dibuat lalu pemain terjebak di tengah jalan. */
+  var MARGIN_PIJAK = 0.16;
+
   function bisaDipijak(tx, ty) {
-    return !bentrok(tx + 0.5, ty + 0.5);
+    return !bentrok(tx + 0.5, ty + 0.5, MARGIN_PIJAK);
   }
 
   function petakTerdekatYangBisa(tx, ty) {
@@ -535,9 +548,12 @@
       } else if (sisaWaktuOtomatis <= 0) {
         batalkanOtomatis();
       } else {
-        // ubah arah petak menjadi arah layar supaya jalur & kendali sejalan
-        sx = (dx - dy) / sisa;
-        sy = (dx + dy) / sisa;
+        // Sisa dari kamera isometrik dulu: arah petak sempat diputar 45 derajat
+        // menjadi arah layar. Pada kamera tampak atas keduanya sudah sama, jadi
+        // pemutaran itu justru membuat perjalanan otomatis menyimpang 45 derajat
+        // dan hanya sampai lewat penyelamat "macet".
+        sx = dx / sisa;
+        sy = dy / sisa;
       }
     }
 
@@ -551,17 +567,23 @@
       var gx = sx / panjang * LAJU * kuat * dt;
       var gy = sy / panjang * LAJU * kuat * dt;
 
+      var xSebelum = pemain.x, ySebelum = pemain.y;
       if (!bentrok(pemain.x + gx, pemain.y)) pemain.x += gx;
       if (!bentrok(pemain.x, pemain.y + gy)) pemain.y += gy;
 
       if (Math.abs(sx) > Math.abs(sy)) pemain.arah = sx > 0 ? 2 : 1;
       else pemain.arah = sy > 0 ? 0 : 3;
 
-      pemain.waktuFrame += dt;
-      if (pemain.waktuFrame >= DURASI_FRAME) {
-        pemain.waktuFrame -= DURASI_FRAME;
+      // Frame dimajukan menurut jarak yang BENAR-BENAR ditempuh, bukan waktu
+      // maupun jarak niat. Telapak kaki jadi menapak, ikut melambat saat
+      // analog didorong setengah, dan berhenti saat badan tertahan.
+      var ditempuh = Math.hypot(pemain.x - xSebelum, pemain.y - ySebelum);
+      pemain.waktuFrame += ditempuh;
+      while (pemain.waktuFrame >= JARAK_FRAME) {
+        pemain.waktuFrame -= JARAK_FRAME;
         pemain.frame = (pemain.frame + 1) % 4;
       }
+      if (ditempuh < 0.0005) pemain.frame = 0;
     } else {
       pemain.frame = 0;
       pemain.waktuFrame = 0;
