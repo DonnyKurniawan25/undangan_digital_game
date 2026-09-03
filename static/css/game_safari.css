@@ -66,8 +66,9 @@ html, body {
 
 #memuat.selesai {
   opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  display: none !important;
 }
 
 .ikon-memuat-safari {
@@ -115,7 +116,9 @@ html, body {
 #sampul.tersembunyi {
   opacity: 0;
   transform: scale(1.04);
-  pointer-events: none;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  display: none !important;
 }
 
 .bingkai-sampul-safari {
@@ -466,6 +469,18 @@ html, body {
   align-items: center;
   padding: 18px;
   z-index: 800;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+[hidden],
+#tirai-popup[hidden],
+.tirai-popup[hidden],
+.popup-safari[hidden],
+#toast-notifikasi[hidden] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .popup-safari {

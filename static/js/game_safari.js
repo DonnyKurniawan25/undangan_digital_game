@@ -34,34 +34,34 @@
        # = Batas tepi pohon rimbun (padat)
      --------------------------------------------------------------------- */
   var PETA = [
-    "####################################", // 0: Batas rimbun utara
-    "##....ssssss...jjjjjj...ssssss....##", // 1: Panggung Pelaminan Utama di tengah
+    "####################################", // 0: Batas rimbun utara (36)
+    "##....ssssss...jjjjjj...ssssss....##", // 1: Panggung Pelaminan Utama (36)
     "##....ssssss...jjjjjj...ssssss....##", // 2
     "##....ssssss...jjjjjj...ssssss....##", // 3
-    "##..pppppppp...jjjjjj...pppppppp..##", // 4: Pagar habitat atas
-    "##..s......s...jjjjjj...s......s..##", // 5: Habitat Gajah (kiri) & Jerapah (kanan)
+    "##..pppppppp...jjjjjj...pppppppp..##", // 4: Pagar habitat atas (36)
+    "##..s......s...jjjjjj...s......s..##", // 5: Habitat Gajah & Jerapah (36)
     "##..s......s...jjjjjj...s......s..##", // 6
     "##..s......s...jjjjjj...s......s..##", // 7
-    "##..pppppppp...jjjjjj...pppppppp..##", // 8
-    "##.............jjjjjj.............##", // 9: Danau Flamingo di tengah
-    "##...bbbbbb....jaaaaj....mmmmmm...##", // 10: Bukit Singa (kiri) & Bambu Panda (kanan)
-    "##...b....b....jttttj....m....m...##", // 11
-    "##...b....b....jttttj....m....m...##", // 12: Danau Teratai & Flamingo
-    "##...bbbbbb....jaaaaj....mmmmmm...##", // 13
-    "##.............jjjjjj.............##", // 14
-    "##...jjjjjjjjjjjjjjjjjjjjjjjjjj...##", // 15: Jalur persimpangan melintang tengah
-    "##...jjjjjjjjjjjjjjjjjjjjjjjjjj...##", // 16: Papan Acara & Galeri Foto
-    "##.............jjjjjj.............##", // 17
-    "##..pppppppp...jjjjjj...oooooooo..##", // 18: Habitat Zebra (kiri) & Pos Jeep (kanan)
-    "##..s......s...jjjjjj...o......o..##", // 19
-    "##..s......s...jjjjjj...o......o..##", // 20: Zebra berlari & Jeep Safari parkir
-    "##..s......s...jjjjjj...o......o..##", // 21
-    "##..pppppppp...jjjjjj...oooooooo..##", // 22
-    "##.............jjjjjj.............##", // 23
-    "##.............jjjjjj.............##", // 24
-    "##.............jjjjjj.............##", // 25: Gerbang Masuk Safari (Spawn Tamu)
-    "##.............jjjjjj.............##", // 26
-    "####################################"  // 27: Batas selatan
+    "##..pppppppp...jjjjjj...pppppppp..##", // 8 (36)
+    "##.............jjjjjj.............##", // 9: Jalur utama (36)
+    "##...bbbbbb....jaaaaj....mmmmmm...##", // 10: Bukit Singa & Bambu Panda (36)
+    "##...b....b....jttttj....m....m...##", // 11 (36)
+    "##...b....b....jttttj....m....m...##", // 12: Danau Teratai & Flamingo (36)
+    "##...bbbbbb....jaaaaj....mmmmmm...##", // 13 (36)
+    "##.............jjjjjj.............##", // 14 (36)
+    "##..jjjjjjjjjjjjjjjjjjjjjjjjjj..##", // 15: Jalur persimpangan melintang (36)
+    "##..jjjjjjjjjjjjjjjjjjjjjjjjjj..##", // 16: Papan Acara & Galeri Foto (36)
+    "##.............jjjjjj.............##", // 17 (36)
+    "##..pppppppp...jjjjjj...oooooooo..##", // 18: Habitat Zebra & Pos Jeep (36)
+    "##..s......s...jjjjjj...o......o..##", // 19 (36)
+    "##..s......s...jjjjjj...o......o..##", // 20 (36)
+    "##..s......s...jjjjjj...o......o..##", // 21 (36)
+    "##..pppppppp...jjjjjj...oooooooo..##", // 22 (36)
+    "##.............jjjjjj.............##", // 23 (36)
+    "##.............jjjjjj.............##", // 24 (36)
+    "##.............jjjjjj.............##", // 25: Gerbang Masuk Safari (36)
+    "##.............jjjjjj.............##", // 26 (36)
+    "####################################"  // 27: Batas selatan (36)
   ];
 
   var INDEKS_PETAK = {
@@ -890,7 +890,10 @@
     var targetPopup = document.getElementById("popup-" + id);
     if (targetPopup) {
       targetPopup.hidden = false;
+      targetPopup.style.display = "block";
       tiraiPopup.hidden = false;
+      tiraiPopup.style.display = "flex";
+      tiraiPopup.style.pointerEvents = "auto";
       if (id === "peta") {
         setTimeout(gambarDenahSafari, 40);
       }
@@ -898,7 +901,16 @@
   }
 
   function tutupPopup() {
-    if (tiraiPopup) tiraiPopup.hidden = true;
+    if (tiraiPopup) {
+      tiraiPopup.hidden = true;
+      tiraiPopup.style.display = "none";
+      tiraiPopup.style.pointerEvents = "none";
+      var semuaPopup = tiraiPopup.querySelectorAll(".popup-safari");
+      semuaPopup.forEach(function (p) {
+        p.hidden = true;
+        p.style.display = "none";
+      });
+    }
   }
 
   function updateKemajuan() {
@@ -1181,6 +1193,10 @@
     if (btnBuka && sampul) {
       btnBuka.addEventListener("click", function () {
         sampul.classList.add("tersembunyi");
+        sampul.style.pointerEvents = "none";
+        setTimeout(function () {
+          sampul.style.display = "none";
+        }, 600);
         var audio = document.getElementById("musik");
         if (audio) {
           audio.play().then(function () {
