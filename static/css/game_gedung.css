@@ -564,6 +564,21 @@ html, body {
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
+/* Tombol tutup toast (induk pointer-events:none, tombol harus di-override) */
+#tutup-toast {
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  color: var(--emas-kilau);
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0 0 0 4px;
+  margin-left: 2px;
+  cursor: pointer;
+  opacity: 0.75;
+}
+#tutup-toast:hover { opacity: 1; }
+
 /* ==================== MODAL POPUP GRAND BALLROOM ==================== */
 #tirai-popup {
   position: fixed;

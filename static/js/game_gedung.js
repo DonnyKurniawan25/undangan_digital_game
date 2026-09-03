@@ -288,6 +288,15 @@
     }, 3200);
   }
 
+  var tombolTutupToast = document.getElementById("tutup-toast");
+  if (tombolTutupToast && toastNotif) {
+    tombolTutupToast.addEventListener("click", function (e) {
+      e.stopPropagation();
+      clearTimeout(toastNotif._timer);
+      toastNotif.hidden = true;
+    });
+  }
+
   function muatSemuaAset(selesai) {
     var kunci = Object.keys(DATA.aset);
     kunci.forEach(function (k) {
@@ -437,6 +446,7 @@
     if (!kursi) return;
     PEMAIN.sedangDuduk = true;
     PEMAIN.kursiAktif = kursi;
+    PEMAIN.waktuDuduk = performance.now();
     PEMAIN.x = kursi.x;
     PEMAIN.y = kursi.y - 0.08;
     PEMAIN.arah = kursi.arah || "bawah";
@@ -788,13 +798,15 @@
         gambarLabel(oItem, oItem.x * PETAK, oItem.y * PETAK, tSprite);
       }
     }
-    // Label Pemain (Jika sedang duduk, beri tahu status duduk)
+    // Label Pemain (status duduk hanya tampil 3.5 detik pertama, lalu hilang sendiri)
     if (PEMAIN.sedangDuduk) {
-      gambarLabel({
-        label: PEMAIN.label + " (Duduk Santai)",
-        sublabel: "Tekan tombol gerak untuk berdiri",
-        ikon: "🪑"
-      }, PEMAIN.x * PETAK, PEMAIN.y * PETAK, 60);
+      if (performance.now() - (PEMAIN.waktuDuduk || 0) < 3500) {
+        gambarLabel({
+          label: PEMAIN.label + " (Duduk Santai)",
+          sublabel: "Tekan tombol gerak untuk berdiri",
+          ikon: "🪑"
+        }, PEMAIN.x * PETAK, PEMAIN.y * PETAK, 60);
+      }
     } else {
       gambarLabel(PEMAIN, PEMAIN.x * PETAK, PEMAIN.y * PETAK, 78);
     }

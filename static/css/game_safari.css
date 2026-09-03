@@ -389,6 +389,20 @@ html, body {
   to { transform: translate(-50%, 0); opacity: 1; }
 }
 
+/* Tombol tutup toast (induk pointer-events:none, tombol harus di-override) */
+#tutup-toast {
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  color: var(--safari-emas);
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0 0 0 4px;
+  cursor: pointer;
+  opacity: 0.75;
+}
+#tutup-toast:hover { opacity: 1; }
+
 /* Virtual Analog Joystick (Cincin Kayu Safari) */
 .analog-wadah {
   position: absolute;
