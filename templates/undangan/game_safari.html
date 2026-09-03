@@ -1,0 +1,325 @@
+{% load static aset %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>{{ pengantin_pria.panggilan|default:"Budi" }} &amp; {{ pengantin_wanita.panggilan|default:"Rina" }} — Taman Safari Kebun Binatang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% aset 'css/game_safari.css' %}">
+</head>
+<body>
+
+{% if pengaturan.musik %}
+  <audio id="musik" loop preload="auto">
+    <source src="{{ pengaturan.musik.url }}">
+  </audio>
+{% else %}
+  <audio id="musik" loop preload="auto">
+    <source src="{% aset 'musik/desa_asri.wav' %}">
+  </audio>
+{% endif %}
+
+<!-- Layar Memuat -->
+<div id="memuat">
+  <div class="ikon-memuat-safari">🦁</div>
+  <div class="batang-muat"><div id="isi-muat"></div></div>
+  <div style="font-size: 13px; color: var(--safari-emas-terang); font-weight: 700;">Menyiapkan Ekspedisi Safari...</div>
+</div>
+
+<!-- Layar Sampul Pembuka Safari -->
+<div id="sampul">
+  <div class="bingkai-sampul-safari">
+    <div class="label-atas-safari">SAFARI ZOO WEDDING ADVENTURE</div>
+    <h1 class="judul-mempelai-safari">{{ pengantin_pria.panggilan|default:"Budi" }} &amp; {{ pengantin_wanita.panggilan|default:"Rina" }}</h1>
+    
+    {% if pengaturan.quote %}
+      <p class="kutipan-safari">“{{ pengaturan.quote }}”</p>
+    {% else %}
+      <p class="kutipan-safari">“Cinta adalah petualangan terindah yang kami mulai bersama di alam semesta yang penuh keajaiban ini.”</p>
+    {% endif %}
+
+    <div class="kotak-tamu-safari">
+      <div class="teks-yth">Kepada Yth. Tamu Undangan:</div>
+      <div class="nama-tamu-terhormat">{{ tamu.nama|default:"Tamu Undangan Terhormat" }}</div>
+    </div>
+
+    <div class="pilih-karakter-area">
+      <div class="judul-pilih">PILIH KARAKTER PETUALANG ANDA:</div>
+      <div class="baris-opsi-karakter">
+        <button type="button" class="karakter-opsi dipilih" data-karakter="pria" aria-pressed="true">
+          <span>🤠</span> Safari Chic (Pria)
+        </button>
+        <button type="button" class="karakter-opsi" data-karakter="wanita" aria-pressed="false">
+          <span>👒</span> Safari Elegance (Wanita)
+        </button>
+      </div>
+    </div>
+
+    <button type="button" id="tombol-buka" class="tombol-buka-safari">
+      <span>🧭</span> JELAJAHI TAMAN SAFARI
+    </button>
+  </div>
+</div>
+
+<!-- Kanvas Permainan -->
+<canvas id="kanvas"></canvas>
+
+<!-- HUD & Notifikasi -->
+<div class="hud-wadah">
+  <div class="hud-kiri-atas">
+    <div class="hud-label-pasangan">{{ pengantin_pria.panggilan|default:"Budi" }} &amp; {{ pengantin_wanita.panggilan|default:"Rina" }}</div>
+    <div id="chip-habitat-indikator" class="chip-habitat">
+      <span>🌿</span> TAMAN SAFARI NUSANTARA
+    </div>
+  </div>
+
+  <div class="hud-kanan-atas hud-elemen-klik">
+    <div class="widget-safari-ringkas">
+      <div class="widget-safari-judul">AKAD &amp; RESEPSI SAFARI</div>
+      <div class="widget-safari-waktu">Pukul 09.00 - 17.00 WIB</div>
+      <div class="widget-safari-kemajuan">Satwa &amp; Lokasi: <span id="hud-kemajuan-angka">0/5</span></div>
+    </div>
+    <div class="baris-tombol-kontrol">
+      <button type="button" id="tombol-peta" class="btn-lingkar-safari" title="Peta Safari" aria-label="Peta">🗺️</button>
+      <button type="button" id="tombol-musik" class="btn-lingkar-safari" title="Musik" aria-label="Musik">🎵</button>
+      <button type="button" id="tombol-petunjuk" class="btn-lingkar-safari" title="Petunjuk" aria-label="Petunjuk">❓</button>
+    </div>
+  </div>
+
+  <div id="toast-notifikasi" hidden>
+    <span id="teks-toast">Selamat datang di Taman Safari!</span>
+  </div>
+
+  <!-- Virtual Analog Joystick Kayu -->
+  <div class="analog-wadah hud-elemen-klik">
+    <div id="analog-alas" class="analog-alas-kayu">
+      <div id="analog-pentol" class="analog-pentol-kayu"></div>
+    </div>
+  </div>
+
+  <!-- Tombol Aksi -->
+  <button type="button" id="tombol-aksi" class="tombol-aksi-safari hud-elemen-klik" title="Interaksi">!</button>
+</div>
+
+<!-- Modal Dialog Safari (Lodge Parchment) -->
+<div id="tirai-popup" class="tirai-popup" hidden>
+
+  <!-- 1. Modal Pelaminan Mempelai -->
+  <div id="popup-pengantin" class="popup-safari" hidden>
+    <button type="button" class="btn-tutup-safari" data-tutup>&times;</button>
+    <div class="popup-safari-header">
+      <div class="popup-safari-ikon">👑</div>
+      <h2 class="popup-safari-judul">Kedua Mempelai</h2>
+      <div class="popup-safari-subjudul">Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan</div>
+    </div>
+    <div class="kartu-acara-safari">
+      <div class="acara-nama">{{ pengantin_pria.nama_lengkap|default:"Budi Santoso, S.T." }}</div>
+      <div class="acara-waktu">Putra dari Bpk. {{ pengantin_pria.nama_ayah|default:"Bambang Santoso" }} &amp; Ibu {{ pengantin_pria.nama_ibu|default:"Siti Rahayu" }}</div>
+    </div>
+    <div class="kartu-acara-safari">
+      <div class="acara-nama">{{ pengantin_wanita.nama_lengkap|default:"Rina Anggraini, S.Kom." }}</div>
+      <div class="acara-waktu">Putri dari Bpk. {{ pengantin_wanita.nama_ayah|default:"Hendra Kusuma" }} &amp; Ibu {{ pengantin_wanita.nama_ibu|default:"Dewi Lestari" }}</div>
+    </div>
+  </div>
+
+  <!-- 2. Modal Rangkaian Acara Safari -->
+  <div id="popup-acara" class="popup-safari" hidden>
+    <button type="button" class="btn-tutup-safari" data-tutup>&times;</button>
+    <div class="popup-safari-header">
+      <div class="popup-safari-ikon">📜</div>
+      <h2 class="popup-safari-judul">Rangkaian Acara Safari</h2>
+      <div class="popup-safari-subjudul">Jadwal Akad Nikah &amp; Pesta Resepsi Alam</div>
+    </div>
+    {% if acara_list %}
+      {% for acara in acara_list %}
+        <div class="kartu-acara-safari">
+          <div class="acara-nama">{{ acara.nama }}</div>
+          <div class="acara-waktu">📅 {{ acara.tanggal|date:"l, d F Y" }} &bull; ⏰ {{ acara.waktu_mulai|time:"H:i" }} - {{ acara.waktu_selesai|time:"H:i" }} WIB</div>
+          <div class="acara-lokasi">📍 {{ acara.tempat }} — {{ acara.alamat }}</div>
+          {% if acara.google_maps_url %}
+            <a href="{{ acara.google_maps_url }}" target="_blank" rel="noopener" class="btn-peta-safari">
+              <span>📍</span> Buka Google Maps
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="kartu-acara-safari">
+        <div class="acara-nama">Akad Nikah Safari</div>
+        <div class="acara-waktu">📅 Sabtu, 24 Oktober 2026 &bull; ⏰ 08.00 - 10.00 WIB</div>
+        <div class="acara-lokasi">📍 Panggung Ranting Safari Lodge — Taman Safari Nusantara</div>
+      </div>
+      <div class="kartu-acara-safari">
+        <div class="acara-nama">Resepsi Ramah Tamah Alam</div>
+        <div class="acara-waktu">📅 Sabtu, 24 Oktober 2026 &bull; ⏰ 11.00 - 16.00 WIB</div>
+        <div class="acara-lokasi">📍 Danau Teratai &amp; Padang Savana — Taman Safari Nusantara</div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- 3. Modal Galeri Foto Prewedding Safari -->
+  <div id="popup-galeri" class="popup-safari" hidden>
+    <button type="button" class="btn-tutup-safari" data-tutup>&times;</button>
+    <div class="popup-safari-header">
+      <div class="popup-safari-ikon">📷</div>
+      <h2 class="popup-safari-judul">Galeri Foto Safari</h2>
+      <div class="popup-safari-subjudul">Momen Manis Petualangan Cinta Kami</div>
+    </div>
+    <div class="grid-galeri-safari">
+      {% if galeri %}
+        {% for foto in galeri %}
+          <div class="item-foto-safari">
+            <img src="{{ foto.gambar.url }}" alt="{{ foto.caption|default:'Momen Safari' }}">
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="item-foto-safari"><img src="{% aset 'img/preview_safari.png' %}" alt="Safari 1"></div>
+        <div class="item-foto-safari"><img src="{% aset 'img/preview_gedung.png' %}" alt="Safari 2"></div>
+        <div class="item-foto-safari"><img src="{% aset 'img/preview_desa.png' %}" alt="Safari 3"></div>
+        <div class="item-foto-safari"><img src="{% aset 'img/preview_tropis.png' %}" alt="Safari 4"></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 4. Modal Pos Ranger & RSVP -->
+  <div id="popup-ucapan" class="popup-safari" hidden>
+    <button type="button" class="btn-tutup-safari" data-tutup>&times;</button>
+    <div class="popup-safari-header">
+      <div class="popup-safari-ikon">🍱</div>
+      <h2 class="popup-safari-judul">Pos Ranger &amp; RSVP</h2>
+      <div class="popup-safari-subjudul">Buku Jurnal Tamu &amp; Konfirmasi Kehadiran</div>
+    </div>
+    <form id="form-ucapan">
+      <div class="form-grup-safari">
+        <label class="form-label-safari" for="input-nama">Nama Lengkap</label>
+        <input type="text" id="input-nama" class="form-input-safari" value="{{ tamu.nama|default:'' }}" required placeholder="Nama Anda">
+      </div>
+      <div class="form-grup-safari">
+        <label class="form-label-safari" for="input-kehadiran">Konfirmasi Kehadiran</label>
+        <select id="input-kehadiran" class="form-input-safari">
+          <option value="hadir">Pasti Hadir di Taman Safari</option>
+          <option value="ragu">Masih Ragu</option>
+          <option value="tidak_hadir">Maaf, Tidak Bisa Hadir</option>
+        </select>
+      </div>
+      <div class="form-grup-safari">
+        <label class="form-label-safari" for="input-jumlah">Jumlah Tamu</label>
+        <input type="number" id="input-jumlah" class="form-input-safari" min="1" max="5" value="1">
+      </div>
+      <div class="form-grup-safari">
+        <label class="form-label-safari" for="input-pesan">Doa &amp; Ucapan Hangat</label>
+        <textarea id="input-pesan" class="form-input-safari" rows="3" required placeholder="Tuliskan pesan doa restu petualangan cinta kami..."></textarea>
+      </div>
+      <button type="submit" class="tombol-kirim-safari">KIRIM UCAPAN &amp; KONFIRMASI</button>
+    </form>
+  </div>
+
+  <!-- 5. Modal Hadiah & Tanda Kasih -->
+  <div id="popup-hadiah" class="popup-safari" hidden>
+    <button type="button" class="btn-tutup-safari" data-tutup>&times;</button>
+    <div class="popup-safari-header">
+      <div class="popup-safari-ikon">🎁</div>
+      <h2 class="popup-safari-judul">Peti Koper Petualang</h2>
+      <div class="popup-safari-subjudul">Amplop Digital &amp; Tanda Kasih Pernikahan</div>
+    </div>
+    {% if rekening_list %}
+      {% for rek in rekening_list %}
+        <div class="kartu-rekening-safari">
+          <div class="bank-header">
+            <span>{{ rek.nama_bank }}</span>
+            <button type="button" class="btn-salin-safari" data-salin="{{ rek.nomor_rekening }}">Salin</button>
+          </div>
+          <div class="nomor-rek">{{ rek.nomor_rekening }}</div>
+          <div style="font-size: 13px; color: #7a6e5a;">a.n. {{ rek.atas_nama }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="kartu-rekening-safari">
+        <div class="bank-header">
+          <span>BANK MANDIRI</span>
+          <button type="button" class="btn-salin-safari" data-salin="1230009876543">Salin</button>
+        </div>
+        <div class="nomor-rek">123-00-0987654-3</div>
+        <div style="font-size: 13px; color: #7a6e5a;">a.n. Budi Santoso</div>
+      </div>
+      <div class="kartu-rekening-safari">
+        <div class="bank-header">
+          <span>BANK BCA</span>
+          <button type="button" class="btn-salin-safari" data-salin="8820123456">Salin</button>
+        </div>
+        <div class="nomor-rek">882-012-3456</div>
+        <div style="font-size: 13px; color: #7a6e5a;">a.n. Rina Anggraini</div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- 6. Modal Peta Safari -->
+  <div id="popup-peta" class="popup-safari" hidden>
+    <button type="button" class="btn-tutup-safari" data-tutup>&times;</button>
+    <div class="popup-safari-header">
+      <div class="popup-safari-ikon">🗺️</div>
+      <h2 class="popup-safari-judul">Peta Ekspedisi Safari</h2>
+      <div class="popup-safari-subjudul">Klik ikon di peta untuk melangkah otomatis ke lokasi</div>
+    </div>
+    <canvas id="kanvas-peta-safari"></canvas>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+      <button type="button" class="btn-peta-safari" data-pergi="pengantin">👑 Pelaminan</button>
+      <button type="button" class="btn-peta-safari" data-pergi="acara">📜 Papan Acara</button>
+      <button type="button" class="btn-peta-safari" data-pergi="galeri">📷 Galeri Foto</button>
+      <button type="button" class="btn-peta-safari" data-pergi="ucapan">🍱 Pos Ranger</button>
+      <button type="button" class="btn-peta-safari" data-pergi="hadiah">🎁 Peti Koper</button>
+    </div>
+  </div>
+
+  <!-- 7. Modal Petunjuk -->
+  <div id="popup-petunjuk" class="popup-safari" hidden>
+    <button type="button" class="btn-tutup-safari" data-tutup>&times;</button>
+    <div class="popup-safari-header">
+      <div class="popup-safari-ikon">🧭</div>
+      <h2 class="popup-safari-judul">Panduan Petualangan</h2>
+      <div class="popup-safari-subjudul">Cara menjelajahi Taman Safari Kebun Binatang</div>
+    </div>
+    <div style="font-size: 13.5px; line-height: 1.7; color: #463a28;">
+      <p>🐾 <strong>Melihat Satwa:</strong> Klik langsung hewan (Gajah, Jerapah, Singa, Panda, Zebra, Flamingo) untuk mendengar reaksi dan suaranya!</p>
+      <p style="margin-top: 8px;">🪑 <strong>Duduk di Bangku:</strong> Dekati bangku kayu gelondongan dan tekan tombol aksi atau spasi untuk duduk santai menikmati pemandangan alam.</p>
+      <p style="margin-top: 8px;">🕹️ <strong>Navigasi:</strong> Gunakan Joystick Analog virtual di kiri bawah layar (PC / HP) atau tombol keyboard <strong>W, A, S, D</strong>.</p>
+      <p style="margin-top: 8px;">👆 <strong>Klik Langsung:</strong> Klik objek apa pun di layar untuk otomatis melangkah ke sana (*Auto-Walk*).</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Data Undangan JSON -->
+<script id="data-undangan" type="application/json">
+{
+  "pria_nama": "{{ pengantin_pria.panggilan|default:'Budi' }}",
+  "wanita_nama": "{{ pengantin_wanita.panggilan|default:'Rina' }}",
+  "tamu_nama": "{{ tamu.nama|default:'Tamu Undangan' }}",
+  "aset": {
+    "tileset": "{% aset 'game_safari/tileset.png' %}",
+    "gajah": "{% aset 'game_safari/gajah.png' %}",
+    "jerapah": "{% aset 'game_safari/jerapah.png' %}",
+    "singa": "{% aset 'game_safari/singa.png' %}",
+    "panda": "{% aset 'game_safari/panda.png' %}",
+    "zebra": "{% aset 'game_safari/zebra.png' %}",
+    "flamingo": "{% aset 'game_safari/flamingo.png' %}",
+    "pelaminan": "{% aset 'game_safari/pelaminan.png' %}",
+    "papan": "{% aset 'game_safari/papan.png' %}",
+    "galeri": "{% aset 'game_safari/galeri.png' %}",
+    "buku_tamu": "{% aset 'game_safari/buku_tamu.png' %}",
+    "hadiah": "{% aset 'game_safari/hadiah.png' %}",
+    "bangku": "{% aset 'game_safari/bangku.png' %}",
+    "jeep_safari": "{% aset 'game_safari/jeep_safari.png' %}",
+    "karakter_pria": "{% aset 'game_safari/karakter_pria.png' %}",
+    "karakter_wanita": "{% aset 'game_safari/karakter_wanita.png' %}",
+    "pengantin_pria": "{% aset 'game_safari/pengantin_pria.png' %}",
+    "pengantin_wanita": "{% aset 'game_safari/pengantin_wanita.png' %}"
+  }
+}
+</script>
+<script src="{% aset 'js/game_safari.js' %}"></script>
+</body>
+</html>

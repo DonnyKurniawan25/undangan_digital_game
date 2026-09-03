@@ -15,6 +15,7 @@ TEMPLATE_TEMA = {
     Pengaturan.TEMA_LOMBOK: "undangan/game_lombok.html",
     Pengaturan.TEMA_DESA: "undangan/game_desa.html",
     Pengaturan.TEMA_GEDUNG: "undangan/game_gedung.html",
+    Pengaturan.TEMA_SAFARI: "undangan/game_safari.html",
 }
 
 
@@ -119,6 +120,16 @@ def undangan_gedung(request, slug=None):
 
     konteks = _buat_konteks_undangan(tamu)
     return render(request, "undangan/game_gedung.html", konteks)
+
+
+def undangan_safari(request, slug=None):
+    tamu = None
+    if slug:
+        tamu = get_object_or_404(Tamu, slug=slug)
+        tamu.catat_kunjungan()
+
+    konteks = _buat_konteks_undangan(tamu)
+    return render(request, "undangan/game_safari.html", konteks)
 
 
 
