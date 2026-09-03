@@ -1,0 +1,377 @@
+{% load static aset %}<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#203816">
+<title>{% if pria and wanita %}{{ pria.nama_panggilan }} &amp; {{ wanita.nama_panggilan }} — Desa Asri Parahyangan{% else %}{{ pengaturan.judul }} — Desa Asri{% endif %}</title>
+<meta name="description" content="Undangan pernikahan interaktif bertema pedesaan Parahyangan bergaya Stardew Valley. Jelajahi kebun, sawah, dan saung pelaminan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% aset 'css/game_desa.css' %}">
+</head>
+<body>
+
+<!-- ================= LAYAR SAMPUL ================= -->
+<section id="sampul">
+  <div class="hias-sampul" aria-hidden="true"></div>
+  <div class="sampul-isi">
+    <div class="lencana-stardew">
+      <span>🌾</span> Stardew Valley Edition <span>🌾</span>
+    </div>
+    <p class="pra-judul">Pesta Kebun Pedesaan Parahyangan</p>
+    <h1 class="nama-pasangan">
+      {{ pria.nama_panggilan|default:"Mempelai Pria" }}
+      <span>&amp;</span>
+      {{ wanita.nama_panggilan|default:"Mempelai Wanita" }}
+    </h1>
+    {% if acara_utama %}
+      <p class="tanggal-sampul">{{ acara_utama.waktu_mulai|date:"l, j F Y" }}</p>
+    {% endif %}
+
+    {% if tamu %}
+      <div class="kartu-tamu">
+        <p class="label-tamu">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+        <p class="nama-tamu">{{ tamu.sapaan_lengkap }}</p>
+        {% if tamu.jumlah_undangan > 1 %}
+          <p class="label-tamu" style="margin-top: 4px;">beserta keluarga ({{ tamu.jumlah_undangan }} orang)</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="pemilih-karakter">
+      <p class="label-pilih">Pilih Karakter Anda (Adat Sunda Parahyangan)</p>
+      <div class="daftar-karakter">
+        <button type="button" class="karakter-opsi dipilih" data-karakter="pria" aria-pressed="true">
+          <span class="pratinjau" style="background-image:url('{% aset 'game_desa/karakter_pria.png' %}')"></span>
+          <span>Pria Sunda</span>
+        </button>
+        <button type="button" class="karakter-opsi" data-karakter="wanita" aria-pressed="false">
+          <span class="pratinjau" style="background-image:url('{% aset 'game_desa/karakter_wanita.png' %}')"></span>
+          <span>Wanita Sunda</span>
+        </button>
+      </div>
+    </div>
+
+    <button type="button" id="tombol-buka" class="tombol-utama">
+      <span>✨</span> Buka Undangan <span>✨</span>
+    </button>
+    <p class="petunjuk-sampul">Gunakan analog di layar HP atau tombol WASD / Panah di komputer untuk berjalan menjelajahi desa.</p>
+  </div>
+</section>
+
+<!-- ================= PERMAINAN ================= -->
+<main id="permainan" aria-hidden="true">
+  <canvas id="kanvas"></canvas>
+
+  <div id="memuat" class="tirai">
+    <p class="teks-muat">Menyiapkan Desa Asri Parahyangan…</p>
+    <div class="bar-muat"><span id="isi-muat"></span></div>
+  </div>
+
+  <header id="hud">
+    <div class="hud-kiri">
+      <p class="hud-judul">{{ pria.nama_panggilan|default:"Mempelai" }} &amp; {{ wanita.nama_panggilan|default:"Mempelai" }}</p>
+      <p class="chip-lokasi">
+        <span>📍</span> <span id="hud-lokasi">Desa Asri Parahyangan</span>
+      </p>
+    </div>
+    <div class="hud-kanan">
+      <!-- Stardew Valley Date & Weather Clock -->
+      <div class="stardew-jam-widget">
+        <div class="jam-baris-musim">
+          <span>🌸</span> Musim Bahagia
+        </div>
+        <div class="jam-angka">
+          {% if acara_utama %}{{ acara_utama.waktu_mulai|date:"D, j M" }}{% else %}Hari H{% endif %}
+        </div>
+        <div class="jam-koin-doa">
+          <span>🪙</span> <span id="hud-kemajuan-angka">0/5</span> Lokasi
+        </div>
+      </div>
+
+      <div class="baris-tombol">
+        <button type="button" id="tombol-peta" class="tombol-bulat" title="Denah Desa" aria-label="Buka denah desa">
+          <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+        </button>
+        <button type="button" id="tombol-musik" class="tombol-bulat" title="Musik latar" aria-label="Putar atau jeda musik">
+          <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </button>
+        <button type="button" id="tombol-petunjuk" class="tombol-bulat" title="Bantuan" aria-label="Petunjuk cara bermain">
+          <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner Toast Notifikasi Jalan Otomatis -->
+  <div id="toast-notifikasi" class="toast-desa" hidden>
+    <span>🌾</span> <span id="teks-toast">Menuju Lokasi…</span>
+  </div>
+
+  <!-- Kontrol Joystick Analog (Selalu Terlihat di Layar) & Tombol Aksi -->
+  <div id="kontrol">
+    <div id="zona-analog">
+      <div id="analog-alas" class="selalu-tampil" title="Tarik joystick untuk berjalan">
+        <div class="analog-cincin-luar"></div>
+        <div id="analog-pentol"></div>
+      </div>
+    </div>
+    <button type="button" id="tombol-aksi" title="Buka" aria-label="Interaksi">!</button>
+  </div>
+</main>
+
+<!-- ================= MODAL POPUP STARDEW VALLEY ================= -->
+<div id="tirai-popup" hidden>
+  <!-- 1. Pelaminan Mempelai -->
+  <section class="popup" id="popup-pengantin" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Kedua Mempelai</h2>
+    {% if pria %}
+      <div class="stardew-avatar-box">
+        <div class="avatar-frame">
+          {% if pria.foto %}<img src="{{ pria.foto.url }}" alt="{{ pria.nama_lengkap }}">{% else %}<div style="background:#ddd;width:100%;height:100%;"></div>{% endif %}
+        </div>
+        <div class="avatar-info">
+          <h3>{{ pria.nama_lengkap }}</h3>
+          <p>{{ pria.anak_ke }}{% if pria.nama_ayah %} dari Bpk. {{ pria.nama_ayah }} &amp; Ibu {{ pria.nama_ibu }}{% endif %}</p>
+          {% if pria.instagram %}<p style="color:var(--marun);font-weight:700;">@{{ pria.instagram }}</p>{% endif %}
+        </div>
+      </div>
+    {% endif %}
+    {% if wanita %}
+      <div class="stardew-avatar-box">
+        <div class="avatar-frame">
+          {% if wanita.foto %}<img src="{{ wanita.foto.url }}" alt="{{ wanita.nama_lengkap }}">{% else %}<div style="background:#ddd;width:100%;height:100%;"></div>{% endif %}
+        </div>
+        <div class="avatar-info">
+          <h3>{{ wanita.nama_lengkap }}</h3>
+          <p>{{ wanita.anak_ke }}{% if wanita.nama_ayah %} dari Bpk. {{ wanita.nama_ayah }} &amp; Ibu {{ wanita.nama_ibu }}{% endif %}</p>
+          {% if wanita.instagram %}<p style="color:var(--marun);font-weight:700;">@{{ wanita.instagram }}</p>{% endif %}
+        </div>
+      </div>
+    {% endif %}
+    {% if pengaturan.quote %}
+      <div style="background:#fff8e8;border:2px dashed var(--garis-kayu);border-radius:10px;padding:12px;margin-top:10px;text-align:center;font-style:italic;">
+        "{{ pengaturan.quote }}"
+        {% if pengaturan.sumber_quote %}<p style="margin:4px 0 0;font-weight:700;font-style:normal;">— {{ pengaturan.sumber_quote }}</p>{% endif %}
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- 2. Papan Pengumuman Acara -->
+  <section class="popup" id="popup-acara" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Papan Pengumuman Acara</h2>
+    {% for acara in acara_list %}
+      <article class="kartu-acara-stardew">
+        <span class="acara-badge">Acara {{ forloop.counter }}</span>
+        <h3 class="acara-nama">{{ acara.nama }}</h3>
+        <p class="acara-waktu"><b>Waktu:</b> {{ acara.waktu_mulai|date:"l, j F Y" }} ({{ acara.waktu_mulai|date:"H:i" }} WIB)</p>
+        <p class="acara-tempat"><b>Tempat:</b> {{ acara.nama_tempat }}</p>
+        {% if acara.alamat %}<p class="acara-tempat" style="font-size:0.8rem;">{{ acara.alamat }}</p>{% endif %}
+        {% if acara.url_maps %}
+          <a href="{{ acara.url_maps }}" target="_blank" rel="noopener" class="tombol-maps">
+            <span>🗺️</span> Buka di Google Maps
+          </a>
+        {% endif %}
+      </article>
+    {% empty %}
+      <p style="text-align:center;">Informasi rangkaian acara belum diisi.</p>
+    {% endfor %}
+  </section>
+
+  <!-- 3. Galeri Foto Prewedding -->
+  <section class="popup" id="popup-galeri" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Jemuran Galeri Foto</h2>
+    <div class="galeri-grid">
+      {% for item in galeri %}
+        <div class="galeri-item">
+          <img src="{{ item.gambar.url }}" alt="{{ item.keterangan|default:'Foto Galeri' }}" loading="lazy">
+          {% if item.keterangan %}<p style="margin:4px 0 0;font-size:0.75rem;text-align:center;">{{ item.keterangan }}</p>{% endif %}
+        </div>
+      {% empty %}
+        <p style="grid-column:1/-1;text-align:center;">Foto galeri prewedding belum diunggah.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- 4. Meja Jamuan & Buku Tamu RSVP -->
+  <section class="popup" id="popup-ucapan" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Buku Tamu &amp; RSVP</h2>
+    <form id="form-ucapan">
+      <div class="form-grup">
+        <label class="form-label" for="input-nama">Nama Anda</label>
+        <input type="text" id="input-nama" class="input-desa" value="{{ tamu.nama|default:'' }}" required placeholder="Tuliskan nama lengkap">
+      </div>
+      <div class="form-grup">
+        <label class="form-label" for="input-kehadiran">Konfirmasi Kehadiran</label>
+        <select id="input-kehadiran" class="select-desa">
+          <option value="hadir">Berkenan Hadir</option>
+          <option value="tidak">Maaf, Tidak Bisa Hadir</option>
+          <option value="ragu">Masih Ragu</option>
+        </select>
+      </div>
+      <div class="form-grup">
+        <label class="form-label" for="input-jumlah">Jumlah Orang</label>
+        <input type="number" id="input-jumlah" class="input-desa" min="1" max="5" value="1">
+      </div>
+      <div class="form-grup">
+        <label class="form-label" for="input-pesan">Ucapan &amp; Doa Restu</label>
+        <textarea id="input-pesan" class="textarea-desa" rows="3" required placeholder="Tuliskan doa restu untuk kedua mempelai..."></textarea>
+      </div>
+      <button type="submit" class="tombol-kirim-desa">Kirim Ucapan &amp; Konfirmasi</button>
+    </form>
+
+    <div style="margin-top:20px;border-top:2px dashed var(--garis-kayu);padding-top:14px;">
+      <h3 style="margin:0 0 10px;font-size:1rem;">Ucapan Doa Sahabat &amp; Kerabat:</h3>
+      <div id="daftar-ucapan" style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">
+        {% for u in ucapan_list %}
+          <div style="background:#fff8e8;border:1px solid var(--garis-kayu);border-radius:8px;padding:8px 10px;">
+            <p style="margin:0;font-weight:700;font-size:0.86rem;">{{ u.nama }} <span style="font-weight:normal;color:var(--tinta-lembut);font-size:0.75rem;">({{ u.get_kehadiran_display }})</span></p>
+            <p style="margin:2px 0 0;font-size:0.82rem;color:var(--tinta-lembut);">{{ u.pesan }}</p>
+          </div>
+        {% empty %}
+          <p style="font-size:0.82rem;color:var(--tinta-lembut);">Belum ada ucapan. Jadilah yang pertama memberikan doa restu!</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Peti Kayu Hadiah & Amplop Digital -->
+  <section class="popup" id="popup-hadiah" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Tanda Kasih (Amplop Digital)</h2>
+    <p style="text-align:center;font-size:0.86rem;color:var(--tinta-lembut);margin-top:-8px;margin-bottom:14px;">
+      Doa restu Anda adalah karunia terindah bagi kami. Namun jika ingin memberikan tanda kasih, dapat disalurkan melalui:
+    </p>
+    {% for rek in rekening_list %}
+      <div class="kartu-rekening-stardew">
+        <p style="margin:0;font-size:0.9rem;font-weight:700;">{{ rek.nama_bank }}</p>
+        <p class="nomor-rekening">{{ rek.nomor }}</p>
+        <p style="margin:0 0 8px;font-size:0.82rem;color:var(--tinta-lembut);">a.n. {{ rek.atas_nama }}</p>
+        {% if rek.qr %}
+          <div style="width:120px;margin:8px auto;"><img src="{{ rek.qr.url }}" alt="QRIS {{ rek.nama_bank }}"></div>
+        {% endif %}
+        <button type="button" class="tombol-salin" data-salin="{{ rek.nomor }}">Salin Nomor Rekening</button>
+      </div>
+    {% empty %}
+      <p style="text-align:center;">Informasi rekening belum diisi.</p>
+    {% endfor %}
+  </section>
+
+  <!-- 6. Denah Desa Penuh & Navigasi Jalan Otomatis -->
+  <section class="popup" id="popup-peta" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Denah Desa Asri</h2>
+    <p class="catatan-peta">Klik lokasi di bawah atau klik denah — karakter akan otomatis berjalan sendiri ke tujuan!</p>
+    
+    <div class="wadah-peta-besar">
+      <canvas id="kanvas-peta-desa"></canvas>
+    </div>
+
+    <div class="daftar-tujuan-desa">
+      <button type="button" class="kartu-tujuan-item" data-pergi="pengantin">
+        <div class="tujuan-ikon">👑</div>
+        <div class="tujuan-teks">
+          <b>1. Pelaminan Mempelai</b>
+          <span>Foto &amp; Biodata Mempelai Sunda</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="acara">
+        <div class="tujuan-ikon">📜</div>
+        <div class="tujuan-teks">
+          <b>2. Papan Pengumuman Acara</b>
+          <span>Jadwal Akad, Resepsi &amp; Maps</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="galeri">
+        <div class="tujuan-ikon">📷</div>
+        <div class="tujuan-teks">
+          <b>3. Jemuran Galeri Foto</b>
+          <span>Foto-foto Prewedding</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="ucapan">
+        <div class="tujuan-ikon">🍱</div>
+        <div class="tujuan-teks">
+          <b>4. Meja Jamuan &amp; RSVP</b>
+          <span>Kirim Ucapan &amp; Konfirmasi Hadir</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="hadiah">
+        <div class="tujuan-ikon">🎁</div>
+        <div class="tujuan-teks">
+          <b>5. Peti Kayu Hadiah</b>
+          <span>Rekening Hadiah &amp; QRIS</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 7. Petunjuk Bermain -->
+  <section class="popup" id="popup-petunjuk" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Petunjuk Bermain</h2>
+    <ul style="padding-left:20px;font-size:0.9rem;line-height:1.6;color:var(--tinta-kayu);">
+      <li><b>Klik Langsung ke Lokasi</b> — Anda bisa langsung <b>mengklik / mengetuk objek lokasi</b> (Pelaminan, Acara, Galeri, Tamu, Hadiah) di layar permainan untuk membukanya secara instan tanpa perlu repot menekan tombol seru! Jika posisi Anda masih jauh, karakter akan otomatis berjalan sendiri ke sana.</li>
+      <li><b>Berjalan Manual</b> — Geser joystick analog kayu di kiri bawah layar (bisa pakai sentuhan HP atau klik &amp; drag mouse komputer), atau gunakan tombol <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / panah.</li>
+      <li><b>Denah Desa</b> — Buka menu Denah Desa (tombol peta di kanan atas) untuk melihat denah lengkap dan memilih tujuan.</li>
+      <li><b>Atraksi Desa</b> — Nikmati alunan musik tradisional kecapi suling, penari Jaipong, ayam &amp; bebek yang berenang di sungai.</li>
+    </ul>
+  </section>
+</div>
+
+<!-- Pemutar Musik Latar (Otomatis & Terintegrasi) -->
+<audio id="musik" loop preload="auto" src="{{ musik_url }}"></audio>
+
+<script id="data-undangan" type="application/json">
+{
+  "slug": "{{ tamu.slug|default:'' }}",
+  "tamu_nama": "{{ tamu.nama|default:'' }}",
+  "pria_nama": "{{ pria.nama_panggilan|default:'Budi' }}",
+  "wanita_nama": "{{ wanita.nama_panggilan|default:'Rina' }}",
+  "aset": {
+    "tileset": "{% aset 'game_desa/tileset.png' %}",
+    "tepi": "{% aset 'game_desa/tepi.png' %}",
+    "karakter_pria": "{% aset 'game_desa/karakter_pria.png' %}",
+    "karakter_wanita": "{% aset 'game_desa/karakter_wanita.png' %}",
+    "pelaminan": "{% aset 'game_desa/pelaminan.png' %}",
+    "pengantin_pria": "{% aset 'game_desa/pengantin_pria.png' %}",
+    "pengantin_wanita": "{% aset 'game_desa/pengantin_wanita.png' %}",
+    "papan": "{% aset 'game_desa/papan.png' %}",
+    "galeri": "{% aset 'game_desa/galeri.png' %}",
+    "buku_tamu": "{% aset 'game_desa/buku_tamu.png' %}",
+    "hadiah": "{% aset 'game_desa/hadiah.png' %}",
+    "gerbang": "{% aset 'game_desa/gerbang.png' %}",
+    "pohon_buah": "{% aset 'game_desa/pohon_buah.png' %}",
+    "saung_lumbung": "{% aset 'game_desa/saung_lumbung.png' %}",
+    "ayam": "{% aset 'game_desa/ayam.png' %}",
+    "kucing": "{% aset 'game_desa/kucing.png' %}",
+    "bebek": "{% aset 'game_desa/bebek.png' %}",
+    "pemusik": "{% aset 'game_desa/pemusik.png' %}",
+    "penari": "{% aset 'game_desa/penari.png' %}",
+    "tamu_desa": "{% aset 'game_desa/tamu_desa.png' %}",
+    "kolam_ikan": "{% aset 'game_desa/kolam_ikan.png' %}",
+    "kincir": "{% aset 'game_desa/kincir.png' %}",
+    "lentera": "{% aset 'game_desa/lentera.png' %}",
+    "bangku": "{% aset 'game_desa/bangku.png' %}"
+  }
+}
+</script>
+<script src="{% aset 'js/game_desa.js' %}"></script>
+</body>
+</html>
+

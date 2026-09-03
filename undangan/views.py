@@ -13,6 +13,8 @@ TEMPLATE_TEMA = {
     Pengaturan.TEMA_KLASIK: "undangan/game.html",
     Pengaturan.TEMA_TROPIS: "undangan/game_tropis.html",
     Pengaturan.TEMA_LOMBOK: "undangan/game_lombok.html",
+    Pengaturan.TEMA_DESA: "undangan/game_desa.html",
+    Pengaturan.TEMA_GEDUNG: "undangan/game_gedung.html",
 }
 
 
@@ -44,19 +46,16 @@ def landing(request):
     return render(request, "undangan/landing.html", konteks)
 
 
-def undangan(request, slug=None):
-    tamu = None
-    if slug:
-        tamu = get_object_or_404(Tamu, slug=slug)
-        tamu.catat_kunjungan()
-
+def _buat_konteks_undangan(tamu=None):
     pengaturan = Pengaturan.ambil()
     acara_list = list(Acara.objects.all())
     pria = Pengantin.objects.filter(peran=Pengantin.PRIA).first()
     wanita = Pengantin.objects.filter(peran=Pengantin.WANITA).first()
+    musik_url = pengaturan.musik.url if pengaturan.musik else "/static/musik/desa_asri.wav"
 
-    konteks = {
+    return {
         "pengaturan": pengaturan,
+        "musik_url": musik_url,
         "tamu": tamu,
         "pria": pria,
         "wanita": wanita,
@@ -68,8 +67,16 @@ def undangan(request, slug=None):
         "ucapan_list": Ucapan.objects.filter(disetujui=True)[:BATAS_UCAPAN_TAMPIL],
         "jumlah_hadir": Ucapan.objects.filter(disetujui=True, kehadiran=Ucapan.HADIR).count(),
     }
-    # Parameter tema pada URL dipakai untuk pratinjau tanpa mengubah pengaturan.
-    tema = request.GET.get("tema") or pengaturan.tema
+
+
+def undangan(request, slug=None):
+    tamu = None
+    if slug:
+        tamu = get_object_or_404(Tamu, slug=slug)
+        tamu.catat_kunjungan()
+
+    konteks = _buat_konteks_undangan(tamu)
+    tema = request.GET.get("tema") or konteks["pengaturan"].tema
     template = TEMPLATE_TEMA.get(tema, TEMPLATE_TEMA[Pengaturan.TEMA_KLASIK])
     return render(request, template, konteks)
 
@@ -80,24 +87,7 @@ def undangan_lombok(request, slug=None):
         tamu = get_object_or_404(Tamu, slug=slug)
         tamu.catat_kunjungan()
 
-    pengaturan = Pengaturan.ambil()
-    acara_list = list(Acara.objects.all())
-    pria = Pengantin.objects.filter(peran=Pengantin.PRIA).first()
-    wanita = Pengantin.objects.filter(peran=Pengantin.WANITA).first()
-
-    konteks = {
-        "pengaturan": pengaturan,
-        "tamu": tamu,
-        "pria": pria,
-        "wanita": wanita,
-        "mempelai": [orang for orang in (pria, wanita) if orang],
-        "acara_list": acara_list,
-        "acara_utama": acara_list[0] if acara_list else None,
-        "galeri": FotoGaleri.objects.all(),
-        "rekening_list": Rekening.objects.all(),
-        "ucapan_list": Ucapan.objects.filter(disetujui=True)[:BATAS_UCAPAN_TAMPIL],
-        "jumlah_hadir": Ucapan.objects.filter(disetujui=True, kehadiran=Ucapan.HADIR).count(),
-    }
+    konteks = _buat_konteks_undangan(tamu)
     return render(request, "undangan/game_lombok.html", konteks)
 
 
@@ -107,25 +97,30 @@ def undangan_tropis(request, slug=None):
         tamu = get_object_or_404(Tamu, slug=slug)
         tamu.catat_kunjungan()
 
-    pengaturan = Pengaturan.ambil()
-    acara_list = list(Acara.objects.all())
-    pria = Pengantin.objects.filter(peran=Pengantin.PRIA).first()
-    wanita = Pengantin.objects.filter(peran=Pengantin.WANITA).first()
-
-    konteks = {
-        "pengaturan": pengaturan,
-        "tamu": tamu,
-        "pria": pria,
-        "wanita": wanita,
-        "mempelai": [orang for orang in (pria, wanita) if orang],
-        "acara_list": acara_list,
-        "acara_utama": acara_list[0] if acara_list else None,
-        "galeri": FotoGaleri.objects.all(),
-        "rekening_list": Rekening.objects.all(),
-        "ucapan_list": Ucapan.objects.filter(disetujui=True)[:BATAS_UCAPAN_TAMPIL],
-        "jumlah_hadir": Ucapan.objects.filter(disetujui=True, kehadiran=Ucapan.HADIR).count(),
-    }
+    konteks = _buat_konteks_undangan(tamu)
     return render(request, "undangan/game_tropis.html", konteks)
+
+
+def undangan_desa(request, slug=None):
+    tamu = None
+    if slug:
+        tamu = get_object_or_404(Tamu, slug=slug)
+        tamu.catat_kunjungan()
+
+    konteks = _buat_konteks_undangan(tamu)
+    return render(request, "undangan/game_desa.html", konteks)
+
+
+def undangan_gedung(request, slug=None):
+    tamu = None
+    if slug:
+        tamu = get_object_or_404(Tamu, slug=slug)
+        tamu.catat_kunjungan()
+
+    konteks = _buat_konteks_undangan(tamu)
+    return render(request, "undangan/game_gedung.html", konteks)
+
+
 
 
 @require_http_methods(["GET", "POST"])

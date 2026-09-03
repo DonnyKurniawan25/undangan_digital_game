@@ -23,6 +23,7 @@
       <a href="#cara-kerja">Cara Kerja</a>
       <a href="#preview">Preview</a>
       <a href="#keunggulan">Keunggulan</a>
+      <a href="{% url 'admin:index' %}" style="color:var(--gold,#d4a373);font-weight:700;">⚙️ Panel Admin / Upload Musik</a>
       <a href="{% url 'undangan:beranda' %}" class="nav-cta">Lihat Demo</a>
     </div>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
@@ -52,15 +53,26 @@
     <div class="hero-buttons">
       <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" id="btn-demo">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo Tema 1 (Taman Jawa)
+        Demo 1 (Jawa)
       </a>
       <a href="{% url 'undangan:beranda_lombok' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #2ba8a8 0%, #ab4430 100%);" id="btn-demo-lombok">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo Tema 2 (Pantai Lombok)
+        Demo 2 (Lombok)
       </a>
       <a href="{% url 'undangan:beranda_tropis' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #4da43a 0%, #9c6a38 100%);" id="btn-demo-tropis">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo Tema 3 (Taman Tropis)
+        Demo 3 (Tropis)
+      </a>
+      <a href="{% url 'undangan:beranda_desa' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #e89528 0%, #3e7828 100%);" id="btn-demo-desa">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Demo 4 (Desa Stardew)
+      </a>
+      <a href="{% url 'undangan:beranda_gedung' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #d4af37 0%, #18223a 100%);" id="btn-demo-gedung">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Demo 5 (Grand Ballroom)
+      </a>
+      <a href="{% url 'admin:index' %}" class="btn btn-secondary" id="btn-admin-hero">
+        ⚙️ Upload Musik / Admin
       </a>
       <a href="#fitur" class="btn btn-secondary" id="btn-fitur">
         Jelajahi Fitur
@@ -167,26 +179,26 @@
 <section class="preview" id="preview">
   <div class="container">
     <div class="text-center reveal">
-      <span class="section-label">Pilihan Tema Game</span>
-      <h2 class="section-title">Tiga Nuansa Adat &amp; Alam Istimewa</h2>
+      <span class="section-label">Pilihan Tema</span>
+      <h2 class="section-title">Lima Nuansa Pernikahan Istimewa</h2>
       <p class="section-desc">
-        Pilih nuansa favorit Anda — dari Taman Tradisional Jawa, Pantai Sasak Lombok yang eksotis, hingga Taman Tropis Rimbun bergaya Stardew Valley.
+        Pilih nuansa favorit Anda — dari Taman Tradisional Jawa, Pantai Sasak Lombok yang eksotis, Taman Tropis Rimbun, Desa Asri Parahyangan bergaya Stardew Valley, hingga Grand Ballroom Gedung Mewah.
       </p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-bottom: 36px;" class="reveal">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-bottom: 36px;" class="reveal">
       <!-- Tema 1 Card -->
       <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .15); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
             <img src="{% aset 'img/preview_game.png' %}" alt="Tema 1: Taman Tradisional Jawa" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
           </div>
-          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🌿 Tema 1: Taman Tradisional Jawa</h3>
+          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🏛️ Tema 1: Taman Tradisional Jawa</h3>
           <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
-            Pelaminan gebyok jati berukir, gunungan, janur kuning, dan busana beskap/kebaya Jawa klasik.
+            Gebyok ukir Jepara, pelaminan bernuansa kayu jati, gapura janur kuning, dan busana adat Jawa klasik dengan blangkon &amp; sanggul.
           </p>
         </div>
-        <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
+        <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #c59b27 0%, #8b2635 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
           Buka Demo Tema Jawa
         </a>
       </div>
@@ -220,6 +232,38 @@
         </div>
         <a href="{% url 'undangan:beranda_tropis' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #4da43a 0%, #9c6a38 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
           Buka Demo Tema Tropis
+        </a>
+      </div>
+
+      <!-- Tema 4 Card -->
+      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(245, 190, 56, .45); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
+            <img src="{% aset 'img/preview_desa.png' %}" alt="Tema 4: Desa Asri Parahyangan (Gaya Stardew Valley)" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+          </div>
+          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🌾 Tema 4: Desa Asri Parahyangan</h3>
+          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
+            Gaya Stardew Valley bertema pedesaan Sunda: saung gazebo rustic, sawah terasering, kebun sayur gembur, hewan ternak, dan jam kalender Stardew.
+          </p>
+        </div>
+        <a href="{% url 'undangan:beranda_desa' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #df9b4b 0%, #3b6b21 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
+          Buka Demo Tema Desa
+        </a>
+      </div>
+
+      <!-- Tema 5 Card -->
+      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(212, 175, 55, .5); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
+            <img src="{% aset 'img/preview_gedung.png' %}" alt="Tema 5: Grand Ballroom Gedung Mewah" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+          </div>
+          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🏛️ Tema 5: Grand Ballroom Gedung Mewah</h3>
+          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
+            Sensasi tiba di drop-off plaza luar gedung di atas karpet merah, melangkah menembus grand entrance, dan menikmati pesta indoor Grand Ballroom megah berlampu chandelier emas.
+          </p>
+        </div>
+        <a href="{% url 'undangan:beranda_gedung' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #d4af37 0%, #18223a 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
+          Buka Demo Grand Ballroom
         </a>
       </div>
     </div>
@@ -260,6 +304,14 @@
       <div class="pixel-item">
         <img src="{% aset 'game/pengantin_pria.png' %}" alt="Pengantin Pria">
         <span>Mempelai</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% aset 'game_desa/saung_lumbung.png' %}" alt="Saung Lumbung">
+        <span>Saung Padi</span>
+      </div>
+      <div class="pixel-item">
+        <img src="{% aset 'game_desa/hadiah.png' %}" alt="Peti Kayu">
+        <span>Peti Hadiah</span>
       </div>
     </div>
   </div>

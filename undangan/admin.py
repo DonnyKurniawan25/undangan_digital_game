@@ -6,10 +6,38 @@ from .models import Acara, FotoGaleri, Pengantin, Pengaturan, Rekening, Tamu, Uc
 
 @admin.register(Pengaturan)
 class PengaturanAdmin(admin.ModelAdmin):
-    list_display = ["judul", "tema", "hashtag"]
+    list_display = ["judul", "tema", "hashtag", "status_musik"]
+    fieldsets = [
+        ("Tampilan & Informasi Utama", {
+            "fields": ["judul", "tema", "hashtag"]
+        }),
+        ("Musik Latar Undangan (Semua Template)", {
+            "fields": ["musik", "pratinjau_audio"],
+            "description": "Unggah file musik (.mp3 atau .wav). Musik ini akan diputar otomatis di SEMUA template setelah tamu membuka undangan. Jika kosong, sistem otomatis memakai musik santai pedesaan bawaan."
+        }),
+        ("Kutipan / Doa & Catatan", {
+            "fields": ["quote", "sumber_quote", "catatan_penutup"]
+        }),
+    ]
+    readonly_fields = ["pratinjau_audio"]
 
     def has_add_permission(self, request):
         return not Pengaturan.objects.exists()
+
+    @admin.display(description="Status Musik")
+    def status_musik(self, obj):
+        if obj.musik:
+            return format_html('<span style="color:#2b8a3e;font-weight:bold;">✓ Musik Kustom</span>')
+        return format_html('<span style="color:#b87418;">♫ Musik Bawaan (Default)</span>')
+
+    @admin.display(description="Dengarkan Musik Saat Ini")
+    def pratinjau_audio(self, obj):
+        url = obj.musik.url if obj.musik else "/static/musik/desa_asri.wav"
+        label = f"File Terpasang: {obj.musik.name}" if obj.musik else "Musik Bawaan: static/musik/desa_asri.wav"
+        return format_html(
+            '<div style="margin-top:6px;"><p style="margin:0 0 6px;color:#555;"><b>{}</b></p><audio controls src="{}" style="height:36px;"></audio></div>',
+            label, url
+        )
 
 
 @admin.register(Pengantin)

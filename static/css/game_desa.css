@@ -1,0 +1,945 @@
+@charset "UTF-8";
+/* ==========================================================================
+   Tema 4 — Desa Asri Parahyangan (Gaya Stardew Valley Edition)
+   Palet: Kayu Madu Hangat, Perkamen Krem, Hijau Lembah Asri, Emas Panen, Marun.
+   ========================================================================== */
+
+:root {
+  /* Palet Khas Stardew Valley */
+  --kayu-bingkai-luar: #4a2912;
+  --kayu-bingkai-tengah: #874e1d;
+  --kayu-bingkai-dalam: #c6833b;
+  --kayu-terang: #e8a956;
+  --perkamen: #fbf3df;
+  --perkamen-gelap: #f2e2c2;
+  --tinta-kayu: #3e2412;
+  --tinta-lembut: #6e4e37;
+  --hijau-lembah: #5c9e38;
+  --hijau-tua: #3b6b21;
+  --emas-stardew: #f5be38;
+  --emas-gelap: #b88318;
+  --marun: #962828;
+  --garis-kayu: #d6984e;
+  --bayang-stardew: 0 10px 30px rgba(40, 22, 10, 0.45);
+  --pixel-border: 4px solid var(--kayu-bingkai-luar);
+  --font-desa: "Nunito", system-ui, -apple-system, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --aman-bawah: env(safe-area-inset-bottom, 0px);
+  --aman-atas: env(safe-area-inset-top, 0px);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #203816;
+  color: var(--tinta-kayu);
+  font-family: var(--font-desa);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+img { max-width: 100%; display: block; }
+
+/* ============================ Layar Sampul ============================ */
+#sampul {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px 20px calc(24px + var(--aman-bawah));
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 248, 220, 0.65), transparent 60%),
+    linear-gradient(175deg, #a8df8e 0%, #68b958 45%, #3d7d32 100%);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  overflow-y: auto;
+}
+
+#sampul.tersembunyi {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.hias-sampul {
+  position: absolute;
+  inset: 16px;
+  border: 4px solid var(--kayu-bingkai-tengah);
+  border-radius: 20px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 3px var(--kayu-terang), 0 0 30px rgba(0, 0, 0, 0.15);
+}
+
+.sampul-isi {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  margin: auto;
+  padding: 20px 10px;
+}
+
+.lencana-stardew {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--kayu-bingkai-luar);
+  color: var(--emas-stardew);
+  border: 2px solid var(--kayu-terang);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.pra-judul {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--kayu-bingkai-luar);
+}
+
+.nama-pasangan {
+  margin: 0 0 8px;
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 8vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--tinta-kayu);
+  text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.7);
+}
+
+.nama-pasangan span {
+  display: inline-block;
+  color: var(--marun);
+  font-style: italic;
+  margin: 0 4px;
+}
+
+.tanggal-sampul {
+  margin: 0 0 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--tinta-lembut);
+}
+
+/* Kotak Nama Tamu ala Surat Stardew */
+.kartu-tamu {
+  margin: 0 auto 20px;
+  padding: 12px 18px;
+  background: var(--perkamen);
+  border: 3px solid var(--kayu-bingkai-luar);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(40, 22, 10, 0.2), inset 0 0 0 2px var(--kayu-terang);
+}
+
+.label-tamu {
+  margin: 0 0 3px;
+  font-size: 0.76rem;
+  color: var(--tinta-lembut);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nama-tamu {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--tinta-kayu);
+}
+
+/* Pemilih Karakter */
+.pemilih-karakter {
+  margin-bottom: 22px;
+}
+
+.label-pilih {
+  margin: 0 0 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--tinta-kayu);
+}
+
+.daftar-karakter {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.karakter-opsi {
+  background: var(--perkamen);
+  border: 3px solid var(--kayu-bingkai-tengah);
+  border-radius: 14px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--tinta-kayu);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.karakter-opsi:hover {
+  transform: translateY(-2px);
+  border-color: var(--kayu-terang);
+}
+
+.karakter-opsi.dipilih {
+  border-color: var(--marun);
+  background: #fff8e8;
+  box-shadow: 0 6px 16px rgba(150, 40, 40, 0.35), inset 0 0 0 2px var(--emas-stardew);
+  transform: translateY(-3px) scale(1.03);
+}
+
+.pratinjau {
+  display: block;
+  width: 54px;
+  height: 90px;
+  background-position: 0 0;
+  background-size: 216px 360px; /* 4 frame x 4 arah dari 48x80 */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Tombol Buka Undangan Kayu Stardew */
+.tombol-utama {
+  appearance: none;
+  border: 3px solid var(--kayu-bingkai-luar);
+  background: linear-gradient(180deg, #df9b4b 0%, #b86c25 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.12rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 14px 34px;
+  border-radius: 14px;
+  box-shadow: 0 6px 0px var(--kayu-bingkai-luar), 0 10px 20px rgba(0,0,0,0.3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.tombol-utama:hover {
+  background: linear-gradient(180deg, #eaa757 0%, #c4762c 100%);
+}
+
+.tombol-utama:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0px var(--kayu-bingkai-luar), 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.petunjuk-sampul {
+  margin: 14px 0 0;
+  font-size: 0.8rem;
+  color: var(--tinta-kayu);
+  opacity: 0.88;
+}
+
+/* ============================== Permainan Canvas ============================== */
+#permainan {
+  position: fixed;
+  inset: 0;
+  background: #1c3514;
+}
+
+#kanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.tirai {
+  position: absolute;
+  inset: 0;
+  background: #1c3514;
+  color: #f7ecd5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.tirai.selesai {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.teks-muat {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.bar-muat {
+  width: 200px;
+  height: 14px;
+  background: #342014;
+  border: 2px solid var(--kayu-terang);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.bar-muat span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #74c74a, #f7ce46);
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+/* ========================= Stardew Valley HUD ========================= */
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 14px calc(12px + var(--aman-atas));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.hud-kiri {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hud-judul {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 3px rgba(0,0,0,0.8);
+}
+
+.chip-lokasi {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 10px;
+  background: var(--kayu-bingkai-luar);
+  color: var(--emas-stardew);
+  border: 2px solid var(--kayu-terang);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.hud-kanan {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* Stardew Clock & Calendar Widget */
+.stardew-jam-widget {
+  background: var(--perkamen);
+  border: 3px solid var(--kayu-bingkai-luar);
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.4), inset 0 0 0 2px var(--kayu-terang);
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+}
+
+.jam-baris-musim {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--marun);
+  text-transform: uppercase;
+}
+
+.jam-angka {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--tinta-kayu);
+  letter-spacing: 0.04em;
+}
+
+.jam-koin-doa {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--emas-gelap);
+  background: #f7e8cb;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--kayu-terang);
+  margin-top: 3px;
+}
+
+.baris-tombol {
+  display: flex;
+  gap: 8px;
+}
+
+.tombol-bulat {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 3px solid var(--kayu-bingkai-luar);
+  background: linear-gradient(180deg, #e8a956 0%, #b86c25 100%);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 0px var(--kayu-bingkai-luar), 0 6px 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s ease;
+}
+
+.tombol-bulat:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0px var(--kayu-bingkai-luar);
+}
+
+.tombol-bulat svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+/* ====================== Kontrol Joystick Analog (Desktop & HP) ====================== */
+#kontrol {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+}
+
+#zona-analog {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 180px;
+  height: 180px;
+  pointer-events: auto;
+}
+
+#analog-alas {
+  position: absolute;
+  left: 28px;
+  bottom: calc(28px + var(--aman-bawah));
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(94, 52, 24, 0.88) 0%, rgba(46, 26, 12, 0.96) 100%);
+  border: 3px solid var(--kayu-terang);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+  opacity: 0.92;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+#analog-alas:hover {
+  opacity: 1;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(247, 206, 70, 0.3);
+}
+
+#analog-alas:active, #analog-alas.aktif {
+  cursor: grabbing;
+  opacity: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.analog-cincin-luar {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px dashed rgba(247, 206, 70, 0.45);
+  pointer-events: none;
+}
+
+#analog-pentol {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  margin-top: -24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e8a652, #8b4a1b 78%, #52270a);
+  border: 2px solid #ffd678;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+/* Toast Notifikasi */
+.toast-desa {
+  position: fixed;
+  top: calc(76px + var(--aman-atas));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--kayu-bingkai-luar);
+  color: var(--emas-stardew);
+  border: 2px solid var(--kayu-terang);
+  border-radius: 999px;
+  padding: 8px 22px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  z-index: 40;
+  pointer-events: none;
+  animation: fadeInDown 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+/* Denah Desa Modal */
+.catatan-peta {
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--tinta-lembut);
+  margin-top: -6px;
+  margin-bottom: 12px;
+}
+
+.wadah-peta-besar {
+  width: 100%;
+  height: 200px;
+  background: #1c3514;
+  border: 3px solid var(--kayu-bingkai-luar);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 16px rgba(0,0,0,0.6);
+  margin-bottom: 14px;
+}
+
+#kanvas-peta-desa {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+
+.daftar-tujuan-desa {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  max-height: 230px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+@media (min-width: 580px) {
+  .daftar-tujuan-desa {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kartu-tujuan-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #fff8e8;
+  border: 2px solid var(--kayu-terang);
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.kartu-tujuan-item:hover {
+  background: #fffdf6;
+  border-color: var(--emas-stardew);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+}
+
+.kartu-tujuan-item:active {
+  transform: translateY(1px);
+}
+
+.tujuan-ikon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.tujuan-teks {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tujuan-teks b {
+  font-size: 0.85rem;
+  color: var(--tinta-kayu);
+}
+
+.tujuan-teks span {
+  font-size: 0.72rem;
+  color: var(--tinta-lembut);
+}
+
+.panah-jalan {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--marun);
+  background: #ffe8e4;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+#tombol-aksi {
+  position: absolute;
+  right: 20px;
+  bottom: calc(24px + var(--aman-bawah));
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  border: 4px solid var(--kayu-bingkai-luar);
+  background: linear-gradient(180deg, #f5be38 0%, #c48018 100%);
+  color: #3e2412;
+  font-family: inherit;
+  font-size: 1.6rem;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 5px 0px var(--kayu-bingkai-luar), 0 8px 18px rgba(0,0,0,0.4);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.1s ease;
+}
+
+#tombol-aksi:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0px var(--kayu-bingkai-luar);
+}
+
+/* ==================== Stardew Valley Dialog Box (Popup) ==================== */
+#tirai-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px 16px calc(20px + var(--aman-bawah));
+  background: rgba(20, 14, 10, 0.7);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+#tirai-popup[hidden] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.popup {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: min(84vh, 640px);
+  overflow-y: auto;
+  background: var(--perkamen);
+  border: 6px solid var(--kayu-bingkai-luar);
+  border-radius: 18px;
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.6),
+    inset 0 0 0 3px var(--kayu-terang),
+    inset 0 0 0 6px var(--kayu-bingkai-tengah);
+  padding: 24px 22px;
+  color: var(--tinta-kayu);
+}
+
+.popup[hidden] {
+  display: none !important;
+}
+
+.tombol-tutup {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 2px solid var(--kayu-bingkai-luar);
+  background: #d64545;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 900;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0px var(--kayu-bingkai-luar);
+}
+
+.tombol-tutup:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0px var(--kayu-bingkai-luar);
+}
+
+.judul-popup {
+  margin: 0 0 16px;
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--tinta-kayu);
+  text-align: center;
+  border-bottom: 2px dashed var(--garis-kayu);
+  padding-bottom: 10px;
+}
+
+/* Dialog Portrait Box ala Stardew */
+.stardew-avatar-box {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: #f4e6c8;
+  border: 3px solid var(--kayu-bingkai-luar);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.avatar-frame {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  border: 2px solid var(--kayu-bingkai-tengah);
+  overflow: hidden;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.avatar-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-info h3 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  color: var(--tinta-kayu);
+}
+
+.avatar-info p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--tinta-lembut);
+  line-height: 1.4;
+}
+
+/* Quest / Notice Board styling for Acara */
+.kartu-acara-stardew {
+  background: #fffdf6;
+  border: 2px solid var(--kayu-bingkai-tengah);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.acara-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--hijau-lembah);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: 6px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.acara-nama {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--tinta-kayu);
+}
+
+.acara-waktu, .acara-tempat {
+  margin: 2px 0;
+  font-size: 0.86rem;
+  color: var(--tinta-lembut);
+}
+
+.tombol-maps {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--kayu-bingkai-luar);
+  color: var(--emas-stardew);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+/* Galeri Foto Clothesline */
+.galeri-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.galeri-item {
+  background: #fff;
+  border: 2px solid var(--kayu-bingkai-luar);
+  border-radius: 8px;
+  padding: 6px 6px 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.galeri-item:hover {
+  transform: scale(1.04) rotate(-1deg);
+}
+
+.galeri-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Form Buku Tamu & RSVP */
+.form-grup {
+  margin-bottom: 12px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--tinta-kayu);
+}
+
+.input-desa, .textarea-desa, .select-desa {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--kayu-bingkai-tengah);
+  border-radius: 10px;
+  background: #fffdf8;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--tinta-kayu);
+}
+
+.input-desa:focus, .textarea-desa:focus, .select-desa:focus {
+  outline: none;
+  border-color: var(--marun);
+  box-shadow: 0 0 0 3px rgba(150, 40, 40, 0.2);
+}
+
+.tombol-kirim-desa {
+  width: 100%;
+  padding: 12px;
+  border: 3px solid var(--kayu-bingkai-luar);
+  background: linear-gradient(180deg, #5c9e38 0%, #3b6b21 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 0px var(--kayu-bingkai-luar);
+  margin-top: 6px;
+}
+
+.tombol-kirim-desa:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0px var(--kayu-bingkai-luar);
+}
+
+/* Shipping Box Hadiah / Rekening */
+.kartu-rekening-stardew {
+  background: #fff8e8;
+  border: 2px solid var(--kayu-bingkai-tengah);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.nomor-rekening {
+  font-family: monospace;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--marun);
+  letter-spacing: 0.08em;
+  margin: 6px 0;
+}
+
+.tombol-salin {
+  padding: 6px 14px;
+  background: var(--kayu-bingkai-luar);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Peta Penuh / Denah Modal */
+#modal-peta {
+  text-align: center;
+}
+
+#kanvas-peta-besar {
+  border: 3px solid var(--kayu-bingkai-luar);
+  border-radius: 12px;
+  max-width: 100%;
+  cursor: pointer;
+}

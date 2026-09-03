@@ -9,10 +9,14 @@ class Pengaturan(models.Model):
     TEMA_KLASIK = "klasik"
     TEMA_TROPIS = "tropis"
     TEMA_LOMBOK = "lombok"
+    TEMA_DESA = "desa"
+    TEMA_GEDUNG = "gedung"
     TEMA = [
         (TEMA_KLASIK, "Taman Pixel Jawa - tampak atas"),
         (TEMA_TROPIS, "Taman Tropis - isometrik"),
         (TEMA_LOMBOK, "Pantai Lombok Sasak Wedding"),
+        (TEMA_DESA, "Desa Asri Parahyangan - Gaya Stardew Valley"),
+        (TEMA_GEDUNG, "Grand Ballroom Gedung Mewah - Modern Indoor-Outdoor"),
     ]
 
     tema = models.CharField(

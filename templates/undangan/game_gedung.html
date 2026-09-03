@@ -1,0 +1,363 @@
+{% load static aset %}<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1d">
+<title>{% if pria and wanita %}{{ pria.nama_panggilan }} &amp; {{ wanita.nama_panggilan }} — Grand Ballroom Gedung Mewah{% else %}{{ pengaturan.judul }} — Grand Ballroom{% endif %}</title>
+<meta name="description" content="Undangan pernikahan interaktif bertema Grand Ballroom Gedung Mewah modern. Rasakan pengalaman tiba di plaza luar gedung dan melangkah masuk ke dalam ballroom megah.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% aset 'css/game_gedung.css' %}">
+</head>
+<body>
+
+<!-- ================= 1. LAYAR SAMPUL LUXURY BALLROOM ================= -->
+<section id="sampul">
+  <div class="kartu-sampul">
+    <div class="lencana-sampul">
+      <span>🏛️</span> Grand Ballroom Edition <span>🏛️</span>
+    </div>
+    <p class="sapaan-sampul">The Wedding Celebration of</p>
+    <h1 class="judul-mempelai">
+      {{ pria.nama_panggilan|default:"Budi" }}
+      <span style="color:var(--emas-terang);">&amp;</span>
+      {{ wanita.nama_panggilan|default:"Rina" }}
+    </h1>
+
+    <div class="pembatas-elegan">
+      <span>⚜️</span>
+    </div>
+
+    {% if acara_utama %}
+      <p class="subjudul-sampul">{{ acara_utama.waktu_mulai|date:"l, j F Y" }} &bull; Grand Ballroom Hotel</p>
+    {% endif %}
+
+    {% if tamu %}
+      <div style="margin-bottom: 14px;">
+        <p class="sapaan-sampul">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+        <p class="nama-tamu">{{ tamu.sapaan_lengkap }}</p>
+        {% if tamu.jumlah_undangan > 1 %}
+          <p class="sapaan-sampul" style="font-size: 0.78rem;">beserta keluarga ({{ tamu.jumlah_undangan }} tamu)</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="pemilih-karakter">
+      <p class="label-pemilih">Pilih Busana Tamu Anda</p>
+      <div class="opsi-baris">
+        <button type="button" class="karakter-opsi dipilih" data-karakter="pria" aria-pressed="true">
+          <div class="preview-avatar">🤵</div>
+          <span>Jas Tuxedo</span>
+        </button>
+        <button type="button" class="karakter-opsi" data-karakter="wanita" aria-pressed="false">
+          <div class="preview-avatar">💃</div>
+          <span>Gaun Malam</span>
+        </button>
+      </div>
+    </div>
+
+    <button type="button" id="tombol-buka" class="tombol-buka-undangan">
+      <span>✨</span> BUKA UNDANGAN <span>✨</span>
+    </button>
+    <p class="petunjuk-sampul">Anda akan tiba di area luar gedung di atas karpet merah. Melangkahlah ke pintu masuk untuk melihat isi Grand Ballroom!</p>
+  </div>
+</section>
+
+<!-- ================= 2. PERMAINAN KANVAS 2D ================= -->
+<main id="permainan" aria-hidden="true">
+  <canvas id="kanvas"></canvas>
+
+  <div id="memuat" class="tirai">
+    <p class="teks-muat">Menyiapkan Grand Ballroom Gedung Mewah…</p>
+    <div class="bar-muat"><span id="isi-muat"></span></div>
+  </div>
+
+  <!-- HUD STATUS -->
+  <header id="hud">
+    <div class="hud-kiri">
+      <h2 class="hud-judul">{{ pria.nama_panggilan|default:"Budi" }} &amp; {{ wanita.nama_panggilan|default:"Rina" }}</h2>
+      <p class="chip-zona" id="chip-zona-indikator">
+        <span>🏛️</span> LOBBY PLAZA LUAR
+      </p>
+    </div>
+
+    <div class="hud-kanan">
+      <div class="widget-jam-ballroom">
+        <span class="jam-musim">Grand Ballroom</span>
+        <span class="jam-tanggal">Pukul 19.00 WIB</span>
+        <span class="jam-lokasi-count">Kunjungan: <b id="hud-kemajuan-angka" style="color:var(--emas-terang);">0/5</b></span>
+      </div>
+
+      <div class="baris-tombol">
+        <button type="button" id="tombol-peta" class="tombol-bulat" aria-label="Denah Gedung" title="Denah Gedung">
+          <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+        </button>
+        <button type="button" id="tombol-musik" class="tombol-bulat" aria-label="Musik" title="Putar / Jeda Musik">
+          <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </button>
+        <button type="button" id="tombol-petunjuk" class="tombol-bulat" aria-label="Petunjuk" title="Petunjuk">
+          <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- KONTROL VIRTUAL JOYSTICK ANALOG -->
+  <div id="kontrol">
+    <div id="zona-analog">
+      <div id="analog-alas">
+        <div class="analog-cincin-luar"></div>
+        <div id="analog-pentol"></div>
+      </div>
+    </div>
+    <button type="button" id="tombol-aksi" aria-label="Aksi Interaksi">!</button>
+  </div>
+
+  <!-- TOAST NOTIFIKASI -->
+  <div id="toast-notifikasi" class="toast-desa" hidden>
+    <span style="font-size:1.1rem;">✨</span>
+    <span id="teks-toast">Selamat Datang di Grand Ballroom!</span>
+  </div>
+</main>
+
+<!-- ================= 3. MODAL POPUP DIALOG BALLROOM ================= -->
+<div id="tirai-popup" hidden>
+  <!-- 1. Popup Pelaminan Grand Ballroom -->
+  <section class="popup" id="popup-pengantin" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Pelaminan Grand Ballroom</h2>
+
+    {% if pria %}
+      <div class="kartu-mempelai-ballroom">
+        <div class="avatar-frame">
+          {% if pria.foto %}
+            <img src="{{ pria.foto.url }}" alt="{{ pria.nama_lengkap }}">
+          {% else %}
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2rem;">🤵</div>
+          {% endif %}
+        </div>
+        <div class="mempelai-detail">
+          <h3>{{ pria.nama_lengkap }}</h3>
+          <p>Putra dari Bapak {{ pria.nama_ayah }} &amp; Ibu {{ pria.nama_ibu }}</p>
+          {% if pria.instagram %}
+            <p><a href="https://instagram.com/{{ pria.instagram }}" target="_blank" style="color:var(--marun-beludru);font-weight:700;">@{{ pria.instagram }}</a></p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if wanita %}
+      <div class="kartu-mempelai-ballroom">
+        <div class="avatar-frame">
+          {% if wanita.foto %}
+            <img src="{{ wanita.foto.url }}" alt="{{ wanita.nama_lengkap }}">
+          {% else %}
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2rem;">👰</div>
+          {% endif %}
+        </div>
+        <div class="mempelai-detail">
+          <h3>{{ wanita.nama_lengkap }}</h3>
+          <p>Putri dari Bapak {{ wanita.nama_ayah }} &amp; Ibu {{ wanita.nama_ibu }}</p>
+          {% if wanita.instagram %}
+            <p><a href="https://instagram.com/{{ wanita.instagram }}" target="_blank" style="color:var(--marun-beludru);font-weight:700;">@{{ wanita.instagram }}</a></p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- 2. Popup Papan LED Rangkaian Acara -->
+  <section class="popup" id="popup-acara" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Rangkaian Acara</h2>
+
+    {% for a in acara_list %}
+      <div class="kartu-acara-ballroom">
+        <span class="acara-badge">AGENDA RESMI</span>
+        <h3 class="acara-nama">{{ a.nama }}</h3>
+        <p class="acara-info"><b>Waktu:</b> {{ a.waktu_mulai|date:"l, j F Y" }} &bull; {{ a.waktu_mulai|date:"H:i" }} WIB</p>
+        <p class="acara-info"><b>Tempat:</b> {{ a.tempat }}</p>
+        {% if a.alamat %}
+          <p class="acara-info" style="font-size:0.78rem;">{{ a.alamat }}</p>
+        {% endif %}
+        {% if a.google_maps_url %}
+          <a href="{{ a.google_maps_url }}" target="_blank" class="tombol-maps">
+            <span>📍</span> Buka Google Maps
+          </a>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p style="text-align:center;color:var(--tinta-lembut);">Belum ada jadwal acara.</p>
+    {% endfor %}
+  </section>
+
+  <!-- 3. Popup Galeri Dinding Emas -->
+  <section class="popup" id="popup-galeri" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Galeri Foto Prewedding</h2>
+    <div class="galeri-grid">
+      {% for f in galeri %}
+        <div class="galeri-item">
+          <img src="{{ f.gambar.url }}" alt="{{ f.judul|default:'Momen Bahagia' }}">
+        </div>
+      {% empty %}
+        <p style="text-align:center;color:var(--tinta-lembut);grid-column:1/-1;">Belum ada foto galeri.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- 4. Popup Meja Resepsionis & RSVP -->
+  <section class="popup" id="popup-ucapan" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Buku Tamu Digital &amp; RSVP</h2>
+    <form id="form-ucapan">
+      {% csrf_token %}
+      <div class="form-grup">
+        <label class="form-label" for="input-nama">Nama Anda</label>
+        <input type="text" id="input-nama" class="input-ballroom" required value="{{ tamu.nama|default:'' }}">
+      </div>
+      <div class="form-grup">
+        <label class="form-label" for="input-kehadiran">Konfirmasi Kehadiran</label>
+        <select id="input-kehadiran" class="select-ballroom">
+          <option value="hadir">Pasti Hadir</option>
+          <option value="ragu">Masih Ragu</option>
+          <option value="tidak_hadir">Maaf, Tidak Bisa Hadir</option>
+        </select>
+      </div>
+      <div class="form-grup">
+        <label class="form-label" for="input-jumlah">Jumlah Tamu yang Hadir</label>
+        <input type="number" id="input-jumlah" class="input-ballroom" min="1" max="10" value="1">
+      </div>
+      <div class="form-grup">
+        <label class="form-label" for="input-pesan">Ucapan &amp; Doa Restu</label>
+        <textarea id="input-pesan" class="textarea-ballroom" rows="3" required placeholder="Tuliskan doa restu untuk kedua mempelai..."></textarea>
+      </div>
+      <button type="submit" class="tombol-kirim-ballroom">Kirim Doa Restu &amp; Konfirmasi</button>
+    </form>
+  </section>
+
+  <!-- 5. Popup Kotak Hadiah Akrilik -->
+  <section class="popup" id="popup-hadiah" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Tanda Kasih &amp; Hadiah</h2>
+    <p style="text-align:center;font-size:0.84rem;color:var(--tinta-lembut);margin-top:-8px;margin-bottom:14px;">Doa restu Anda adalah karunia terindah bagi kami. Jika ingin memberikan tanda kasih secara cashless:</p>
+
+    {% for r in rekening_list %}
+      <div class="kartu-rekening-ballroom">
+        <b style="color:#121828;font-size:0.95rem;">{{ r.nama_bank }}</b>
+        <div class="nomor-rekening">{{ r.nomor_rekening }}</div>
+        <p style="margin:2px 0 8px;font-size:0.8rem;color:var(--tinta-lembut);">a.n. {{ r.atas_nama }}</p>
+        <button type="button" class="tombol-salin" data-salin="{{ r.nomor_rekening }}">Salin Nomor Rekening</button>
+      </div>
+    {% empty %}
+      <p style="text-align:center;color:var(--tinta-lembut);">Informasi rekening belum tersedia.</p>
+    {% endfor %}
+  </section>
+
+  <!-- 6. Popup Denah Gedung & Navigasi -->
+  <section class="popup" id="popup-peta" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Denah Grand Ballroom</h2>
+    <p class="catatan-peta">Klik tujuan pada denah atau daftar di bawah untuk berjalan otomatis!</p>
+
+    <div class="wadah-peta-besar">
+      <canvas id="kanvas-peta-gedung"></canvas>
+    </div>
+
+    <div class="daftar-tujuan-gedung">
+      <button type="button" class="kartu-tujuan-item" data-pergi="pengantin">
+        <div class="tujuan-ikon">👑</div>
+        <div class="tujuan-teks">
+          <b>1. Pelaminan Mempelai</b>
+          <span>Sofa Utama &amp; Pengantin</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="acara">
+        <div class="tujuan-ikon">📜</div>
+        <div class="tujuan-teks">
+          <b>2. Papan LED Acara</b>
+          <span>Jadwal Akad, Resepsi &amp; Maps</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="galeri">
+        <div class="tujuan-ikon">📷</div>
+        <div class="tujuan-teks">
+          <b>3. Dinding Galeri Emas</b>
+          <span>Foto-foto Prewedding</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="ucapan">
+        <div class="tujuan-ikon">🍱</div>
+        <div class="tujuan-teks">
+          <b>4. Meja Resepsionis &amp; RSVP</b>
+          <span>Buku Tamu Digital &amp; Doa</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+
+      <button type="button" class="kartu-tujuan-item" data-pergi="hadiah">
+        <div class="tujuan-ikon">🎁</div>
+        <div class="tujuan-teks">
+          <b>5. Kotak Hadiah Akrilik</b>
+          <span>Amplop Digital &amp; QRIS</span>
+        </div>
+        <span class="panah-jalan">Jalan ➔</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 7. Petunjuk Bermain -->
+  <section class="popup" id="popup-petunjuk" hidden>
+    <button class="tombol-tutup" data-tutup aria-label="Tutup">&times;</button>
+    <h2 class="judul-popup">Petunjuk Undangan</h2>
+    <ul style="padding-left:20px;font-size:0.88rem;line-height:1.6;color:var(--tinta-gelap);">
+      <li><b>Suasana Luar &amp; Pintu Masuk Gedung</b> — Saat membuka undangan, Anda pertama kali tiba di <b>area luar gedung</b> (Lobby Drop-off Plaza) di atas karpet merah persis di depan pintu masuk.</li>
+      <li><b>Melangkah Masuk ke Grand Ballroom</b> — Cukup jalankan karakter Anda menembus pintu masuk kaca berkanopi emas ke arah atas, dan seluruh kemewahan interior <b>Grand Ballroom akan langsung tersingkap</b>!</li>
+      <li><b>Klik Langsung ke Lokasi</b> — Anda bisa langsung <b>mengklik / mengetuk objek atau label lokasi</b> di layar untuk membukanya secara instan tanpa perlu menekan tombol seru di pojok! Jika posisi Anda masih jauh, karakter akan otomatis berjalan sendiri ke sana.</li>
+      <li><b>Kendali Gerak</b> — Geser joystick analog emas di kiri bawah layar (bisa sentuhan HP atau klik &amp; drag mouse komputer), atau gunakan tombol <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / panah.</li>
+      <li><b>Denah Gedung</b> — Buka menu denah (tombol peta di kanan atas) untuk melihat denah lantai dan memilih tujuan berjalan otomatis.</li>
+    </ul>
+  </section>
+</div>
+
+<!-- Pemutar Musik Latar (Otomatis & Terintegrasi) -->
+<audio id="musik" loop preload="auto" src="{{ musik_url }}"></audio>
+
+<script id="data-undangan" type="application/json">
+{
+  "slug": "{{ tamu.slug|default:'' }}",
+  "tamu_nama": "{{ tamu.nama|default:'' }}",
+  "pria_nama": "{{ pria.nama_panggilan|default:'Budi' }}",
+  "wanita_nama": "{{ wanita.nama_panggilan|default:'Rina' }}",
+  "aset": {
+    "tileset": "{% aset 'game_gedung/tileset.png' %}",
+    "pintu_gedung": "{% aset 'game_gedung/pintu_gedung.png' %}",
+    "pelaminan": "{% aset 'game_gedung/pelaminan.png' %}",
+    "pengantin_pria": "{% aset 'game_gedung/pengantin_pria.png' %}",
+    "pengantin_wanita": "{% aset 'game_gedung/pengantin_wanita.png' %}",
+    "papan": "{% aset 'game_gedung/papan.png' %}",
+    "galeri": "{% aset 'game_gedung/galeri.png' %}",
+    "buku_tamu": "{% aset 'game_gedung/buku_tamu.png' %}",
+    "hadiah": "{% aset 'game_gedung/hadiah.png' %}",
+    "mobil_pengantin": "{% aset 'game_gedung/mobil_pengantin.png' %}",
+    "grand_piano": "{% aset 'game_gedung/grand_piano.png' %}",
+    "kue_pengantin": "{% aset 'game_gedung/kue_pengantin.png' %}",
+    "meja_vip": "{% aset 'game_gedung/meja_vip.png' %}",
+    "kursi": "{% aset 'game_gedung/kursi.png' %}",
+    "pot_bunga": "{% aset 'game_gedung/pot_bunga.png' %}",
+    "karakter_pria": "{% aset 'game_gedung/karakter_pria.png' %}",
+    "karakter_wanita": "{% aset 'game_gedung/karakter_wanita.png' %}"
+  }
+}
+</script>
+<script src="{% aset 'js/game_gedung.js' %}"></script>
+</body>
+</html>

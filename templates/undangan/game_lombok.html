@@ -265,7 +265,7 @@
   <div id="lightbox" hidden><img alt=""><button class="tombol-tutup" data-tutup-lightbox aria-label="Tutup">&times;</button></div>
 </div>
 
-{% if pengaturan.musik %}<audio id="musik" loop preload="none" src="{{ pengaturan.musik.url }}"></audio>{% endif %}
+<audio id="musik" loop preload="auto" src="{{ musik_url }}"></audio>
 
 <script id="data-undangan" type="application/json">
 {
