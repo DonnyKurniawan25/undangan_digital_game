@@ -1,0 +1,287 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Aktivasi & Perpanjangan Undangan{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Aktivasi &amp; Perpanjangan Masa Aktif</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Pilih paket masa aktif website undangan Anda mulai dari <b>1 Bulan</b>, <b>6 Bulan</b>, hingga <b>1 Tahun</b>.
+    Bebas kustomisasi domain langsung (contoh: <code>jelajah.biz.id/rana&amp;cahyo</code>).
+  </p>
+</div>
+
+<!-- KARTU STATUS MASA AKTIF SAAT INI -->
+<div class="card" style="border-left: 4px solid {% if undangan.is_online_aktif %}#10b981{% elif undangan.is_masa_tenggang %}#f59e0b{% elif undangan.is_siap_dibersihkan %}#ef4444{% elif undangan.status_langganan == 'menunggu' %}#f59e0b{% else %}#ef4444{% endif %};">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div style="flex: 1; min-width: 260px;">
+      <span class="badge" style="background: {% if undangan.status_langganan == 'aktif' and undangan.is_online_aktif %}rgba(16, 185, 129, 0.15); color: var(--success);{% elif undangan.is_masa_tenggang %}rgba(245, 158, 11, 0.15); color: var(--gold);{% elif undangan.is_siap_dibersihkan %}rgba(239, 68, 68, 0.15); color: var(--danger);{% elif undangan.status_langganan == 'menunggu' %}rgba(245, 158, 11, 0.15); color: var(--gold);{% else %}rgba(59, 130, 246, 0.15); color: #3b82f6;{% endif %} margin-bottom: 8px;">
+        {{ undangan.status_label }}
+      </span>
+
+      <h2 style="font-size: 18px; font-weight: 700; color: var(--text); margin: 6px 0;">
+        {% if undangan.status_langganan == 'aktif' and undangan.is_online_aktif %}
+          🎉 Undangan Online Aktif hingga {{ undangan.aktif_berakhir|date:"d F Y, H:i" }} WIB
+        {% elif undangan.status_langganan == 'menunggu' %}
+          ⏳ Menunggu Verifikasi Pembayaran oleh Admin
+        {% elif undangan.is_masa_tenggang %}
+          ⚠️ Masa Aktif Berakhir — Masa Tenggang 1 Bulan (Sisa {{ undangan.sisa_hari_tenggang }} Hari)
+        {% elif undangan.is_siap_dibersihkan %}
+          🛑 Masa Tenggang 1 Bulan Habis (Data Siap Dibersihkan)
+        {% elif undangan.status_langganan == 'trial' and undangan.is_online_aktif %}
+          ⏱️ Masa Uji Coba Gratis 1 Hari (Sisa Waktu: {{ undangan.sisa_waktu_trial }})
+        {% else %}
+          ⚠️ Masa Aktif Berakhir
+        {% endif %}
+      </h2>
+
+      <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5;">
+        {% if undangan.is_online_aktif %}
+          Tamu undangan dapat mengakses dan memainkan game undangan di domain publik <code>{{ undangan.get_url_publik }}</code>.
+        {% elif undangan.is_masa_tenggang %}
+          Website undangan saat ini <b>offline</b> untuk tamu umum. Anda diberi kesempatan <b>1 bulan</b> hingga <b>{{ undangan.batas_tenggang_berakhir|date:"d F Y" }}</b> untuk memperpanjang.
+          Jika tidak diperpanjang dalam batas waktu tersebut, website dan seluruh file foto galeri akan dibersihkan permanen oleh superadmin dari server.
+        {% elif undangan.is_siap_dibersihkan %}
+          Batas waktu masa tenggang 1 bulan telah lewat. Website dan seluruh foto di server dapat dibersihkan permanen sewaktu-waktu oleh superadmin. Segera perpanjang untuk memulihkan website Anda!
+        {% else %}
+          Tamu yang mengakses tautan undangan akan melihat halaman pemberitahuan bahwa undangan sedang offline / menunggu aktivasi.
+        {% endif %}
+      </p>
+    </div>
+
+    {% if not undangan.is_online_aktif or undangan.status_langganan == 'trial' or undangan.is_masa_tenggang %}
+      <a href="#form-bayar" class="btn btn-primary" style="white-space: nowrap;">
+        ⚡ {% if undangan.is_masa_tenggang or undangan.is_siap_dibersihkan %}Perpanjang Sekarang{% else %}Aktivasi Undangan Sekarang{% endif %}
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- INFORMASI MASA TENGGANG 1 BULAN & KEBIJAKAN PEMBERSIHAN SERVER -->
+<div style="background: var(--card-inner); border-left: 4px solid var(--accent); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; border: 1px solid var(--border);">
+  <div style="display: flex; gap: 14px; align-items: flex-start;">
+    <div style="font-size: 24px; line-height: 1;">ℹ️</div>
+    <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+      <b style="color: var(--text);">Kebijakan Masa Aktif &amp; Pembersihan Server:</b><br>
+      &bull; <b>Fleksibilitas Masa Aktif:</b> Anda dapat memilih masa aktif 1 Bulan (30 hari), 6 Bulan (180 hari), atau 1 Tahun (365 hari).<br>
+      &bull; <b>Masa Tenggang 1 Bulan:</b> Ketika masa aktif berakhir, kami memberi waktu toleransi <b>selama 1 bulan (30 hari)</b> agar Anda memiliki kesempatan untuk memperpanjang.<br>
+      &bull; <b>Pembersihan Server Total:</b> Apabila dalam 1 bulan masa tenggang tidak ada perpanjangan, website beserta <b>seluruh foto galeri dan foto pengantin akan dibersihkan permanen</b> dari harddisk server oleh superadmin guna menjaga kestabilan dan kebersihan beban server.
+    </div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+  <!-- FORM KONFIRMASI PEMBAYARAN -->
+  <div class="card" id="form-bayar">
+    <div class="card-header">
+      <h2 class="card-title">💳 Formulir Aktivasi / Perpanjangan</h2>
+      <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--gold);">Pilihan 1 Bln, 6 Bln, 1 Thn</span>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" id="payment-form">
+      {% csrf_token %}
+
+      <!-- PILIHAN PAKET DURASI -->
+      <div class="form-group">
+        <label class="form-label" style="font-weight: 700; margin-bottom: 10px; display: block;">
+          Pilih Paket Masa Aktif Undangan
+        </label>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;" id="paket-container">
+          <!-- Paket 1 Bulan -->
+          <label class="paket-card" data-durasi="1" data-harga="30000" data-label="1 Bulan (30 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <input type="radio" name="durasi_bulan" value="1" checked style="accent-color: var(--accent); width: 18px; height: 18px;">
+              <div>
+                <b style="font-size: 14px; color: var(--text); display: block;">Paket 1 Bulan (30 Hari)</b>
+                <span style="font-size: 12px; color: var(--text-muted);">Standar online acara pernikahan</span>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 15px; font-weight: 800; color: var(--text);">Rp 30.000</span>
+            </div>
+          </label>
+
+          <!-- Paket 6 Bulan -->
+          <label class="paket-card" data-durasi="6" data-harga="150000" data-label="6 Bulan (180 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <input type="radio" name="durasi_bulan" value="6" style="accent-color: var(--accent); width: 18px; height: 18px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <b style="font-size: 14px; color: var(--text);">Paket 6 Bulan (180 Hari)</b>
+                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); font-size: 10px; padding: 2px 6px;">Hemat Rp 30rb</span>
+                </div>
+                <span style="font-size: 12px; color: var(--text-muted);">Cocok untuk persiapan jauh-jauh hari</span>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 15px; font-weight: 800; color: var(--text);">Rp 150.000</span>
+            </div>
+          </label>
+
+          <!-- Paket 1 Tahun -->
+          <label class="paket-card" data-durasi="12" data-harga="250000" data-label="1 Tahun (365 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <input type="radio" name="durasi_bulan" value="12" style="accent-color: var(--accent); width: 18px; height: 18px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <b style="font-size: 14px; color: var(--text);">Paket 1 Tahun (365 Hari)</b>
+                  <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--gold); font-size: 10px; padding: 2px 6px;">Paling Hemat 🔥</span>
+                </div>
+                <span style="font-size: 12px; color: var(--text-muted);">Kenang-kenangan online satu tahun penuh (Diskon Rp 110rb)</span>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 15px; font-weight: 800; color: var(--text);">Rp 250.000</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- PETUNJUK TRANSFER DINAMIS -->
+      <div style="padding: 16px; background: var(--card-inner); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;">
+        <b style="font-size: 13.5px; color: var(--text); display: block; margin-bottom: 8px;">
+          📌 Rekening Resmi Pembayaran:
+        </b>
+        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+          &bull; <b>Bank BCA:</b> <code>1234-5678-90</code> a.n. <b>Admin Undangan Digital</b><br>
+          &bull; <b>Bank Mandiri:</b> <code>137-00-1234567-8</code> a.n. <b>Admin Undangan Digital</b><br>
+          &bull; <b>QRIS / GoPay / OVO:</b> Scan QRIS di halaman depan atau transfer antar bank.
+        </div>
+        <div style="margin-top: 12px; padding: 10px 12px; background: rgba(245, 158, 11, 0.1); border: 1px dashed var(--accent); border-radius: 8px; font-size: 13px; color: var(--text);">
+          Nominal Transfer Tepat: <b style="font-size: 16px; color: var(--accent);" id="display-nominal">Rp 30.000</b>
+          <span style="display: block; font-size: 11.5px; color: var(--text-muted); margin-top: 2px;" id="display-keterangan">Untuk aktivasi masa aktif 1 Bulan (30 Hari)</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Metode Pembayaran yang Digunakan</label>
+        <select name="metode" class="form-select">
+          <option value="Transfer BCA">Transfer Bank BCA</option>
+          <option value="Transfer Mandiri">Transfer Bank Mandiri</option>
+          <option value="Transfer BRI / BNI">Transfer Bank Lain (BRI/BNI/dll)</option>
+          <option value="QRIS / E-Wallet">QRIS / E-Wallet (GoPay, OVO, ShopeePay)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="bukti_bayar">Unggah Bukti Transfer / Struk (Foto/Screenshot)</label>
+        <input type="file" id="bukti_bayar" name="bukti_bayar" accept="image/*" class="form-input" required>
+        <div class="form-help">Format foto JPG, PNG, atau WebP. Maksimal 5MB.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="catatan">Nama Pengirim / Catatan (Opsional)</label>
+        <input type="text" id="catatan" name="catatan" class="form-input" placeholder="Contoh: Transfer dari rekening a.n. Budi">
+      </div>
+
+      <button type="submit" id="btn-submit-bayar" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px; font-size: 15px; padding: 12px;">
+        🚀 Kirim Bukti Pembayaran (Rp 30.000)
+      </button>
+    </form>
+  </div>
+
+  <!-- RIWAYAT TRANSAKSI -->
+  <div>
+    <div class="card-header" style="margin-bottom: 16px;">
+      <h2 class="card-title">📜 Riwayat Pembayaran &amp; Aktivasi</h2>
+    </div>
+
+    {% if riwayat_pembayaran %}
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        {% for p in riwayat_pembayaran %}
+          <div class="card" style="margin-bottom: 0; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div>
+                <b style="font-size: 16px; color: var(--text);">Rp {{ p.nominal|floatformat:"0" }}</b>
+                <span style="font-size: 12.5px; color: var(--text-muted); display: block; margin-top: 2px;">
+                  {{ p.metode }} &bull; <b style="color: var(--accent);">{{ p.label_durasi }}</b>
+                </span>
+              </div>
+
+              {% if p.status == 'disetujui' %}
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                  ✅ Lunas / Aktif
+                </span>
+              {% elif p.status == 'ditolak' %}
+                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">
+                  ❌ Ditolak
+                </span>
+              {% else %}
+                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--gold);">
+                  ⏳ Menunggu Verifikasi
+                </span>
+              {% endif %}
+            </div>
+
+            <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 6px;">
+              Diajukan: {{ p.dibuat|date:"d M Y, H:i" }} WIB
+              {% if p.catatan %}
+                <div style="margin-top: 4px; color: var(--text-muted); font-style: italic;">"{{ p.catatan }}"</div>
+              {% endif %}
+            </div>
+
+            {% if p.bukti_bayar %}
+              <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);">
+                <a href="{{ p.bukti_bayar.url }}" target="_blank" rel="noopener" style="font-size: 12px; color: var(--accent); font-weight: 600;">
+                  Lihat Foto Bukti Transfer &rarr;
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card" style="text-align: center; padding: 40px 20px;">
+        <span style="font-size: 36px; display: block; margin-bottom: 10px;">💳</span>
+        <b style="color: var(--text); font-size: 15px;">Belum Ada Riwayat Pembayaran</b>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 6px; line-height: 1.5;">
+          Pilih paket 1 Bulan, 6 Bulan, atau 1 Tahun untuk mengaktifkan website undangan pernikahan Anda secara resmi tanpa embel-embel trial.
+        </p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  (function() {
+    const cards = document.querySelectorAll('.paket-card');
+    const displayNominal = document.getElementById('display-nominal');
+    const displayKeterangan = document.getElementById('display-keterangan');
+    const btnSubmit = document.getElementById('btn-submit-bayar');
+
+    function formatRupiah(num) {
+      return 'Rp ' + Number(num).toLocaleString('id-ID');
+    }
+
+    function updateSelection(card) {
+      cards.forEach(c => {
+        c.style.borderColor = 'var(--border)';
+        c.style.background = 'var(--card-bg)';
+      });
+      card.style.borderColor = 'var(--accent)';
+      card.style.background = 'var(--accent-soft)';
+
+      const radio = card.querySelector('input[type="radio"]');
+      radio.checked = true;
+
+      const harga = card.getAttribute('data-harga');
+      const label = card.getAttribute('data-label');
+
+      if (displayNominal) displayNominal.textContent = formatRupiah(harga);
+      if (displayKeterangan) displayKeterangan.textContent = 'Untuk masa aktif ' + label;
+      if (btnSubmit) btnSubmit.textContent = '🚀 Kirim Bukti Pembayaran (' + formatRupiah(harga) + ' — ' + label + ')';
+    }
+
+    cards.forEach(card => {
+      card.addEventListener('click', function(e) {
+        updateSelection(this);
+      });
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio && radio.checked) {
+        updateSelection(card);
+      }
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% load static %}<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk — Undangan Game Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --input-bg: #0f172a;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .auth-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .auth-brand span.logo-icon {
+      font-size: 28px;
+      background: rgba(245, 158, 11, 0.2);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .auth-brand h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .auth-brand h1 span { color: var(--accent); }
+    .auth-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .auth-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 7px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #000;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px -5px rgba(245, 158, 11, 0.4);
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+    .auth-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+    .alert {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      margin-bottom: 18px;
+    }
+    .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+    .alert-success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <a href="{% url 'undangan:landing' %}" class="auth-brand">
+      <span class="logo-icon">🎮</span>
+      <h1>Undangan<span>Game</span></h1>
+    </a>
+
+    <h2 class="auth-title">Masuk ke Akun</h2>
+    <p class="auth-desc">Kelola undangan pernikahan interaktif dan pantau RSVP tamu Anda.</p>
+
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+          {{ msg }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="{% url 'undangan:login' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="username">Username atau Email</label>
+        <input type="text" id="username" name="username" class="form-input" required placeholder="Masukkan username atau email" autofocus>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Kata Sandi</label>
+        <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn-submit">Masuk ke Dashboard</button>
+    </form>
+
+    <div class="auth-footer">
+      Belum memiliki akun? <a href="{% url 'undangan:register' %}">Daftar Sekarang</a>
+      <div style="margin-top: 10px;">
+        <a href="{% url 'undangan:landing' %}" style="color: var(--text-muted); font-size: 12px;">&larr; Kembali ke Beranda</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

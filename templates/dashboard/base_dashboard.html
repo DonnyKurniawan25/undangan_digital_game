@@ -1,0 +1,664 @@
+{% load static %}<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard Undangan{% endblock %} — Undangan Game Digital</title>
+  
+  <!-- Cegah Flash of Unstyled Theme (FOUC) - Default: Light -->
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('dashboard_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       TEMA WARNA: LIGHT MODE (DEFAULT) & DARK MODE
+       ============================================================ */
+    :root, [data-theme="light"] {
+      --bg: #f8fafc;
+      --topbar-bg: rgba(255, 255, 255, 0.92);
+      --card-bg: #ffffff;
+      --card-inner: #f1f5f9;
+      --accent: #d97706;
+      --accent-hover: #b45309;
+      --accent-soft: rgba(217, 119, 6, 0.12);
+      --text: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --banner-bg: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      --banner-border: #fde68a;
+      --success: #059669;
+      --danger: #dc2626;
+      --info: #2563eb;
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b0f19;
+      --topbar-bg: rgba(15, 23, 42, 0.92);
+      --card-bg: #151d30;
+      --card-inner: #1c2742;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-soft: rgba(245, 158, 11, 0.15);
+      --text: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border: #263554;
+      --input-bg: #0e1424;
+      --input-border: #263554;
+      --banner-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      --banner-border: rgba(245, 158, 11, 0.4);
+      --success: #10b981;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* TOPBAR */
+    .topbar {
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .topbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+    }
+    .brand-icon {
+      font-size: 22px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    .brand span { color: var(--accent); }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* TOMBOL TOGGLE TEMA LIGHT / DARK */
+    .btn-theme-toggle {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-theme-toggle:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .btn-theme-toggle span.theme-icon { font-size: 14px; }
+
+    .btn-preview {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13.5px;
+      padding: 8px 16px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    [data-theme="light"] .btn-preview { color: #000; }
+    .btn-preview:hover { transform: translateY(-1px); }
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 13px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
+
+    /* NAVIGATION TABS */
+    .nav-tabs-wrapper {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .nav-tabs {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 4px;
+      padding: 0 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .nav-tab {
+      padding: 13px 14px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+    }
+    .nav-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    /* MAIN CONTAINER */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px 20px 48px;
+      flex: 1;
+    }
+
+    /* NOTIFIKASI */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    [data-theme="light"] .alert-success {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+    [data-theme="dark"] .alert-success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+    [data-theme="light"] .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+    [data-theme="dark"] .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    /* CARD STYLING */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* FORM ELEMENTS */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+    }
+    .form-help {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #fff;
+    }
+    [data-theme="light"] .btn-primary { color: #000; }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px -4px rgba(217, 119, 6, 0.4);
+    }
+    .btn-secondary {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12.5px;
+      border-radius: 8px;
+    }
+
+    /* TAB PILIHAN SUMBER MEDIA (UPLOAD / LINK) */
+    .media-source-tabs {
+      display: flex;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 12px;
+      gap: 4px;
+    }
+    .media-source-tab {
+      flex: 1;
+      text-align: center;
+      padding: 7px 12px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 0.2s;
+    }
+    .media-source-tab.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    [data-theme="light"] .media-source-tab.active { color: #000; }
+
+    /* PREVIEW THUMBNAIL */
+    .img-preview-box {
+      width: 100%;
+      height: 160px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      background: var(--card-inner);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-top: 10px;
+      position: relative;
+    }
+    .img-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .img-preview-empty {
+      color: var(--text-muted);
+      font-size: 12.5px;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* BADGE */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-file { background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); }
+    [data-theme="dark"] .badge-file { color: #93c5fd; }
+    .badge-link { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
+    [data-theme="dark"] .badge-link { color: #6ee7b7; }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--card-bg);
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .topbar-container { flex-direction: column; gap: 12px; align-items: flex-start; }
+      .topbar-actions { width: 100%; justify-content: space-between; }
+      .main-content { padding: 16px 14px 36px; }
+      .card { padding: 18px 14px; }
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-container">
+      <a href="{% url 'undangan:dashboard' %}" class="brand">
+        <span class="brand-icon">🎮</span>
+        <div>Undangan<span>Game</span> <small style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Dashboard</small></div>
+      </a>
+      <div class="topbar-actions">
+        <!-- TOGGLE TEMA LIGHT / DARK -->
+        <button type="button" id="btn-theme-toggle" class="btn-theme-toggle" onclick="toggleTheme()" title="Ubah tema Light/Dark">
+          <span id="theme-icon" class="theme-icon">☀️</span>
+          <span id="theme-label" class="theme-label-text">Mode Terang</span>
+        </button>
+
+        {% if request.user.is_superuser %}
+          <a href="{% url 'undangan:superadmin_index' %}" class="btn btn-sm" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; font-weight: 800;" title="Buka Pusat Kendali Superadmin">
+            👑 Panel Superadmin
+          </a>
+        {% endif %}
+
+        <a href="{{ undangan.path_publik }}" target="_blank" class="btn-preview" title="Buka Game Undangan">
+          <span>👀</span> Lihat Undangan
+        </a>
+        <span style="font-size: 13px; color: var(--text-muted);">Hai, <b>{{ request.user.first_name|default:request.user.username }}</b></span>
+        <a href="{% url 'undangan:logout' %}" class="btn-logout">Keluar</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="nav-tabs-wrapper">
+    <div class="nav-tabs">
+      <a href="{% url 'undangan:dashboard' %}" class="nav-tab {% if tab_aktif == 'beranda' %}active{% endif %}">
+        <span>📊</span> Beranda &amp; Statistik
+      </a>
+      <a href="{% url 'undangan:dashboard_pengaturan' %}" class="nav-tab {% if tab_aktif == 'pengaturan' %}active{% endif %}">
+        <span>⚙️</span> Tema &amp; Pengaturan
+      </a>
+      <a href="{% url 'undangan:dashboard_mempelai' %}" class="nav-tab {% if tab_aktif == 'mempelai' %}active{% endif %}">
+        <span>👰🤵</span> Mempelai
+      </a>
+      <a href="{% url 'undangan:dashboard_acara' %}" class="nav-tab {% if tab_aktif == 'acara' %}active{% endif %}">
+        <span>📅</span> Jadwal Acara
+      </a>
+      <a href="{% url 'undangan:dashboard_galeri' %}" class="nav-tab {% if tab_aktif == 'galeri' %}active{% endif %}">
+        <span>📸</span> Galeri Foto
+      </a>
+      <a href="{% url 'undangan:dashboard_rekening' %}" class="nav-tab {% if tab_aktif == 'rekening' %}active{% endif %}">
+        <span>💳</span> Amplop Digital &amp; QRIS
+      </a>
+      <a href="{% url 'undangan:dashboard_tamu' %}" class="nav-tab {% if tab_aktif == 'tamu' %}active{% endif %}">
+        <span>💌</span> Daftar Tamu &amp; WhatsApp
+      </a>
+      <a href="{% url 'undangan:dashboard_ucapan' %}" class="nav-tab {% if tab_aktif == 'ucapan' %}active{% endif %}">
+        <span>💬</span> Buku Tamu &amp; RSVP
+      </a>
+      <a href="{% url 'undangan:dashboard_pembayaran' %}" class="nav-tab {% if tab_aktif == 'pembayaran' %}active{% endif %}" style="{% if not undangan.is_online_aktif %}color: var(--danger); font-weight: 700;{% endif %}">
+        <span>💳</span> Aktivasi &amp; Pembayaran
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-content">
+    <!-- BANNER STATUS LANGGANAN & TRIAL -->
+    {% if not undangan.is_online_aktif %}
+      {% if undangan.is_masa_tenggang %}
+        <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-left: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 24px;">⚠️</span>
+            <div>
+              <b style="color: var(--gold); font-size: 14px;">Masa Aktif Berakhir — Masa Tenggang 1 Bulan (Sisa {{ undangan.sisa_hari_tenggang }} Hari)</b>
+              <div style="font-size: 12.5px; color: var(--text-secondary);">Undangan saat ini offline bagi tamu. Anda memiliki waktu hingga <b>{{ undangan.batas_tenggang_berakhir|date:"d M Y" }}</b> untuk memperpanjang sebelum website dan file foto galeri dibersihkan permanen dari server.</div>
+            </div>
+          </div>
+          <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-primary btn-sm" style="font-weight: 700; white-space: nowrap;">
+            ⚡ Perpanjang Sekarang
+          </a>
+        </div>
+      {% elif undangan.is_siap_dibersihkan %}
+        <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-left: 4px solid var(--danger); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 24px;">🛑</span>
+            <div>
+              <b style="color: var(--danger); font-size: 14px;">Masa Tenggang 1 Bulan Telah Habis — Data Siap Dibersihkan</b>
+              <div style="font-size: 12.5px; color: var(--text-secondary);">Masa toleransi 1 bulan telah lewat. Website dan seluruh file foto dapat dibersihkan permanen oleh superadmin sewaktu-waktu. Segera perpanjang untuk memulihkan!</div>
+            </div>
+          </div>
+          <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-danger btn-sm" style="font-weight: 700; white-space: nowrap;">
+            ⚡ Pulihkan &amp; Perpanjang
+          </a>
+        </div>
+      {% else %}
+        <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 24px;">⚠️</span>
+            <div>
+              <b style="color: var(--danger); font-size: 14px;">Masa Uji Coba Gratis 1 Hari Telah Berakhir</b>
+              <div style="font-size: 12.5px; color: var(--text-muted);">Tamu umum belum dapat membuka game Anda. Segera lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun) untuk online aktif dan membuka domain langsung.</div>
+            </div>
+          </div>
+          <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-sm" style="background: var(--danger); color: #fff; font-weight: 700;">
+            ⚡ Aktifkan Sekarang
+          </a>
+        </div>
+      {% endif %}
+    {% elif undangan.status_langganan == 'trial' %}
+      <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 20px;">⏱️</span>
+          <div>
+            <b style="color: var(--gold); font-size: 13.5px;">Masa Uji Coba Gratis: Sisa {{ undangan.sisa_waktu_trial }}</b>
+            <div style="font-size: 12px; color: var(--text-muted);">Undangan Anda saat ini aktif online. Agar tetap online dan mendapatkan domain langsung tanpa awalan /trial/, lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun).</div>
+          </div>
+        </div>
+        <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-secondary btn-sm" style="font-weight: 700; color: var(--gold); border-color: var(--gold);">
+          Aktivasi Undangan &rarr;
+        </a>
+      </div>
+    {% elif undangan.status_langganan == 'menunggu' %}
+      <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 20px;">⏳</span>
+        <div>
+          <b style="color: #3b82f6; font-size: 13.5px;">Bukti Pembayaran Sedang Diverifikasi Admin</b>
+          <div style="font-size: 12px; color: var(--text-muted);">Undangan Anda akan segera diaktifkan begitu verifikasi oleh admin selesai.</div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+          <span>{% if msg.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
+          <div>{{ msg }}</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Undangan Game Digital — Platform Undangan Interaktif Mandiri.</p>
+  </footer>
+
+  <script>
+    // FUNGSI TEMA LIGHT / DARK
+    function syncThemeButton(theme) {
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+      if (!icon || !label) return;
+      if (theme === 'dark') {
+        icon.innerText = '🌙';
+        label.innerText = 'Mode Gelap';
+      } else {
+        icon.innerText = '☀️';
+        label.innerText = 'Mode Terang';
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', targetTheme);
+      try {
+        localStorage.setItem('dashboard_theme', targetTheme);
+      } catch (e) {}
+      syncThemeButton(targetTheme);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const activeTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      syncThemeButton(activeTheme);
+    });
+
+    // Helper untuk tab upload vs link di form media
+    function setupMediaSourceTabs(containerId, inputUploadId, inputLinkId, previewImgId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const tabUpload = container.querySelector('[data-tab="upload"]');
+      const tabLink = container.querySelector('[data-tab="link"]');
+      const uploadArea = document.getElementById(inputUploadId);
+      const linkArea = document.getElementById(inputLinkId);
+
+      if (tabUpload && uploadArea) {
+        tabUpload.addEventListener('click', () => {
+          tabUpload.classList.add('active');
+          if (tabLink) tabLink.classList.remove('active');
+          uploadArea.style.display = 'block';
+          if (linkArea) linkArea.style.display = 'none';
+        });
+      }
+
+      if (tabLink && linkArea) {
+        tabLink.addEventListener('click', () => {
+          tabLink.classList.add('active');
+          if (tabUpload) tabUpload.classList.remove('active');
+          linkArea.style.display = 'block';
+          if (uploadArea) uploadArea.style.display = 'none';
+        });
+      }
+    }
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

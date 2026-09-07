@@ -13,6 +13,13 @@
 </head>
 <body>
 
+{% if is_owner_or_admin and not is_online_aktif %}
+<div style="position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 99999; background: rgba(15, 23, 42, 0.92); border: 1px solid #f59e0b; color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-family: sans-serif; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
+  <span>⏳ <b>Pratinjau Pemilik:</b> Uji coba 1 hari berakhir (offline bagi tamu).</span>
+  <a href="{% url 'undangan:dashboard_pembayaran' %}" style="background: #f59e0b; color: #000; font-weight: 700; padding: 4px 10px; border-radius: 999px; text-decoration: none; font-size: 11px;">Aktifkan 1 Bulan (Rp 30rb)</a>
+</div>
+{% endif %}
+
 <!-- ================= LAYAR SAMPUL ================= -->
 <section id="sampul">
   <div class="hias-sampul" aria-hidden="true"></div>
@@ -123,7 +130,7 @@
       {% for orang in mempelai %}
         <article class="mempelai">
           <div class="bingkai-foto">
-            {% if orang.foto %}<img src="{{ orang.foto.url }}" alt="Foto {{ orang.nama_panggilan }}" loading="lazy">
+            {% if orang.url_tampil %}<img src="{{ orang.url_tampil }}" alt="Foto {{ orang.nama_panggilan }}" loading="lazy">
             {% else %}<span class="foto-kosong">Foto belum diunggah</span>{% endif %}
           </div>
           <h3>{{ orang.nama_lengkap }}</h3>
@@ -148,7 +155,7 @@
       <div class="galeri-gulir">
         {% for foto in galeri %}
           <figure class="galeri-item">
-            <img src="{{ foto.gambar.url }}" alt="{{ foto.keterangan|default:'Foto prewedding' }}" loading="lazy" data-perbesar>
+            <img src="{{ foto.url_tampil }}" alt="{{ foto.keterangan|default:'Foto prewedding' }}" loading="lazy" data-perbesar>
             {% if foto.keterangan %}<figcaption>{{ foto.keterangan }}</figcaption>{% endif %}
           </figure>
         {% endfor %}
@@ -241,7 +248,7 @@
         <p class="bank">{{ rek.nama_bank }}</p>
         <p class="nomor">{{ rek.nomor }}</p>
         <p class="atas-nama">a.n. {{ rek.atas_nama }}</p>
-        {% if rek.qr %}<img class="qr" src="{{ rek.qr.url }}" alt="QR {{ rek.nama_bank }}" loading="lazy">{% endif %}
+        {% if rek.url_tampil %}<img class="qr" src="{{ rek.url_tampil }}" alt="QR {{ rek.nama_bank }}" loading="lazy">{% endif %}
         <button type="button" class="tombol-kecil" data-salin="{{ rek.nomor }}">Salin nomor</button>
       </article>
     {% empty %}

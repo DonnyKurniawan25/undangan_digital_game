@@ -23,8 +23,16 @@
       <a href="#cara-kerja">Cara Kerja</a>
       <a href="#preview">Preview</a>
       <a href="#keunggulan">Keunggulan</a>
-      <a href="{% url 'admin:index' %}" style="color:var(--gold,#d4a373);font-weight:700;">⚙️ Panel Admin / Upload Musik</a>
-      <a href="{% url 'undangan:beranda' %}" class="nav-cta">Lihat Demo</a>
+      {% if request.user.is_authenticated %}
+        {% if request.user.is_superuser %}
+          <a href="{% url 'undangan:superadmin_index' %}" style="color:var(--gold,#d4a373);font-weight:700;">👑 Panel Superadmin</a>
+        {% endif %}
+        <a href="{% url 'undangan:dashboard' %}" style="color:var(--text);font-weight:700;">📊 Dashboard Saya</a>
+        <a href="{% url 'undangan:logout' %}" style="color:#f87171;font-size:13px;">Keluar</a>
+      {% else %}
+        <a href="{% url 'undangan:login' %}" style="color:var(--gold,#d4a373);font-weight:700;">Masuk</a>
+        <a href="{% url 'undangan:register' %}" class="nav-cta">Buat Undangan Sendiri</a>
+      {% endif %}
     </div>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
       <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"/></svg>
@@ -51,6 +59,15 @@
       Dekati objek untuk membuka info acara, galeri foto, RSVP, dan amplop digital.
     </p>
     <div class="hero-buttons">
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'undangan:dashboard' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-weight:800; font-size:15px; grid-column: 1 / -1;" id="btn-hero-cta">
+          🚀 Buka Dashboard Undangan Saya
+        </a>
+      {% else %}
+        <a href="{% url 'undangan:register' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-weight:800; font-size:15px; grid-column: 1 / -1;" id="btn-hero-cta">
+          ✨ Buat Undangan Sendiri (Gratis)
+        </a>
+      {% endif %}
       <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" id="btn-demo">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
         Demo 1 (Jawa)

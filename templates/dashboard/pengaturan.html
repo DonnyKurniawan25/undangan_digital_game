@@ -1,0 +1,138 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Tema & Pengaturan Undangan{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Tema &amp; Pengaturan Umum</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Atur tema game 2D, judul acara, alamat tautan kustom, serta musik pengiring undangan Anda.
+  </p>
+</div>
+
+<div class="card">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-grid">
+      <!-- Judul Undangan -->
+      <div class="form-group">
+        <label class="form-label" for="judul">Judul Undangan</label>
+        <input type="text" id="judul" name="judul" class="form-input" value="{{ undangan.judul }}" required>
+        <div class="form-help">Nama judul yang muncul di layar pembuka &amp; metadata bagikan.</div>
+      </div>
+
+      <!-- Tautan Kustom (Slug & Domain) -->
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <label class="form-label" for="slug" style="margin-bottom: 0;">Domain / Tautan Unik Undangan</label>
+          {% if undangan.status_langganan == 'aktif' %}
+            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); font-size: 10px;">
+              🟢 Kustom Domain Terbuka
+            </span>
+          {% else %}
+            <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); font-size: 10px;">
+              🔒 Terkunci (Masa Uji Coba)
+            </span>
+          {% endif %}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="color: var(--text-muted); font-size: 13px; font-family: monospace; white-space: nowrap;">
+            jelajah.biz.id/{% if undangan.status_langganan != 'aktif' %}trial/{% endif %}
+          </span>
+          <input type="text" id="slug" name="slug" class="form-input" value="{{ undangan.slug }}"
+                 {% if undangan.status_langganan != 'aktif' %}readonly style="background: var(--card-inner); color: var(--text-muted); cursor: not-allowed;" title="Aktifkan langganan berbayar untuk kustomisasi nama tautan"{% endif %}
+                 required placeholder="nama-undangan">
+        </div>
+
+        {% if undangan.status_langganan == 'aktif' %}
+          <div class="form-help" style="color: var(--success);">
+            ✅ Anda bebas menyesuaikan nama domain/tautan Anda (contoh: <code>rana&amp;cahyo</code> atau <code>budi-ani</code>). Tautan Anda langsung diakses tanpa awalan /trial/.
+          </div>
+        {% else %}
+          <div class="form-help" style="color: var(--text-muted);">
+            ⚠️ Selama masa uji coba (1 hari), tautan Anda beralamat di <code>jelajah.biz.id/trial/{{ undangan.slug }}/</code>. Untuk mengkustomisasi nama domain langsung (seperti <code>jelajah.biz.id/{{ undangan.slug }}/</code>), silakan lakukan <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 700; text-decoration: underline;">Aktivasi Pembayaran (1 Bulan / 6 Bulan / 1 Tahun)</a>.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Pilihan Tema Game -->
+    <div class="form-group" style="margin-top: 10px;">
+      <label class="form-label" for="tema">Pilihan Tema Game Interaktif</label>
+      <select id="tema" name="tema" class="form-select">
+        {% for kode, label in daftar_tema %}
+          <option value="{{ kode }}" {% if undangan.tema == kode %}selected{% endif %}>
+            🎮 {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+      <div class="form-help">
+        Tamu akan menjelajahi dunia game sesuai tema yang Anda pilih untuk melihat galeri, biodata, dan mengirim ucapan.
+      </div>
+    </div>
+
+    <div class="form-grid" style="margin-top: 10px;">
+      <!-- Hashtag -->
+      <div class="form-group">
+        <label class="form-label" for="hashtag">Hashtag Acara (Opsional)</label>
+        <input type="text" id="hashtag" name="hashtag" class="form-input" value="{{ undangan.hashtag }}" placeholder="#BudiAniWedding">
+      </div>
+
+      <!-- Sumber Kutipan -->
+      <div class="form-group">
+        <label class="form-label" for="sumber_quote">Sumber Kutipan / Ayat</label>
+        <input type="text" id="sumber_quote" name="sumber_quote" class="form-input" value="{{ undangan.sumber_quote }}" placeholder="Contoh: QS. Ar-Rum: 21">
+      </div>
+    </div>
+
+    <!-- Teks Kutipan -->
+    <div class="form-group">
+      <label class="form-label" for="quote">Teks Kutipan / Doa Pembuka</label>
+      <textarea id="quote" name="quote" class="form-textarea" rows="3" placeholder="Tuliskan ayat suci atau kata mutiara...">{{ undangan.quote }}</textarea>
+    </div>
+
+    <!-- Musik Pengiring -->
+    <div class="form-group" style="padding: 16px; background: var(--card-inner); border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;">
+      <label class="form-label" style="color: var(--accent); font-size: 14px;">🎵 Musik Latar Belakang (.mp3)</label>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
+        Musik akan diputar secara otomatis saat tamu menekan tombol "Buka Undangan". Anda dapat mengunggah berkas musik lokal atau mengisi tautan audio online.
+      </p>
+
+      <div class="form-grid">
+        <div>
+          <label class="form-label">Opsi 1: Unggah Berkas Musik (.mp3 / .wav)</label>
+          <input type="file" name="musik" accept="audio/*" class="form-input">
+          {% if undangan.musik %}
+            <div style="margin-top: 8px; font-size: 12px; color: #34d399;">
+              ✅ Musik aktif: <code>{{ undangan.musik.name }}</code>
+              <label style="display: block; margin-top: 6px; color: #f87171;">
+                <input type="checkbox" name="hapus_musik" value="1"> Hapus file musik ini (kembali ke musik bawaan)
+              </label>
+            </div>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="form-label">Opsi 2: Tautan Audio Online (URL)</label>
+          <input type="url" name="musik_url" class="form-input" value="{{ undangan.musik_url }}" placeholder="https://example.com/lagu.mp3">
+          <div class="form-help">Gunakan opsi ini jika file audio sudah Anda simpan di cloud hosting.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catatan Penutup -->
+    <div class="form-group" style="margin-top: 18px;">
+      <label class="form-label" for="catatan_penutup">Pesan &amp; Catatan Penutup</label>
+      <textarea id="catatan_penutup" name="catatan_penutup" class="form-textarea" rows="3">{{ undangan.catatan_penutup }}</textarea>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+      <button type="submit" class="btn btn-primary">
+        💾 Simpan Perubahan Pengaturan
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

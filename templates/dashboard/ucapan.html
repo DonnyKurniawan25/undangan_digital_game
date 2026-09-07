@@ -1,0 +1,108 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Buku Tamu & RSVP{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Buku Tamu &amp; Konfirmasi Hadir (RSVP)</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Pantau ucapan doa restu dan kepastian kehadiran para tamu Anda secara *real-time*. Anda dapat menyembunyikan atau menghapus pesan yang tidak diinginkan.
+  </p>
+</div>
+
+<!-- KARTU STATISTIK RINGKAS -->
+<div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+  <a href="?status=semua" class="btn {% if filter_status == 'semua' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+    Semua ({{ total_ucapan }})
+  </a>
+  <a href="?status=hadir" class="btn {% if filter_status == 'hadir' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'hadir' %}border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7;{% endif %}">
+    🎉 Berkenan Hadir ({{ total_hadir }})
+  </a>
+  <a href="?status=ragu" class="btn {% if filter_status == 'ragu' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'ragu' %}border-color: rgba(245, 158, 11, 0.4); color: #fde68a;{% endif %}">
+    ⏳ Masih Ragu ({{ total_ragu }})
+  </a>
+  <a href="?status=tidak" class="btn {% if filter_status == 'tidak' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'tidak' %}border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;{% endif %}">
+    ❌ Berhalangan ({{ total_tidak }})
+  </a>
+</div>
+
+<!-- DAFTAR UCAPAN -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div style="padding: 18px 20px; border-bottom: 1px solid var(--border);">
+    <h2 class="card-title" style="margin-bottom: 0;">
+      💬 Daftar Pesan Ucapan ({{ ucapan_list.count }})
+    </h2>
+  </div>
+
+  {% if ucapan_list %}
+    <div style="display: flex; flex-direction: column;">
+      {% for u in ucapan_list %}
+        <div style="padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 260px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+              <b style="font-size: 15px; color: var(--text);">{{ u.nama }}</b>
+              
+              {% if u.kehadiran == 'hadir' %}
+                <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
+                  ✅ Hadir ({{ u.jumlah_orang }} Orang)
+                </span>
+              {% elif u.kehadiran == 'tidak' %}
+                <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;">
+                  ❌ Tidak Hadir
+                </span>
+              {% else %}
+                <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fde68a;">
+                  ⏳ Ragu-ragu
+                </span>
+              {% endif %}
+
+              {% if not u.disetujui %}
+                <span class="badge" style="background: rgba(148, 163, 184, 0.2); color: var(--text-muted);">
+                  👁️‍🗨️ Disembunyikan
+                </span>
+              {% endif %}
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+              "{{ u.pesan }}"
+            </p>
+
+            <span style="font-size: 11.5px; color: var(--text-muted);">
+              Dikirim pada: {{ u.dibuat|date:"d M Y, H:i" }} WIB
+            </span>
+          </div>
+
+          <!-- Aksi Moderasi -->
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <form method="POST" action="{% url 'undangan:dashboard_ucapan_toggle' pk=u.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-secondary btn-sm" title="Ubah visibilitas">
+                {% if u.disetujui %}
+                  👁️ Sembunyikan
+                {% else %}
+                  ✅ Tampilkan
+                {% endif %}
+              </button>
+            </form>
+
+            <form method="POST" action="{% url 'undangan:dashboard_ucapan_hapus' pk=u.pk %}" onsubmit="return confirm('Hapus ucapan ini?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm" title="Hapus Permanen">
+                🗑️
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 48px 20px;">
+      <span style="font-size: 40px; display: block; margin-bottom: 10px;">💬</span>
+      <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Belum Ada Ucapan Sesuai Kategori</h3>
+      <p style="color: var(--text-muted); font-size: 14px; max-width: 440px; margin: 0 auto;">
+        Ucapan doa restu dan konfirmasi kehadiran yang dikirimkan oleh para tamu di dalam game akan langsung terdata di sini.
+      </p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

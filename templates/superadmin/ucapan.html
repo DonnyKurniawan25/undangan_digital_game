@@ -1,0 +1,125 @@
+{% extends "superadmin/base_superadmin.html" %}
+
+{% block title %}Moderasi Pesan & RSVP Global{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Moderasi Pesan Doa &amp; RSVP Global</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Awasi dan moderasi seluruh ucapan doa restu yang masuk dari tamu pada semua proyek undangan di platform. Anda dapat menyembunyikan atau menghapus komentar spam/tidak pantas.
+  </p>
+</div>
+
+<!-- FORM PENCARIAN & FILTER -->
+<div class="card" style="padding: 16px 20px;">
+  <form method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+    <div style="display: flex; gap: 10px; flex: 1; min-width: 260px;">
+      <input type="text" name="q" value="{{ q }}" class="form-input" placeholder="Cari nama pengirim atau isi pesan ucapan...">
+      <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+      {% if q or status_filter != 'semua' or undangan_filter %}
+        <a href="{% url 'undangan:superadmin_ucapan' %}" class="btn btn-secondary btn-sm">Reset</a>
+      {% endif %}
+    </div>
+
+    <!-- FILTER ACARA & STATUS -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+      <select name="undangan_id" class="form-select" style="width: auto;" onchange="this.form.submit()">
+        <option value="">Semua Proyek Undangan</option>
+        {% for und in semua_undangan %}
+          <option value="{{ und.pk }}" {% if undangan_filter == und.pk|stringformat:"s" %}selected{% endif %}>
+            {{ und.judul }} (@{{ und.user.username }})
+          </option>
+        {% endfor %}
+      </select>
+
+      <div style="display: flex; gap: 4px;">
+        <a href="?status=semua{% if q %}&q={{ q }}{% endif %}{% if undangan_filter %}&undangan_id={{ undangan_filter }}{% endif %}" class="btn {% if status_filter == 'semua' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">Semua</a>
+        <a href="?status=hadir{% if q %}&q={{ q }}{% endif %}{% if undangan_filter %}&undangan_id={{ undangan_filter }}{% endif %}" class="btn {% if status_filter == 'hadir' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">Hadir</a>
+        <a href="?status=sembunyi{% if q %}&q={{ q }}{% endif %}{% if undangan_filter %}&undangan_id={{ undangan_filter }}{% endif %}" class="btn {% if status_filter == 'sembunyi' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">Disembunyikan</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- DAFTAR UCAPAN GLOBAL -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div style="padding: 16px 20px; border-bottom: 1px solid var(--border);">
+    <h2 class="card-title" style="margin-bottom: 0;">
+      💬 Pesan Masuk ({{ total_ucapan }} Ditemukan)
+    </h2>
+  </div>
+
+  {% if daftar_ucapan %}
+    <div style="display: flex; flex-direction: column;">
+      {% for u in daftar_ucapan %}
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 260px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
+              <b style="font-size: 14.5px; color: var(--text);">{{ u.nama }}</b>
+
+              <!-- Target Undangan -->
+              <span class="badge" style="background: var(--card-inner); color: var(--accent); border: 1px solid var(--border);">
+                💌 {{ u.undangan.judul|default:"Global" }}
+              </span>
+
+              {% if u.kehadiran == 'hadir' %}
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                  ✅ Hadir ({{ u.jumlah_orang }} Orang)
+                </span>
+              {% elif u.kehadiran == 'tidak' %}
+                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">
+                  ❌ Tidak Hadir
+                </span>
+              {% else %}
+                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">
+                  ⏳ Ragu-ragu
+                </span>
+              {% endif %}
+
+              {% if not u.disetujui %}
+                <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: var(--danger);">
+                  🚫 Disembunyikan
+                </span>
+              {% endif %}
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 6px;">
+              "{{ u.pesan }}"
+            </p>
+
+            <span style="font-size: 11.5px; color: var(--text-muted);">
+              Dikirim: {{ u.dibuat|date:"d M Y, H:i" }} WIB &bull; 
+              {% if u.tamu %}Tamu: <b>{{ u.tamu.nama }}</b>{% else %}Tamu Umum{% endif %}
+            </span>
+          </div>
+
+          <!-- Aksi Moderasi -->
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <form method="POST" action="{% url 'undangan:superadmin_ucapan_toggle' pk=u.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-secondary btn-sm" title="Ubah status tampil">
+                {% if u.disetujui %}
+                  👁️ Sembunyikan
+                {% else %}
+                  ✅ Tampilkan
+                {% endif %}
+              </button>
+            </form>
+
+            <form method="POST" action="{% url 'undangan:superadmin_ucapan_hapus' pk=u.pk %}" onsubmit="return confirm('Hapus ucapan ini secara permanen?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm" title="Hapus Spam">
+                🗑️
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 48px 20px;">
+      <p style="color: var(--text-muted); font-size: 14px;">Tidak ada pesan ucapan yang sesuai dengan filter.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Beranda & Statistik{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">
+    Selamat Datang, {{ request.user.first_name|default:request.user.username }}! 👋
+  </h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Undangan game Anda siap dikustomisasi dan dibagikan kepada keluarga serta sahabat tercinta.
+  </p>
+</div>
+
+<!-- KOTAK TAUTAN UTAMA & QUICK SHARE -->
+<div class="card" style="background: var(--banner-bg); border: 1px solid var(--banner-border);">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        {% if undangan.status_langganan == 'aktif' %}
+          <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">
+            🟢 Tautan Langsung Aktif (jelajah.biz.id/{{ undangan.slug }}/)
+          </span>
+        {% else %}
+          <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent); border: 1px solid rgba(245, 158, 11, 0.3);">
+            ⏳ Tautan Uji Coba 1 Hari (jelajah.biz.id/trial/{{ undangan.slug }}/)
+          </span>
+        {% endif %}
+      </div>
+      <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">{{ undangan.judul }}</h3>
+      <p style="color: var(--accent); font-family: monospace; font-size: 14px; word-break: break-all;">
+        {{ url_lengkap }}
+      </p>
+    </div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="salinLink('{{ url_lengkap }}')">
+        📋 Salin Tautan
+      </button>
+      <a href="{{ undangan.path_publik }}" target="_blank" class="btn btn-primary btn-sm">
+        🎮 Mainkan Game Sekarang
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- STATISTIK KILAT -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Total Tamu Terdaftar</span>
+      <span style="font-size: 20px;">👥</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #60a5fa;">{{ total_tamu }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      {{ tamu_buka }} tamu telah membuka undangan
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Konfirmasi Hadir</span>
+      <span style="font-size: 20px;">🎉</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #34d399;">{{ total_hadir }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Estimasi {{ total_orang_hadir }} orang akan datang
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Masih Ragu / Berhalangan</span>
+      <span style="font-size: 20px;">⏳</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #fbbf24;">{{ total_ragu }} <span style="font-size: 16px; color: #f87171; font-weight: 600;">/ {{ total_tidak }}</span></div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      {{ total_ragu }} ragu &bull; {{ total_tidak }} tidak hadir
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Koleksi Galeri Foto</span>
+      <span style="font-size: 20px;">🖼️</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #c084fc;">{{ galeri_count }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Foto prewedding di papan lukis game
+    </div>
+  </div>
+</div>
+
+<!-- GRID PANDUAN CEPAT & UCAPAN TERBARU -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+  <!-- Panduan Langkah Cepat -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">🚀 Langkah Lengkap Pembuatan</h2>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <a href="{% url 'undangan:dashboard_pengaturan' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">⚙️</span>
+          <div>
+            <b style="font-size: 13.5px;">1. Pilih Tema Game &amp; Judul</b>
+            <div style="font-size: 12px; color: var(--text-muted);">Tema saat ini: {{ undangan.get_tema_display }}</div>
+          </div>
+        </div>
+        <span style="color: var(--accent); font-weight: 700;">&rarr;</span>
+      </a>
+
+      <a href="{% url 'undangan:dashboard_mempelai' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">👰🤵</span>
+          <div>
+            <b style="font-size: 13.5px;">2. Isi Data &amp; Foto Mempelai</b>
+            <div style="font-size: 12px; color: var(--text-muted);">Upload foto langsung atau tempel link gambar</div>
+          </div>
+        </div>
+        <span style="color: var(--accent); font-weight: 700;">&rarr;</span>
+      </a>
+
+      <a href="{% url 'undangan:dashboard_galeri' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">📸</span>
+          <div>
+            <b style="font-size: 13.5px;">3. Upload Galeri Prewedding</b>
+            <div style="font-size: 12px; color: var(--text-muted);">Tinggal upload berkas atau tempel link URL bebas</div>
+          </div>
+        </div>
+        <span style="color: var(--accent); font-weight: 700;">&rarr;</span>
+      </a>
+
+      <a href="{% url 'undangan:dashboard_tamu' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">💌</span>
+          <div>
+            <b style="font-size: 13.5px;">4. Buat Nama Tamu &amp; Sebar via WhatsApp</b>
+            <div style="font-size: 12px; color: var(--text-muted);">Tombol 1-klik kirim teks undangan personal</div>
+          </div>
+        </div>
+        <span style="color: var(--accent); font-weight: 700;">&rarr;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Doa & Ucapan Terbaru -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">💬 Ucapan Terbaru dari Tamu</h2>
+      <a href="{% url 'undangan:dashboard_ucapan' %}" style="font-size: 12.5px; color: var(--accent); font-weight: 600;">Lihat Semua &rarr;</a>
+    </div>
+    {% if ucapan_terbaru %}
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for u in ucapan_terbaru %}
+          <div style="padding: 10px 12px; background: var(--card-inner); border-radius: 10px; border-left: 3px solid {% if u.kehadiran == 'hadir' %}#10b981{% elif u.kehadiran == 'tidak' %}#ef4444{% else %}#f59e0b{% endif %};">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <b style="font-size: 13px;">{{ u.nama }}</b>
+              <span style="font-size: 11px; color: var(--text-muted);">{{ u.get_kehadiran_display }}</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">{{ u.pesan|truncatechars:80 }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 30px 10px;">
+        Belum ada ucapan yang masuk. Bagikan tautan undangan kepada tamu untuk menerima doa restu!
+      </p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function salinLink(teks) {
+    navigator.clipboard.writeText(teks).then(() => {
+      alert("Tautan undangan berhasil disalin ke clipboard!");
+    }).catch(() => {
+      prompt("Salin tautan berikut:", teks);
+    });
+  }
+</script>
+{% endblock %}

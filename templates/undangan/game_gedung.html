@@ -13,6 +13,13 @@
 </head>
 <body>
 
+{% if is_owner_or_admin and not is_online_aktif %}
+<div style="position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 99999; background: rgba(15, 23, 42, 0.92); border: 1px solid #f59e0b; color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-family: sans-serif; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
+  <span>⏳ <b>Pratinjau Pemilik:</b> Uji coba 1 hari berakhir (offline bagi tamu).</span>
+  <a href="{% url 'undangan:dashboard_pembayaran' %}" style="background: #f59e0b; color: #000; font-weight: 700; padding: 4px 10px; border-radius: 999px; text-decoration: none; font-size: 11px;">Aktifkan 1 Bulan (Rp 30rb)</a>
+</div>
+{% endif %}
+
 <!-- ================= 1. LAYAR SAMPUL LUXURY BALLROOM ================= -->
 <section id="sampul">
   <div class="kartu-sampul">
@@ -133,8 +140,8 @@
     {% if pria %}
       <div class="kartu-mempelai-ballroom">
         <div class="avatar-frame">
-          {% if pria.foto %}
-            <img src="{{ pria.foto.url }}" alt="{{ pria.nama_lengkap }}">
+          {% if pria.url_tampil %}
+            <img src="{{ pria.url_tampil }}" alt="{{ pria.nama_lengkap }}">
           {% else %}
             <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2rem;">🤵</div>
           {% endif %}
@@ -152,8 +159,8 @@
     {% if wanita %}
       <div class="kartu-mempelai-ballroom">
         <div class="avatar-frame">
-          {% if wanita.foto %}
-            <img src="{{ wanita.foto.url }}" alt="{{ wanita.nama_lengkap }}">
+          {% if wanita.url_tampil %}
+            <img src="{{ wanita.url_tampil }}" alt="{{ wanita.nama_lengkap }}">
           {% else %}
             <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2rem;">👰</div>
           {% endif %}
@@ -201,7 +208,7 @@
     <div class="galeri-grid">
       {% for f in galeri %}
         <div class="galeri-item">
-          <img src="{{ f.gambar.url }}" alt="{{ f.judul|default:'Momen Bahagia' }}">
+          <img src="{{ f.url_tampil }}" alt="{{ f.judul|default:'Momen Bahagia' }}">
         </div>
       {% empty %}
         <p style="text-align:center;color:var(--tinta-lembut);grid-column:1/-1;">Belum ada foto galeri.</p>

@@ -1,0 +1,272 @@
+{% extends "superadmin/base_superadmin.html" %}
+
+{% block title %}Kelola Transaksi & Pembayaran{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Manajemen Transaksi &amp; Pembayaran</h1>
+      <p style="color: var(--text-muted); font-size: 14px;">
+        Verifikasi bukti pembayaran transfer dari pengguna untuk mengaktifkan paket undangan online (1 Bulan, 6 Bulan, atau 1 Tahun).
+      </p>
+    </div>
+    {% if jml_menunggu > 0 %}
+      <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); padding: 8px 14px; font-size: 13px; border: 1px solid rgba(245, 158, 11, 0.3);">
+        🔔 Ada <b>{{ jml_menunggu }}</b> pembayaran menunggu verifikasi Anda!
+      </span>
+    {% endif %}
+  </div>
+</div>
+
+<!-- KARTU METRIK KEUANGAN -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Menunggu Verifikasi</span>
+      <span style="font-size: 20px;">⏳</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #f59e0b;">{{ jml_menunggu }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Perlu persetujuan admin
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Pembayaran Disetujui</span>
+      <span style="font-size: 20px;">✅</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #10b981;">{{ jml_disetujui }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Undangan berhasil diaktifkan
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Pembayaran Ditolak</span>
+      <span style="font-size: 20px;">❌</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #ef4444;">{{ jml_ditolak }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Bukti tidak valid / salah
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Total Omset Platform</span>
+      <span style="font-size: 20px;">💰</span>
+    </div>
+    <div style="font-size: 26px; font-weight: 800; color: var(--accent);">Rp {{ total_pendapatan|floatformat:0 }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Dari {{ jml_disetujui }} transaksi berhasil
+    </div>
+  </div>
+</div>
+
+<!-- FILTER & PENCARIAN -->
+<div class="card" style="padding: 16px 20px;">
+  <form method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+    <div style="display: flex; gap: 10px; flex: 1; min-width: 260px;">
+      <input type="text" name="q" value="{{ q }}" class="form-input" placeholder="Cari username, judul undangan, slug, atau catatan...">
+      <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+      {% if q or status_filter != 'semua' %}
+        <a href="{% url 'undangan:superadmin_transaksi' %}" class="btn btn-secondary btn-sm">Reset</a>
+      {% endif %}
+    </div>
+
+    <!-- FILTER STATUS -->
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <label style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Status:</label>
+      <select name="status" class="form-select" style="width: auto;" onchange="this.form.submit()">
+        <option value="semua" {% if status_filter == 'semua' %}selected{% endif %}>Semua Transaksi</option>
+        <option value="menunggu" {% if status_filter == 'menunggu' %}selected{% endif %}>Menunggu Verifikasi ({{ jml_menunggu }})</option>
+        <option value="disetujui" {% if status_filter == 'disetujui' %}selected{% endif %}>Disetujui / Aktif ({{ jml_disetujui }})</option>
+        <option value="ditolak" {% if status_filter == 'ditolak' %}selected{% endif %}>Ditolak ({{ jml_ditolak }})</option>
+      </select>
+    </div>
+  </form>
+</div>
+
+<!-- TABEL TRANSAKSI -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+    <h2 class="card-title" style="margin-bottom: 0;">
+      💳 Daftar Riwayat Pembayaran ({{ daftar_transaksi|length }} Data)
+    </h2>
+  </div>
+
+  {% if daftar_transaksi %}
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID &amp; Tanggal</th>
+            <th>Pengguna &amp; Undangan</th>
+            <th>Nominal &amp; Durasi</th>
+            <th>Bukti Transfer</th>
+            <th>Catatan User / Alasan</th>
+            <th>Status</th>
+            <th style="text-align: right; min-width: 170px;">Aksi Verifikasi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in daftar_transaksi %}
+            <tr>
+              <td>
+                <b style="font-size: 13.5px; color: var(--text);">#{{ tx.pk }}</b>
+                <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  {{ tx.dibuat|date:"d M Y, H:i" }}
+                </div>
+              </td>
+
+              <td>
+                <div style="font-weight: 700; color: var(--text);">@{{ tx.user.username }}</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">
+                  💌 {{ tx.undangan.judul }}
+                </div>
+                <a href="{{ tx.undangan.path_publik }}" target="_blank" style="font-size: 11.5px; color: var(--accent); text-decoration: underline;">
+                  jelajah.biz.id{{ tx.undangan.path_publik }} &nearr;
+                </a>
+              </td>
+
+              <td>
+                <div style="font-weight: 800; font-size: 14px; color: #10b981;">
+                  Rp {{ tx.nominal|floatformat:0 }}
+                </div>
+                <span class="badge" style="background: rgba(79, 70, 229, 0.1); color: var(--accent); margin-top: 4px;">
+                  +{{ tx.label_durasi }}
+                </span>
+              </td>
+
+              <td>
+                {% if tx.bukti_bayar %}
+                  <a href="{{ tx.bukti_bayar.url }}" target="_blank" title="Lihat gambar bukti pembayaran penuh" style="display: inline-block;">
+                    <img src="{{ tx.bukti_bayar.url }}" alt="Bukti Transfer" style="width: 58px; height: 58px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                    <div style="font-size: 11px; color: var(--accent); margin-top: 2px; text-align: center;">Buka &nearr;</div>
+                  </a>
+                {% else %}
+                  <span style="font-size: 12px; color: var(--text-muted);">Tidak ada berkas</span>
+                {% endif %}
+              </td>
+
+              <td>
+                <div style="font-size: 12px; color: var(--text-secondary); max-width: 220px; white-space: pre-line; word-break: break-word;">
+                  {{ tx.catatan|default:"-" }}
+                </div>
+                {% if tx.diverifikasi_pada %}
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                    Diverifikasi: {{ tx.diverifikasi_pada|date:"d M Y, H:i" }}
+                  </div>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if tx.status == 'disetujui' %}
+                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">
+                    ✅ Disetujui
+                  </span>
+                {% elif tx.status == 'menunggu' %}
+                  <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3);">
+                    ⏳ Menunggu
+                  </span>
+                {% else %}
+                  <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3);">
+                    ❌ Ditolak
+                  </span>
+                {% endif %}
+              </td>
+
+              <td style="text-align: right;">
+                {% if tx.status == 'menunggu' %}
+                  <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                    <!-- FORM SETUJUI -->
+                    <form method="POST" action="{% url 'undangan:superadmin_transaksi_aksi' pk=tx.pk %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="aksi" value="setujui">
+                      <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Verifikasi pembayaran ini dan aktifkan undangan selama 30 hari?');">
+                        ✅ Setujui &amp; Aktifkan
+                      </button>
+                    </form>
+
+                    <!-- TOMBOL TOLAK -->
+                    <button type="button" class="btn btn-danger btn-sm" onclick="bukaModalTolak('{{ tx.pk }}', '{{ tx.user.username }}')">
+                      ❌ Tolak...
+                    </button>
+                  </div>
+                {% elif tx.status == 'disetujui' %}
+                  <div style="display: inline-flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                    <span style="font-size: 11.5px; color: var(--success); font-weight: 600;">Sudah Aktif</span>
+                    <!-- Opsi Tambah +1 Bulan Lagi Manual -->
+                    <form method="POST" action="{% url 'undangan:superadmin_undangan_aktifkan_manual' pk=tx.undangan.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 3px 8px;" onclick="return confirm('Tambah masa aktif undangan ini lagi sebesar +30 hari?');">
+                        ⚡ +30 Hari Lagi
+                      </button>
+                    </form>
+                  </div>
+                {% else %}
+                  <!-- Ditolak tapi bisa disetujui ulang jika user klarifikasi -->
+                  <form method="POST" action="{% url 'undangan:superadmin_transaksi_aksi' pk=tx.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="aksi" value="setujui">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 11px;" onclick="return confirm('Ubah status menjadi Disetujui dan aktifkan undangan 30 hari?');">
+                      🔄 Setujui Ulang
+                    </button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 48px 20px;">
+      <span style="font-size: 36px; display: block; margin-bottom: 8px;">💳</span>
+      <p style="color: var(--text-muted); font-size: 14px;">Belum ada data transaksi pembayaran yang sesuai kriteria.</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- MODAL TOLAK PEMBAYARAN -->
+<div id="modal-tolak" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
+  <div class="card" style="max-width: 440px; width: 100%; margin-bottom: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+    <div class="card-header">
+      <h2 class="card-title" style="color: var(--danger);">❌ Tolak Konfirmasi Pembayaran</h2>
+      <button type="button" onclick="tutupModalTolak()" style="background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer;">&times;</button>
+    </div>
+    <form id="form-tolak" method="POST" action="">
+      {% csrf_token %}
+      <input type="hidden" name="aksi" value="tolak">
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;" id="teks-tolak-info">
+        Masukkan alasan penolakan agar pengguna memahami kendala pada bukti transfer mereka:
+      </p>
+      <div style="margin-bottom: 16px;">
+        <textarea name="alasan" class="form-textarea" rows="3" placeholder="Contoh: Bukti transfer buram / nominal tidak sesuai / nama pengirim tidak cocok." required></textarea>
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="tutupModalTolak()">Batal</button>
+        <button type="submit" class="btn btn-danger btn-sm">Tolak Pembayaran</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function bukaModalTolak(txId, username) {
+    const modal = document.getElementById('modal-tolak');
+    const form = document.getElementById('form-tolak');
+    const info = document.getElementById('teks-tolak-info');
+    form.action = '/superadmin/transaksi/' + txId + '/aksi/';
+    info.textContent = 'Alasan penolakan pembayaran #' + txId + ' dari @' + username + ':';
+    modal.style.display = 'flex';
+  }
+
+  function tutupModalTolak() {
+    document.getElementById('modal-tolak').style.display = 'none';
+  }
+</script>
+{% endblock %}

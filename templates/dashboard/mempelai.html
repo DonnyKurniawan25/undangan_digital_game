@@ -1,0 +1,207 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Data Mempelai{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Data Kedua Mempelai</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Lengkapi profil pengantin pria dan wanita. Foto mempelai dapat diunggah langsung dari perangkat ATAU ditempelkan link tautannya secara bebas.
+  </p>
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px;">
+    <!-- MEMPELAI PRIA -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">🤵 Mempelai Pria</h2>
+        <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">Groom</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="pria_nama_lengkap">Nama Lengkap &amp; Gelar</label>
+        <input type="text" id="pria_nama_lengkap" name="pria_nama_lengkap" class="form-input" value="{{ pria.nama_lengkap }}" required placeholder="Contoh: Budi Santoso, S.T.">
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="pria_nama_panggilan">Nama Panggilan</label>
+          <input type="text" id="pria_nama_panggilan" name="pria_nama_panggilan" class="form-input" value="{{ pria.nama_panggilan }}" required placeholder="Budi">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pria_anak_ke">Urutan Anak</label>
+          <input type="text" id="pria_anak_ke" name="pria_anak_ke" class="form-input" value="{{ pria.anak_ke }}" placeholder="Putra pertama">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="pria_nama_ayah">Nama Ayah</label>
+          <input type="text" id="pria_nama_ayah" name="pria_nama_ayah" class="form-input" value="{{ pria.nama_ayah }}" placeholder="Bpk. Bambang">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pria_nama_ibu">Nama Ibu</label>
+          <input type="text" id="pria_nama_ibu" name="pria_nama_ibu" class="form-input" value="{{ pria.nama_ibu }}" placeholder="Ibu Siti">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="pria_instagram">Akun Instagram</label>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="color: var(--text-muted); font-size: 13px;">@</span>
+          <input type="text" id="pria_instagram" name="pria_instagram" class="form-input" value="{{ pria.instagram }}" placeholder="budisantoso">
+        </div>
+      </div>
+
+      <!-- FOTO MEMPELAI PRIA (DUAL SOURCE) -->
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <label class="form-label" style="color: var(--accent);">📷 Foto Mempelai Pria</label>
+
+        <div class="media-source-tabs" id="tabs-pria">
+          <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
+          <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
+        </div>
+
+        <div id="box-pria-upload">
+          <input type="file" name="pria_foto" accept="image/*" class="form-input" onchange="previewLocal(this, 'preview-pria')">
+          <div class="form-help">Pilih foto dari komputer atau galeri ponsel Anda.</div>
+        </div>
+
+        <div id="box-pria-link" style="display: none;">
+          <input type="text" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link URL gambar" oninput="previewUrl(this.value, 'preview-pria')">
+          <div class="form-help">Mendukung link Google Drive, Imgur, Cloudinary, atau web hosting gambar.</div>
+        </div>
+
+        <!-- Preview Thumbnail -->
+        <div class="img-preview-box" style="margin-top: 12px;">
+          <img id="preview-pria" src="{{ pria.url_tampil }}" alt="Preview Pria" style="{% if not pria.url_tampil %}display:none;{% endif %}">
+          <span id="preview-pria-empty" class="img-preview-empty" style="{% if pria.url_tampil %}display:none;{% endif %}">
+            Belum ada foto yang dipilih
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMPELAI WANITA -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">👰 Mempelai Wanita</h2>
+        <span class="badge" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">Bride</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="wanita_nama_lengkap">Nama Lengkap &amp; Gelar</label>
+        <input type="text" id="wanita_nama_lengkap" name="wanita_nama_lengkap" class="form-input" value="{{ wanita.nama_lengkap }}" required placeholder="Contoh: Rina Anggraini, S.Kom.">
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="wanita_nama_panggilan">Nama Panggilan</label>
+          <input type="text" id="wanita_nama_panggilan" name="wanita_nama_panggilan" class="form-input" value="{{ wanita.nama_panggilan }}" required placeholder="Rina">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wanita_anak_ke">Urutan Anak</label>
+          <input type="text" id="wanita_anak_ke" name="wanita_anak_ke" class="form-input" value="{{ wanita.anak_ke }}" placeholder="Putri kedua">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="wanita_nama_ayah">Nama Ayah</label>
+          <input type="text" id="wanita_nama_ayah" name="wanita_nama_ayah" class="form-input" value="{{ wanita.nama_ayah }}" placeholder="Bpk. Hendra">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wanita_nama_ibu">Nama Ibu</label>
+          <input type="text" id="wanita_nama_ibu" name="wanita_nama_ibu" class="form-input" value="{{ wanita.nama_ibu }}" placeholder="Ibu Dewi">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="wanita_instagram">Akun Instagram</label>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="color: var(--text-muted); font-size: 13px;">@</span>
+          <input type="text" id="wanita_instagram" name="wanita_instagram" class="form-input" value="{{ wanita.instagram }}" placeholder="rinaanggraini">
+        </div>
+      </div>
+
+      <!-- FOTO MEMPELAI WANITA (DUAL SOURCE) -->
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <label class="form-label" style="color: var(--accent);">📷 Foto Mempelai Wanita</label>
+
+        <div class="media-source-tabs" id="tabs-wanita">
+          <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
+          <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
+        </div>
+
+        <div id="box-wanita-upload">
+          <input type="file" name="wanita_foto" accept="image/*" class="form-input" onchange="previewLocal(this, 'preview-wanita')">
+          <div class="form-help">Pilih foto dari komputer atau galeri ponsel Anda.</div>
+        </div>
+
+        <div id="box-wanita-link" style="display: none;">
+          <input type="text" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link URL gambar" oninput="previewUrl(this.value, 'preview-wanita')">
+          <div class="form-help">Mendukung link Google Drive, Imgur, Cloudinary, atau web hosting gambar.</div>
+        </div>
+
+        <!-- Preview Thumbnail -->
+        <div class="img-preview-box" style="margin-top: 12px;">
+          <img id="preview-wanita" src="{{ wanita.url_tampil }}" alt="Preview Wanita" style="{% if not wanita.url_tampil %}display:none;{% endif %}">
+          <span id="preview-wanita-empty" class="img-preview-empty" style="{% if wanita.url_tampil %}display:none;{% endif %}">
+            Belum ada foto yang dipilih
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+    <button type="submit" class="btn btn-primary">
+      💾 Simpan Data Kedua Mempelai
+    </button>
+  </div>
+</form>
+
+<script>
+  // Tab switch
+  setupMediaSourceTabs('tabs-pria', 'box-pria-upload', 'box-pria-link', 'preview-pria');
+  setupMediaSourceTabs('tabs-wanita', 'box-wanita-upload', 'box-wanita-link', 'preview-wanita');
+
+  // Preview berkas lokal
+  function previewLocal(input, imgId) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.getElementById(imgId);
+        const empty = document.getElementById(imgId + '-empty');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        if (empty) empty.style.display = 'none';
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // Preview URL online
+  function previewUrl(url, imgId) {
+    const img = document.getElementById(imgId);
+    const empty = document.getElementById(imgId + '-empty');
+    if (!url) {
+      img.style.display = 'none';
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+    // Konversi cepat preview gdrive jika terdeteksi
+    let finalUrl = url.trim();
+    const gdriveMatch = finalUrl.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]+)/);
+    if (gdriveMatch) {
+      finalUrl = 'https://lh3.googleusercontent.com/d/' + gdriveMatch[1];
+    }
+    img.src = finalUrl;
+    img.style.display = 'block';
+    if (empty) empty.style.display = 'none';
+  }
+</script>
+{% endblock %}

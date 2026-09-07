@@ -1,0 +1,308 @@
+{% extends "superadmin/base_superadmin.html" %}
+
+{% block title %}Kelola Semua Proyek Undangan{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Semua Proyek Undangan Pernikahan</h1>
+      <p style="color: var(--text-muted); font-size: 14px;">
+        Pantau seluruh proyek undangan digital, status langganan, masa aktif, domain, masa tenggang 1 bulan, dan pembersihan berkas server.
+      </p>
+    </div>
+    <div style="font-size: 13px; color: var(--text-muted);">
+      Domain Platform: <b style="color: var(--accent);">jelajah.biz.id</b>
+    </div>
+  </div>
+</div>
+
+<!-- BANNER PERINGATAN PEMBERSIHAN SERVER JIKA ADA UNDANGAN KEDALUWARSA > 1 BULAN -->
+{% if jml_siap_bersih > 0 %}
+  <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); border-left: 5px solid #ef4444; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div style="flex: 1; min-width: 280px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 20px;">🧹</span>
+        <b style="color: #ef4444; font-size: 15px;">Peringatan Kapasitas Server: {{ jml_siap_bersih }} Undangan Siap Dibersihkan Total!</b>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5;">
+        Terdapat <b>{{ jml_siap_bersih }} proyek undangan</b> yang masa aktifnya telah kedaluwarsa <b>lebih dari 1 bulan</b> dan tidak diperpanjang oleh pemilik.
+        Anda dapat membersihkan seluruh file foto galeri, mempelai, QR, dan medianya dari harddisk server untuk meringankan beban server.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'undangan:superadmin_bersihkan_server_massal' %}" onsubmit="return confirm('Peringatan Superadmin: Seluruh file media (foto galeri prewedding, pengantin, QR, musik, dan bukti transfer) dari {{ jml_siap_bersih }} undangan kedaluwarsa > 1 bulan akan dihapus permanen dari harddisk server disk. Lanjutkan pembersihan?');">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-sm" style="font-weight: 700; white-space: nowrap; padding: 10px 16px; font-size: 13.5px;">
+        🧹 Bersihkan Semua Server ({{ jml_siap_bersih }})
+      </button>
+    </form>
+  </div>
+{% endif %}
+
+<!-- TAB FILTER STATUS UNDANGAN -->
+<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+  <a href="{% url 'undangan:superadmin_undangan' %}?status=semua{% if q %}&q={{ q }}{% endif %}{% if tema_filter %}&tema={{ tema_filter }}{% endif %}"
+     class="btn {% if status_filter == 'semua' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+    Semua ({{ total_undangan }})
+  </a>
+  <a href="{% url 'undangan:superadmin_undangan' %}?status=aktif{% if q %}&q={{ q }}{% endif %}{% if tema_filter %}&tema={{ tema_filter }}{% endif %}"
+     class="btn {% if status_filter == 'aktif' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+    🟢 Aktif ({{ jml_aktif }})
+  </a>
+  <a href="{% url 'undangan:superadmin_undangan' %}?status=trial{% if q %}&q={{ q }}{% endif %}{% if tema_filter %}&tema={{ tema_filter }}{% endif %}"
+     class="btn {% if status_filter == 'trial' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+    ⏳ Trial 1 Hari ({{ jml_trial }})
+  </a>
+  <a href="{% url 'undangan:superadmin_undangan' %}?status=tenggang{% if q %}&q={{ q }}{% endif %}{% if tema_filter %}&tema={{ tema_filter }}{% endif %}"
+     class="btn {% if status_filter == 'tenggang' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm"
+     style="{% if jml_tenggang > 0 and status_filter != 'tenggang' %}border-color: rgba(245, 158, 11, 0.5); color: var(--gold);{% endif %}">
+    ⚠️ Masa Tenggang 1 Bln ({{ jml_tenggang }})
+  </a>
+  <a href="{% url 'undangan:superadmin_undangan' %}?status=siap_bersih{% if q %}&q={{ q }}{% endif %}{% if tema_filter %}&tema={{ tema_filter }}{% endif %}"
+     class="btn {% if status_filter == 'siap_bersih' %}btn-danger{% else %}btn-secondary{% endif %} btn-sm"
+     style="{% if jml_siap_bersih > 0 and status_filter != 'siap_bersih' %}border-color: rgba(239, 68, 68, 0.5); color: var(--danger);{% endif %}">
+    🧹 Siap Dibersihkan ({{ jml_siap_bersih }})
+  </a>
+</div>
+
+<!-- FORM PENCARIAN & FILTER TEMA -->
+<div class="card" style="padding: 16px 20px;">
+  <form method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+    <input type="hidden" name="status" value="{{ status_filter }}">
+    <div style="display: flex; gap: 10px; flex: 1; min-width: 260px;">
+      <input type="text" name="q" value="{{ q }}" class="form-input" placeholder="Cari judul, slug tautan, atau username pemilik...">
+      <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+      {% if q or tema_filter or status_filter != 'semua' %}
+        <a href="{% url 'undangan:superadmin_undangan' %}" class="btn btn-secondary btn-sm">Reset</a>
+      {% endif %}
+    </div>
+
+    <!-- FILTER TEMA -->
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <label style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Tema:</label>
+      <select name="tema" class="form-select" style="width: auto;" onchange="this.form.submit()">
+        <option value="">Semua Tema Game</option>
+        {% for kode, label in daftar_tema %}
+          <option value="{{ kode }}" {% if tema_filter == kode %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+</div>
+
+<!-- TABEL UNDANGAN -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+    <h2 class="card-title" style="margin-bottom: 0;">
+      💌 Daftar Undangan ({{ daftar_undangan|length }} Ditampilkan)
+    </h2>
+  </div>
+
+  {% if daftar_undangan %}
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Judul &amp; Domain Undangan</th>
+            <th>Pemilik Akun</th>
+            <th>Tema Game</th>
+            <th>Masa Aktif &amp; Status</th>
+            <th>Statistik Data</th>
+            <th>Dibuat Pada</th>
+            <th style="text-align: right; min-width: 260px;">Aksi Admin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for und in daftar_undangan %}
+            <tr>
+              <td>
+                <b style="font-size: 14px; color: var(--text);">{{ und.judul }}</b>
+                <div style="margin-top: 3px;">
+                  {% if und.status_langganan == 'aktif' %}
+                    <a href="{{ und.path_publik }}" target="_blank" style="font-family: monospace; font-size: 12px; color: #10b981; font-weight: 700; text-decoration: underline;" title="Tautan Langsung Aktif">
+                      jelajah.biz.id/{{ und.slug }}/ &nearr;
+                    </a>
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); font-size: 9.5px; margin-left: 4px;">Langsung</span>
+                  {% else %}
+                    <a href="{{ und.path_publik }}" target="_blank" style="font-family: monospace; font-size: 12px; color: var(--gold); text-decoration: underline;" title="Tautan Masa Uji Coba">
+                      jelajah.biz.id/trial/{{ und.slug }}/ &nearr;
+                    </a>
+                    <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); font-size: 9.5px; margin-left: 4px;">Trial</span>
+                  {% endif %}
+                </div>
+              </td>
+
+              <td>
+                <span style="font-weight: 600; color: var(--text);">@{{ und.user.username }}</span>
+                <span style="display: block; font-size: 11.5px; color: var(--text-muted);">{{ und.user.first_name|default:"" }}</span>
+              </td>
+
+              <td>
+                <span class="badge" style="background: rgba(79, 70, 229, 0.15); color: var(--accent);">
+                  🎮 {{ und.get_tema_display }}
+                </span>
+              </td>
+
+              <td>
+                {% if und.status_langganan == 'aktif' and und.is_online_aktif %}
+                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">
+                    🟢 Aktif ({{ und.sisa_hari_aktif }} Hari)
+                  </span>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+                    s/d {{ und.aktif_berakhir|date:"d M Y, H:i" }}
+                  </div>
+                {% elif und.status_langganan == 'trial' and und.is_online_aktif %}
+                  <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3);">
+                    ⏳ Trial 1 Hari ({{ und.sisa_waktu_trial }})
+                  </span>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+                    Uji coba gratis
+                  </div>
+                {% elif und.is_masa_tenggang %}
+                  <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--gold); border: 1px solid rgba(245, 158, 11, 0.3);">
+                    ⚠️ Tenggang ({{ und.sisa_hari_tenggang }} Hari Lagi)
+                  </span>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+                    Batas: {{ und.batas_tenggang_berakhir|date:"d M Y" }}
+                  </div>
+                {% elif und.is_siap_dibersihkan %}
+                  <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3);">
+                    🧹 Siap Bersih (&gt;1 Bulan)
+                  </span>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+                    Kedaluwarsa permanen
+                  </div>
+                {% else %}
+                  <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3);">
+                    🔴 Offline / Habis
+                  </span>
+                {% endif %}
+              </td>
+
+              <td>
+                <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                  👥 <b>{{ und.jml_tamu }}</b> Tamu &bull; 📸 <b>{{ und.jml_foto }}</b> Foto<br>
+                  💬 <b>{{ und.jml_ucapan }}</b> Ucapan Masuk
+                </div>
+              </td>
+
+              <td>
+                <span style="font-size: 12px; color: var(--text-muted);">{{ und.dibuat|date:"d M Y, H:i" }}</span>
+              </td>
+
+              <td style="text-align: right;">
+                <div style="display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+                  <!-- Buka Game Undangan Publik -->
+                  <a href="{{ und.path_publik }}" target="_blank" class="btn btn-secondary btn-sm" title="Mainkan Game Undangan">
+                    🎮 Mainkan
+                  </a>
+
+                  <!-- Kelola / Tambah Durasi Modal -->
+                  <button type="button" class="btn btn-success btn-sm" onclick="bukaModalDurasi('{{ und.pk }}', '{{ und.judul|escapejs }}', '{{ und.sisa_hari_aktif }}', '{{ und.status_label }}')" title="Tambah atau ubah durasi aktif">
+                    ⏱️ Tambah Durasi
+                  </button>
+
+                  <!-- Bersihkan File Server Jika Masa Tenggang / Siap Bersih -->
+                  {% if und.is_siap_dibersihkan or und.is_masa_tenggang %}
+                    <form method="POST" action="{% url 'undangan:superadmin_undangan_bersihkan' pk=und.pk %}" style="display: inline;" onsubmit="return confirm('Peringatan Pembersihan Server: Seluruh file foto galeri, foto pengantin, QR rekening, dan musik dari undangan \'{{ und.judul|escapejs }}\' akan dihapus permanen dari harddisk server untuk meringankan server. Lanjutkan?');">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger btn-sm" title="Bersihkan file foto & data server" style="background: #dc2626; border-color: #b91c1c;">
+                        🧹 Bersihkan Server
+                      </button>
+                    </form>
+                  {% endif %}
+
+                  <!-- Hapus Undangan Normal -->
+                  <form method="POST" action="{% url 'undangan:superadmin_undangan_hapus' pk=und.pk %}" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus proyek undangan \'{{ und.judul|escapejs }}\'? Seluruh file media juga akan dibersihkan dari server.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary btn-sm" title="Hapus Undangan">
+                      🗑️
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 48px 20px;">
+      <span style="font-size: 32px; display: block; margin-bottom: 8px;">💌</span>
+      <p style="color: var(--text-muted); font-size: 14px;">Tidak ada proyek undangan yang sesuai dengan kriteria filter.</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- MODAL TAMBAH DURASI OLEH SUPERADMIN -->
+<div id="modal-durasi" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
+  <div class="card" style="max-width: 480px; width: 100%; margin-bottom: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+    <div class="card-header">
+      <h2 class="card-title" style="color: var(--success);">⏱️ Kelola &amp; Tambah Durasi Undangan</h2>
+      <button type="button" onclick="tutupModalDurasi()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+    </div>
+
+    <form id="form-durasi" method="POST" action="">
+      {% csrf_token %}
+      <input type="hidden" name="mode" id="mode-durasi" value="hari">
+
+      <div style="margin-bottom: 14px;">
+        <h4 id="durasi-undangan-judul" style="font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px;">-</h4>
+        <div id="durasi-status-info" style="font-size: 12.5px; color: var(--text-muted);">-</div>
+      </div>
+
+      <!-- OPSI CEPAT TAMBAH HARI -->
+      <div style="margin-bottom: 16px;">
+        <label class="form-label" style="font-size: 12.5px; font-weight: 700; margin-bottom: 6px;">Pilih Tambahan Durasi Cepat:</label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setJumlahHari(1)">+1 Hari</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setJumlahHari(7)">+7 Hari</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setJumlahHari(30)">+30 Hari (1 Bulan)</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setJumlahHari(180)">+6 Bulan</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setJumlahHari(365)">+1 Tahun</button>
+        </div>
+      </div>
+
+      <!-- INPUT CUSTOM HARI -->
+      <div style="margin-bottom: 16px;">
+        <label class="form-label" for="input-jumlah-hari">Atau Masukkan Jumlah Hari Tambahan:</label>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="number" id="input-jumlah-hari" name="jumlah_hari" class="form-input" value="30" min="1" max="3650" required style="width: 120px;">
+          <span style="font-size: 13.5px; color: var(--text-secondary); font-weight: 600;">Hari</span>
+        </div>
+        <div class="form-help">Masa aktif online akan ditambahkan secara kumulatif dari sisa waktu saat ini.</div>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="tutupModalDurasi()">Batal</button>
+        <button type="submit" class="btn btn-success btn-sm">💾 Simpan &amp; Perpanjang Durasi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function bukaModalDurasi(undanganId, judul, sisaHari, statusLabel) {
+    const modal = document.getElementById('modal-durasi');
+    const form = document.getElementById('form-durasi');
+    const elJudul = document.getElementById('durasi-undangan-judul');
+    const elInfo = document.getElementById('durasi-status-info');
+
+    form.action = '/superadmin/undangan/' + undanganId + '/durasi/';
+    elJudul.textContent = judul;
+    elInfo.textContent = 'Status saat ini: ' + statusLabel + ' (' + sisaHari + ' hari aktif)';
+    modal.style.display = 'flex';
+  }
+
+  function setJumlahHari(hari) {
+    document.getElementById('input-jumlah-hari').value = hari;
+  }
+
+  function tutupModalDurasi() {
+    document.getElementById('modal-durasi').style.display = 'none';
+  }
+</script>
+{% endblock %}

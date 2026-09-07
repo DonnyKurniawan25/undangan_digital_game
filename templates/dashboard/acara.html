@@ -1,0 +1,118 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Agenda Acara Pernikahan{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Rangkaian Acara Pernikahan</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Atur jadwal akad nikah, pemberkatan, dan resepsi. Tamu dapat melihat hitung mundur (*countdown*) dan rute Google Maps secara langsung di dalam game.
+  </p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+  <!-- FORM TAMBAH ACARA -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">➕ Tambah Acara Baru</h2>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="nama">Nama Acara</label>
+        <input type="text" id="nama" name="nama" class="form-input" required placeholder="Contoh: Akad Nikah / Resepsi">
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="waktu_mulai">Waktu Mulai</label>
+          <input type="datetime-local" id="waktu_mulai" name="waktu_mulai" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="waktu_selesai">Waktu Selesai (Opsional)</label>
+          <input type="datetime-local" id="waktu_selesai" name="waktu_selesai" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="nama_tempat">Nama Tempat / Gedung</label>
+        <input type="text" id="nama_tempat" name="nama_tempat" class="form-input" required placeholder="Contoh: Masjid Agung / Grand Ballroom Hotel">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="alamat">Alamat Lengkap</label>
+        <textarea id="alamat" name="alamat" class="form-textarea" rows="2" placeholder="Jl. Sudirman No. 12, Jakarta"></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="url_maps">Tautan Google Maps</label>
+          <input type="url" id="url_maps" name="url_maps" class="form-input" placeholder="https://maps.app.goo.gl/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="urutan">Nomor Urutan</label>
+          <input type="number" id="urutan" name="urutan" class="form-input" value="1" min="0">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+        💾 Simpan Acara
+      </button>
+    </form>
+  </div>
+
+  <!-- DAFTAR ACARA TERSIMPAN -->
+  <div>
+    <div class="card-header" style="margin-bottom: 16px;">
+      <h2 class="card-title">📋 Daftar Acara ({{ acara_list.count }})</h2>
+    </div>
+
+    {% if acara_list %}
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        {% for acr in acara_list %}
+          <div class="card" style="margin-bottom: 0; padding: 18px; border-left: 4px solid var(--accent);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent); margin-bottom: 6px;">
+                  Urutan ke-{{ acr.urutan }}
+                </span>
+                <h3 style="font-size: 17px; font-weight: 700; margin: 4px 0 6px;">{{ acr.nama }}</h3>
+                <p style="font-size: 13.5px; color: #34d399; font-weight: 600;">
+                  📅 {{ acr.waktu_mulai|date:"l, d F Y — H:i" }} WIB
+                  {% if acr.waktu_selesai %} s/d {{ acr.waktu_selesai|date:"H:i" }} WIB{% endif %}
+                </p>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">
+                  📍 <b>{{ acr.nama_tempat }}</b><br>
+                  <span style="color: var(--text-muted);">{{ acr.alamat }}</span>
+                </p>
+              </div>
+
+              <form method="POST" action="{% url 'undangan:dashboard_acara_hapus' pk=acr.pk %}" onsubmit="return confirm('Yakin ingin menghapus acara ini?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm" title="Hapus Acara">
+                  🗑️ Hapus
+                </button>
+              </form>
+            </div>
+
+            {% if acr.url_maps %}
+              <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);">
+                <a href="{{ acr.url_maps }}" target="_blank" rel="noopener" style="font-size: 12.5px; color: var(--accent); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                  🗺️ Buka Tautan Google Maps &rarr;
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card" style="text-align: center; padding: 40px 20px;">
+        <p style="color: var(--text-muted); font-size: 14px;">
+          Belum ada jadwal acara yang ditambahkan. Gunakan formulir di samping untuk menambahkan acara akad atau resepsi.
+        </p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

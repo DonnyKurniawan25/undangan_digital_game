@@ -13,6 +13,13 @@
 </head>
 <body>
 
+{% if is_owner_or_admin and not is_online_aktif %}
+<div style="position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 99999; background: rgba(15, 23, 42, 0.92); border: 1px solid #f59e0b; color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-family: sans-serif; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
+  <span>⏳ <b>Pratinjau Pemilik:</b> Uji coba 1 hari berakhir (offline bagi tamu).</span>
+  <a href="{% url 'undangan:dashboard_pembayaran' %}" style="background: #f59e0b; color: #000; font-weight: 700; padding: 4px 10px; border-radius: 999px; text-decoration: none; font-size: 11px;">Aktifkan 1 Bulan (Rp 30rb)</a>
+</div>
+{% endif %}
+
 <!-- ================= LAYAR SAMPUL ================= -->
 <section id="sampul">
   <div class="hias-sampul" aria-hidden="true"></div>
@@ -131,7 +138,7 @@
     {% if pria %}
       <div class="stardew-avatar-box">
         <div class="avatar-frame">
-          {% if pria.foto %}<img src="{{ pria.foto.url }}" alt="{{ pria.nama_lengkap }}">{% else %}<div style="background:#ddd;width:100%;height:100%;"></div>{% endif %}
+          {% if pria.url_tampil %}<img src="{{ pria.url_tampil }}" alt="{{ pria.nama_lengkap }}">{% else %}<div style="background:#ddd;width:100%;height:100%;"></div>{% endif %}
         </div>
         <div class="avatar-info">
           <h3>{{ pria.nama_lengkap }}</h3>
@@ -143,7 +150,7 @@
     {% if wanita %}
       <div class="stardew-avatar-box">
         <div class="avatar-frame">
-          {% if wanita.foto %}<img src="{{ wanita.foto.url }}" alt="{{ wanita.nama_lengkap }}">{% else %}<div style="background:#ddd;width:100%;height:100%;"></div>{% endif %}
+          {% if wanita.url_tampil %}<img src="{{ wanita.url_tampil }}" alt="{{ wanita.nama_lengkap }}">{% else %}<div style="background:#ddd;width:100%;height:100%;"></div>{% endif %}
         </div>
         <div class="avatar-info">
           <h3>{{ wanita.nama_lengkap }}</h3>
@@ -189,7 +196,7 @@
     <div class="galeri-grid">
       {% for item in galeri %}
         <div class="galeri-item">
-          <img src="{{ item.gambar.url }}" alt="{{ item.keterangan|default:'Foto Galeri' }}" loading="lazy">
+          <img src="{{ item.url_tampil }}" alt="{{ item.keterangan|default:'Foto Galeri' }}" loading="lazy">
           {% if item.keterangan %}<p style="margin:4px 0 0;font-size:0.75rem;text-align:center;">{{ item.keterangan }}</p>{% endif %}
         </div>
       {% empty %}
@@ -253,8 +260,8 @@
         <p style="margin:0;font-size:0.9rem;font-weight:700;">{{ rek.nama_bank }}</p>
         <p class="nomor-rekening">{{ rek.nomor }}</p>
         <p style="margin:0 0 8px;font-size:0.82rem;color:var(--tinta-lembut);">a.n. {{ rek.atas_nama }}</p>
-        {% if rek.qr %}
-          <div style="width:120px;margin:8px auto;"><img src="{{ rek.qr.url }}" alt="QRIS {{ rek.nama_bank }}"></div>
+        {% if rek.url_tampil %}
+          <div style="width:120px;margin:8px auto;"><img src="{{ rek.url_tampil }}" alt="QRIS {{ rek.nama_bank }}"></div>
         {% endif %}
         <button type="button" class="tombol-salin" data-salin="{{ rek.nomor }}">Salin Nomor Rekening</button>
       </div>

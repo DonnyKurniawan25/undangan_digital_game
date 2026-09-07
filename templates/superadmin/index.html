@@ -1,0 +1,236 @@
+{% extends "superadmin/base_superadmin.html" %}
+
+{% block title %}Ringkasan Platform & Metrik Analitik{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Pusat Ringkasan &amp; Analitik Platform</h1>
+      <p style="color: var(--text-muted); font-size: 14px;">
+        Pantau pertumbuhan pengguna, total undangan aktif, statistik RSVP tamu, dan popularitas tema game interaktif.
+      </p>
+    </div>
+    <span class="badge" style="background: rgba(79, 70, 229, 0.15); color: var(--accent); padding: 6px 12px; font-size: 12px;">
+      🟢 Sistem Operasional &bull; Multi-Tenant Aktif
+    </span>
+  </div>
+</div>
+
+<!-- KARTU METRIK UTAMA -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Total Pengguna</span>
+      <span style="font-size: 20px;">👥</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #3b82f6;">{{ total_users }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      {{ user_biasa }} calon pengantin terdaftar
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Proyek Undangan</span>
+      <span style="font-size: 20px;">💌</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #10b981;">{{ total_undangan }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Undangan siap sebar di platform
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Total Tamu Terdata</span>
+      <span style="font-size: 20px;">🎉</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #f59e0b;">{{ total_tamu }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Tamu dengan tautan personal
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Pesan Ucapan &amp; RSVP</span>
+      <span style="font-size: 20px;">💬</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #8b5cf6;">{{ total_ucapan }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Doa restu masuk dari tamu
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Foto Galeri Prewedding</span>
+      <span style="font-size: 20px;">📸</span>
+    </div>
+    <div style="font-size: 28px; font-weight: 800; color: #ec4899;">{{ total_foto }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      Foto tersimpan (berkas &amp; link)
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0; border-color: {% if menunggu_verifikasi > 0 %}rgba(245, 158, 11, 0.4){% else %}var(--border){% endif %};">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Total Omset Platform</span>
+      <span style="font-size: 20px;">💰</span>
+    </div>
+    <div style="font-size: 24px; font-weight: 800; color: #059669;">Rp {{ total_pendapatan|floatformat:0 }}</div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+      {% if menunggu_verifikasi > 0 %}
+        <span style="color: var(--warning); font-weight: 700;">⚠️ {{ menunggu_verifikasi }} menunggu verifikasi</span>
+      {% else %}
+        {{ total_pembayaran }} transaksi total
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- DISTRIBUSI TEMA GAME & AKTIVITAS TERBARU -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-bottom: 24px;">
+  <!-- Popularitas Tema Game -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">🎮 Penggunaan Tema Game Interaktif</h2>
+    </div>
+    <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">
+      Persentase tema game yang dipilih oleh para calon pengantin:
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      {% for kode, item in distribusi_tema.items %}
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+            <b>{{ item.label }}</b>
+            <span style="color: var(--text-muted);">{{ item.jumlah }} Undangan</span>
+          </div>
+          <div style="width: 100%; height: 8px; background: var(--card-inner); border-radius: 4px; overflow: hidden;">
+            <div style="height: 100%; width: {% if total_undangan > 0 %}{% widthratio item.jumlah total_undangan 100 %}{% else %}0{% endif %}%; background: var(--accent); border-radius: 4px;"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Pengguna Baru Bergabung -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">👥 Pengguna Terdaftar Terbaru</h2>
+      <a href="{% url 'undangan:superadmin_users' %}" style="font-size: 12.5px; color: var(--accent); font-weight: 600;">Lihat Semua &rarr;</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      {% for u in users_terbaru %}
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+          <div>
+            <b style="font-size: 13.5px; display: block;">{{ u.first_name|default:u.username }}</b>
+            <span style="font-size: 11.5px; color: var(--text-muted);">@{{ u.username }} &bull; {{ u.email|default:"(tanpa email)" }}</span>
+          </div>
+          <div style="text-align: right;">
+            {% if u.is_active %}
+              <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">Aktif</span>
+            {% else %}
+              <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">Nonaktif</span>
+            {% endif %}
+            <span style="display: block; font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+              {{ u.date_joined|date:"d M Y" }}
+            </span>
+          </div>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Belum ada user terdaftar.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- UNDANGAN TERBARU & UCAPAN TERBARU -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px;">
+  <!-- Proyek Undangan Terbaru -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">💌 Undangan Dibuat Terbaru</h2>
+      <a href="{% url 'undangan:superadmin_undangan' %}" style="font-size: 12.5px; color: var(--accent); font-weight: 600;">Kelola Semua &rarr;</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      {% for und in undangan_terbaru %}
+        <div style="padding: 10px 12px; background: var(--card-inner); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <b style="font-size: 13.5px; color: var(--text); display: block;">{{ und.judul }}</b>
+            <span style="font-size: 12px; color: var(--text-muted);">
+              Pemilik: @{{ und.user.username }} &bull; Tema: {{ und.get_tema_display|truncatechars:20 }}
+            </span>
+          </div>
+          <a href="{% url 'undangan:u_undangan' slug_undangan=und.slug %}" target="_blank" class="btn btn-secondary btn-sm">
+            Mainkan &rarr;
+          </a>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Belum ada proyek undangan.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Ucapan RSVP Terkini -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">💬 Ucapan Tamu Masuk Terkini</h2>
+      <a href="{% url 'undangan:superadmin_ucapan' %}" style="font-size: 12.5px; color: var(--accent); font-weight: 600;">Moderasi Semua &rarr;</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      {% for u in ucapan_terbaru %}
+        <div style="padding: 10px 12px; background: var(--card-inner); border-radius: 10px; border-left: 3px solid {% if u.kehadiran == 'hadir' %}#10b981{% elif u.kehadiran == 'tidak' %}#ef4444{% else %}#f59e0b{% endif %};">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <b style="font-size: 13px;">{{ u.nama }}</b>
+            <span style="font-size: 11px; color: var(--text-muted);">{{ u.undangan.judul|truncatechars:20 }}</span>
+          </div>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">{{ u.pesan|truncatechars:70 }}</p>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Belum ada ucapan tamu masuk.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Transaksi Masuk Terkini -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">💳 Transaksi Pembayaran Terkini</h2>
+      <a href="{% url 'undangan:superadmin_transaksi' %}" style="font-size: 12.5px; color: var(--accent); font-weight: 600;">Lihat Semua &rarr;</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      {% for tx in transaksi_terbaru %}
+        <div style="padding: 10px 12px; background: var(--card-inner); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <b style="font-size: 13px; color: var(--text);">@{{ tx.user.username }}</b>
+              {% if tx.status == 'disetujui' %}
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); font-size: 10px;">Disetujui</span>
+              {% elif tx.status == 'menunggu' %}
+                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); font-size: 10px;">Menunggu</span>
+              {% else %}
+                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger); font-size: 10px;">Ditolak</span>
+              {% endif %}
+            </div>
+            <span style="font-size: 11.5px; color: var(--text-muted);">
+              {{ tx.undangan.judul|truncatechars:25 }} &bull; Rp {{ tx.nominal|floatformat:0 }}
+            </span>
+          </div>
+          <a href="{% url 'undangan:superadmin_transaksi' %}" class="btn btn-secondary btn-sm" style="font-size: 11px;">
+            Detail &rarr;
+          </a>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Belum ada riwayat transaksi.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

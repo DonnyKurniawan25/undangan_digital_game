@@ -1,0 +1,91 @@
+{% extends "superadmin/base_superadmin.html" %}
+
+{% block title %}Pengaturan Bawaan Platform{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Pengaturan Bawaan Platform</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Atur template dan konfigurasi global yang menjadi nilai default saat pengguna baru mendaftar atau saat halaman demo utama dibuka.
+  </p>
+</div>
+
+<div class="card" style="max-width: 900px;">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-bottom: 18px;">
+      <div>
+        <label class="form-label" for="judul" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">
+          Judul Bawaan Platform
+        </label>
+        <input type="text" id="judul" name="judul" class="form-input" value="{{ pengaturan.judul }}" required>
+      </div>
+
+      <div>
+        <label class="form-label" for="tema" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">
+          Tema Default Demo
+        </label>
+        <select id="tema" name="tema" class="form-select">
+          {% for kode, label in daftar_tema %}
+            <option value="{{ kode }}" {% if pengaturan.tema == kode %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-bottom: 18px;">
+      <div>
+        <label class="form-label" for="hashtag" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">
+          Hashtag Bawaan
+        </label>
+        <input type="text" id="hashtag" name="hashtag" class="form-input" value="{{ pengaturan.hashtag }}" placeholder="#ContohWedding">
+      </div>
+
+      <div>
+        <label class="form-label" for="sumber_quote" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">
+          Sumber Kutipan / Ayat
+        </label>
+        <input type="text" id="sumber_quote" name="sumber_quote" class="form-input" value="{{ pengaturan.sumber_quote }}" placeholder="QS. Ar-Rum: 21">
+      </div>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+      <label class="form-label" for="quote" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">
+        Teks Kutipan / Doa Pembuka Default
+      </label>
+      <textarea id="quote" name="quote" class="form-textarea" rows="3">{{ pengaturan.quote }}</textarea>
+    </div>
+
+    <div style="padding: 16px; background: var(--card-inner); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 18px;">
+      <label class="form-label" style="font-size: 13.5px; font-weight: 700; color: var(--accent); margin-bottom: 8px; display: block;">
+        🎵 File Musik Global Bawaan Platform
+      </label>
+      <input type="file" name="musik" accept="audio/*" class="form-input">
+      {% if pengaturan.musik %}
+        <div style="margin-top: 8px; font-size: 12px; color: var(--success);">
+          ✅ Musik aktif: <code>{{ pengaturan.musik.name }}</code>
+          <label style="display: block; margin-top: 6px; color: var(--danger);">
+            <input type="checkbox" name="hapus_musik" value="1"> Hapus file musik ini
+          </label>
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <label class="form-label" for="catatan_penutup" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block;">
+        Catatan Penutup Default
+      </label>
+      <textarea id="catatan_penutup" name="catatan_penutup" class="form-textarea" rows="3">{{ pengaturan.catatan_penutup }}</textarea>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <button type="submit" class="btn btn-primary">
+        💾 Simpan Pengaturan Bawaan Platform
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

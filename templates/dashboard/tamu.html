@@ -1,0 +1,147 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Daftar Tamu & Broadcast WhatsApp{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Daftar Tamu &amp; Sebar Undangan</h1>
+  <p style="color: var(--text-muted); font-size: 14px;">
+    Buat tautan undangan personal untuk masing-masing tamu Anda dan kirimkan langsung pesan undangan sopan ke WhatsApp hanya dengan satu kali klik!
+  </p>
+</div>
+
+<!-- FORM TAMBAH TAMU -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">➕ Tambah Tamu Undangan Baru</h2>
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label" for="sapaan">Sapaan Tamu</label>
+        <input type="text" id="sapaan" name="sapaan" class="form-input" value="Bapak/Ibu/Saudara/i" placeholder="Contoh: Bapak / Ibu / Sahabat">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label" for="nama">Nama Lengkap Tamu</label>
+        <input type="text" id="nama" name="nama" class="form-input" required placeholder="Contoh: Joko Widodo &amp; Keluarga">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label" for="catatan">Catatan / Kategori (Opsional)</label>
+        <input type="text" id="catatan" name="catatan" class="form-input" placeholder="Contoh: Teman Kantor / Kerabat Ayah">
+      </div>
+    </div>
+
+    <div style="margin-top: 16px; text-align: right;">
+      <button type="submit" class="btn btn-primary">
+        ➕ Tambah Tamu &amp; Buat Link WhatsApp
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- TABEL DAFTAR TAMU -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+    <h2 class="card-title" style="margin-bottom: 0;">
+      💌 Daftar Tamu Terdaftar ({{ total_tamu }})
+    </h2>
+    <div style="font-size: 13px; color: var(--text-muted);">
+      Link personal otomatis mencantumkan nama tamu di dalam game
+    </div>
+  </div>
+
+  {% if tamu_items %}
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px;">
+        <thead>
+          <tr style="background: var(--card-inner); border-bottom: 1px solid var(--border); color: var(--text-muted);">
+            <th style="padding: 12px 16px;">Nama Tamu</th>
+            <th style="padding: 12px 16px;">Tautan Personal</th>
+            <th style="padding: 12px 16px;">Status Kunjungan</th>
+            <th style="padding: 12px 16px; text-align: right;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in tamu_items %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 14px 16px;">
+                <b style="color: var(--text); font-size: 14px;">{{ item.obj.sapaan_lengkap }}</b>
+                {% if item.obj.catatan %}
+                  <span style="display: block; font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                    🏷️ {{ item.obj.catatan }}
+                  </span>
+                {% endif %}
+              </td>
+
+              <td style="padding: 14px 16px;">
+                <div style="font-family: monospace; font-size: 12px; color: var(--accent); word-break: break-all; max-width: 320px;">
+                  {{ item.link }}
+                </div>
+              </td>
+
+              <td style="padding: 14px 16px;">
+                {% if item.obj.jumlah_dibuka > 0 %}
+                  <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
+                    👀 Dibuka {{ item.obj.jumlah_dibuka }}x
+                  </span>
+                  <span style="display: block; font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+                    Terakhir: {{ item.obj.pertama_dibuka|date:"d M Y, H:i" }}
+                  </span>
+                {% else %}
+                  <span class="badge" style="background: rgba(148, 163, 184, 0.2); color: var(--text-muted);">
+                    ⏳ Belum dibuka
+                  </span>
+                {% endif %}
+              </td>
+
+              <td style="padding: 14px 16px; text-align: right;">
+                <div style="display: inline-flex; gap: 6px; align-items: center;">
+                  <!-- Tombol WhatsApp -->
+                  <a href="{{ item.wa_url }}" target="_blank" rel="noopener" class="btn btn-sm" style="background: #25d366; color: #000; font-weight: 700;" title="Kirim Pesan WhatsApp">
+                    💬 Kirim WA
+                  </a>
+
+                  <!-- Tombol Salin -->
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="salinLink('{{ item.link }}')" title="Salin Tautan">
+                    📋 Salin
+                  </button>
+
+                  <!-- Hapus -->
+                  <form method="POST" action="{% url 'undangan:dashboard_tamu_hapus' pk=item.obj.pk %}" style="display: inline;" onsubmit="return confirm('Hapus tamu ini?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                      🗑️
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 48px 20px;">
+      <span style="font-size: 40px; display: block; margin-bottom: 10px;">💌</span>
+      <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Belum Ada Tamu yang Ditambahkan</h3>
+      <p style="color: var(--text-muted); font-size: 14px; max-width: 440px; margin: 0 auto;">
+        Tambahkan nama tamu undangan melalui form di atas untuk mendapatkan tautan khusus dan kemudahan mengirim undangan lewat WhatsApp.
+      </p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  function salinLink(teks) {
+    navigator.clipboard.writeText(teks).then(() => {
+      alert("Tautan personal tamu berhasil disalin!");
+    }).catch(() => {
+      prompt("Salin tautan berikut:", teks);
+    });
+  }
+</script>
+{% endblock %}
