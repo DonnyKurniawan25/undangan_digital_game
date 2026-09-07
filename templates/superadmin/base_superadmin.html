@@ -1,14 +1,14 @@
 {% load static %}<!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Pusat Kendali Superadmin{% endblock %} — Undangan Game Digital</title>
+  <title>{% block title %}Panel Superadmin{% endblock %} — Undangan Game Digital</title>
   
   <script>
     (function() {
       try {
-        const savedTheme = localStorage.getItem('superadmin_theme') || localStorage.getItem('dashboard_theme') || 'light';
+        const savedTheme = localStorage.getItem('superadmin_theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
       } catch (e) {}
     })();
@@ -18,12 +18,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* THEME VARIABLES: LIGHT (DEFAULT) & DARK */
     :root, [data-theme="light"] {
-      --bg: #f1f5f9;
-      --topbar-bg: rgba(255, 255, 255, 0.95);
+      --bg: #f8fafc;
+      --sidebar-bg: #ffffff;
+      --sidebar-border: #e2e8f0;
+      --topbar-bg: rgba(255, 255, 255, 0.94);
       --card-bg: #ffffff;
-      --card-inner: #f8fafc;
+      --card-inner: #f1f5f9;
       --accent: #4f46e5;
       --accent-hover: #4338ca;
       --accent-soft: rgba(79, 70, 229, 0.1);
@@ -34,6 +35,8 @@
       --border: #e2e8f0;
       --input-bg: #ffffff;
       --input-border: #cbd5e1;
+      --bottom-nav-bg: rgba(255, 255, 255, 0.96);
+      --sheet-bg: #ffffff;
       --success: #059669;
       --danger: #dc2626;
       --warning: #d97706;
@@ -41,8 +44,10 @@
     }
 
     [data-theme="dark"] {
-      --bg: #090d16;
-      --topbar-bg: rgba(15, 23, 42, 0.95);
+      --bg: #0b0f19;
+      --sidebar-bg: #131a2b;
+      --sidebar-border: #222d46;
+      --topbar-bg: rgba(15, 23, 42, 0.94);
       --card-bg: #111827;
       --card-inner: #1f2937;
       --accent: #6366f1;
@@ -55,6 +60,8 @@
       --border: #1f2937;
       --input-bg: #0b0f19;
       --input-border: #374151;
+      --bottom-nav-bg: rgba(19, 26, 43, 0.96);
+      --sheet-bg: #111827;
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
@@ -67,29 +74,39 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       transition: background-color 0.25s ease, color 0.25s ease;
     }
     a { color: inherit; text-decoration: none; }
 
-    /* TOPBAR SUPERADMIN */
-    .super-topbar {
-      background: var(--topbar-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+    /* LAYOUT UTAMA DENGAN SIDEBAR */
+    .super-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* SIDEBAR SUPERADMIN (DESKTOP) */
+    .super-sidebar {
+      width: 270px;
+      min-width: 270px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
       position: sticky;
       top: 0;
-      z-index: 50;
+      height: 100vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      z-index: 40;
       transition: background 0.25s, border-color 0.25s;
     }
-    .super-container {
-      max-width: 1260px;
-      margin: 0 auto;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .super-sidebar::-webkit-scrollbar { width: 5px; }
+    .super-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .super-sidebar-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--sidebar-border);
     }
     .super-brand {
       display: flex;
@@ -101,21 +118,315 @@
     .badge-superadmin {
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       color: #000;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 800;
       padding: 3px 8px;
       border-radius: 6px;
       letter-spacing: 0.5px;
       text-transform: uppercase;
-    }
-    .super-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      margin-left: auto;
     }
 
-    /* THEME TOGGLE */
+    /* USER CARD DI SIDEBAR */
+    .super-sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      margin: 14px 16px 6px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .super-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .super-user-meta { flex: 1; min-width: 0; }
+    .super-user-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .super-user-role {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* NAVIGASI VERTICAL SIDEBAR */
+    .super-sidebar-nav {
+      flex: 1;
+      padding: 10px 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .super-nav-section-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding: 14px 10px 6px;
+      text-transform: uppercase;
+    }
+    .super-sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: all 0.18s ease;
+      position: relative;
+    }
+    .super-sidebar-item:hover {
+      background: var(--card-inner);
+      color: var(--text);
+      transform: translateX(2px);
+    }
+    .super-sidebar-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .super-sidebar-item.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent);
+    }
+    .super-sidebar-icon {
+      font-size: 17px;
+      width: 22px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* SIDEBAR FOOTER ACTIONS */
+    .super-sidebar-footer {
+      padding: 16px 14px;
+      border-top: 1px solid var(--sidebar-border);
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* MAIN CONTENT WRAPPER */
+    .super-main-wrapper {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* DESKTOP TOPBAR */
+    .super-desktop-topbar {
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    /* MOBILE TOPBAR (< 992px) */
+    .super-mobile-topbar {
+      display: none; /* Hidden on desktop */
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    /* MAIN CONTAINER BODY */
+    .super-main {
+      padding: 28px 32px 60px;
+      flex: 1;
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* ANDROID BOTTOM NAVIGATION BAR (MOBILE) */
+    .super-android-bottom-bar {
+      display: none; /* Hidden on desktop */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--bottom-nav-bg);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 4px;
+    }
+    .super-bottom-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 0;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .super-bottom-item .b-icon { font-size: 20px; line-height: 1; }
+    .super-bottom-item .b-label { font-size: 10.5px; font-weight: 600; }
+    .super-bottom-item.active { color: var(--accent); }
+    .super-bottom-item.active .b-label { font-weight: 800; }
+
+    /* BOTTOM SHEET DRAWER */
+    .super-sheet-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .super-sheet-backdrop.open { opacity: 1; }
+
+    .super-android-bottom-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-height: 85vh;
+      overflow-y: auto;
+      background: var(--sheet-bg);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
+      z-index: 1001;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 12px 18px 36px;
+      display: flex;
+      flex-direction: column;
+    }
+    .super-android-bottom-sheet.open { transform: translateY(0); }
+    .super-sheet-handle-bar {
+      width: 44px;
+      height: 5px;
+      border-radius: 10px;
+      background: var(--border);
+      margin: 4px auto 14px;
+    }
+    .super-sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .super-sheet-title { font-size: 16px; font-weight: 800; color: var(--text); }
+    .super-sheet-close-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .super-sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .super-sheet-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 14px 8px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      transition: transform 0.15s;
+    }
+    .super-sheet-item.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* BUTTONS & GENERAL UI */
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary { background: var(--card-inner); border: 1px solid var(--border); color: var(--text); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-danger { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); color: var(--danger); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+    .btn-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--success); }
+    .btn-success:hover { background: rgba(16, 185, 129, 0.3); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
     .btn-theme-toggle {
       background: var(--card-inner);
       border: 1px solid var(--border);
@@ -130,92 +441,7 @@
       gap: 6px;
       transition: all 0.2s;
     }
-    .btn-theme-toggle:hover {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    /* BUTTONS */
-    .btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-secondary {
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-    .btn-secondary:hover { background: var(--border); }
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      color: var(--danger);
-    }
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
-    .btn-success {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: var(--success);
-    }
-    .btn-success:hover { background: rgba(16, 185, 129, 0.3); }
-    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
-
-    /* NAVIGATION TABS SUPERADMIN */
-    .super-nav-wrapper {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border);
-    }
-    .super-nav {
-      max-width: 1260px;
-      margin: 0 auto;
-      display: flex;
-      gap: 6px;
-      padding: 0 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .super-nav::-webkit-scrollbar { display: none; }
-    .super-tab {
-      padding: 13px 16px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    .super-tab:hover { color: var(--text); }
-    .super-tab.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-      background: var(--accent-soft);
-    }
-
-    /* MAIN CONTENT */
-    .super-main {
-      max-width: 1260px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 24px 20px 48px;
-      flex: 1;
-    }
+    .btn-theme-toggle:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 
     /* CARD */
     .card {
@@ -254,47 +480,43 @@
       align-items: center;
       gap: 10px;
     }
-    .alert-success {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: var(--success);
-    }
-    .alert-error {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: var(--danger);
-    }
+    [data-theme="light"] .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+    [data-theme="dark"] .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+    [data-theme="light"] .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    [data-theme="dark"] .alert-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
 
     /* TABEL DATA */
     .table-container {
       overflow-x: auto;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       background: var(--card-bg);
     }
-    table.data-table {
+    .data-table {
       width: 100%;
       border-collapse: collapse;
+      font-size: 13px;
       text-align: left;
-      font-size: 13.5px;
     }
-    table.data-table th {
+    .data-table th {
       background: var(--card-inner);
-      padding: 12px 14px;
+      padding: 12px 16px;
+      font-weight: 700;
       color: var(--text-muted);
-      font-weight: 600;
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
-    table.data-table td {
-      padding: 13px 14px;
+    .data-table td {
+      padding: 13px 16px;
       border-bottom: 1px solid var(--border);
       color: var(--text);
+      vertical-align: middle;
     }
-    table.data-table tr:last-child td {
-      border-bottom: none;
-    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    [data-theme="light"] .data-table tr:hover td { background: rgba(0, 0, 0, 0.02); }
 
-    /* FORM INPUTS */
+    /* FORM ELEMENTS */
     .form-input, .form-select, .form-textarea {
       width: 100%;
       background: var(--input-bg);
@@ -312,7 +534,6 @@
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     }
 
-    /* BADGES */
     .badge {
       display: inline-block;
       padding: 3px 8px;
@@ -333,10 +554,13 @@
       margin-top: auto;
     }
 
-    @media (max-width: 768px) {
-      .super-container { flex-direction: column; gap: 12px; align-items: flex-start; }
-      .super-actions { width: 100%; justify-content: space-between; }
-      .super-main { padding: 16px 14px 36px; }
+    /* RESPONSIVE MEDIA QUERIES */
+    @media (max-width: 991px) {
+      .super-sidebar { display: none; }
+      .super-desktop-topbar { display: none; }
+      .super-mobile-topbar { display: flex; }
+      .super-android-bottom-bar { display: flex; }
+      .super-main { padding: 16px 14px 84px; }
       .card { padding: 16px 12px; }
     }
   </style>
@@ -344,102 +568,266 @@
 </head>
 <body>
 
-  <!-- TOPBAR -->
-  <header class="super-topbar">
-    <div class="super-container">
-      <div class="super-brand">
-        <span style="font-size: 22px;">👑</span>
-        <div>Superadmin<span>Control</span></div>
-        <span class="badge-superadmin">Owner</span>
+  <div class="super-layout">
+
+    <!-- ============================================================
+         1. SIDEBAR SUPERADMIN (KHUSUS DESKTOP >= 992px)
+         ============================================================ -->
+    <aside class="super-sidebar">
+      <div class="super-sidebar-header">
+        <div class="super-brand">
+          <span style="font-size: 22px;">👑</span>
+          <div>Superadmin<span>Control</span></div>
+        </div>
       </div>
 
-      <div class="super-actions">
-        <!-- TOGGLE TEMA -->
-        <button type="button" id="btn-theme-toggle" class="btn-theme-toggle" onclick="toggleSuperTheme()" title="Ubah tema Light/Dark">
-          <span id="theme-icon">☀️</span>
-          <span id="theme-label">Mode Terang</span>
-        </button>
+      <div class="super-sidebar-user">
+        <div class="super-avatar">
+          {{ request.user.username|slice:":1"|upper }}
+        </div>
+        <div class="super-user-meta">
+          <div class="super-user-name">@{{ request.user.username }}</div>
+          <div class="super-user-role">Super Administrator</div>
+        </div>
+      </div>
 
-        <a href="{% url 'undangan:dashboard' %}" class="btn btn-secondary btn-sm" title="Buka Dashboard User Biasa">
+      <nav class="super-sidebar-nav">
+        <div class="super-nav-section-label">MANAJEMEN UTAMA</div>
+
+        <a href="{% url 'undangan:superadmin_index' %}" class="super-sidebar-item {% if menu_aktif == 'beranda' %}active{% endif %}">
+          <span class="super-sidebar-icon">📊</span>
+          <span>Ringkasan &amp; Analitik</span>
+        </a>
+        <a href="{% url 'undangan:superadmin_users' %}" class="super-sidebar-item {% if menu_aktif == 'users' %}active{% endif %}">
+          <span class="super-sidebar-icon">👥</span>
+          <span>Kelola Pengguna (Users)</span>
+        </a>
+        <a href="{% url 'undangan:superadmin_undangan' %}" class="super-sidebar-item {% if menu_aktif == 'undangan' %}active{% endif %}">
+          <span class="super-sidebar-icon">💌</span>
+          <span>Semua Proyek Undangan</span>
+        </a>
+        <a href="{% url 'undangan:superadmin_transaksi' %}" class="super-sidebar-item {% if menu_aktif == 'transaksi' %}active{% endif %}">
+          <span class="super-sidebar-icon">💳</span>
+          <span>Transaksi &amp; Pembayaran</span>
+        </a>
+
+        <div class="super-nav-section-label">MODERASI &amp; SISTEM</div>
+
+        <a href="{% url 'undangan:superadmin_ucapan' %}" class="super-sidebar-item {% if menu_aktif == 'ucapan' %}active{% endif %}">
+          <span class="super-sidebar-icon">💬</span>
+          <span>Moderasi RSVP Global</span>
+        </a>
+        <a href="{% url 'undangan:superadmin_pengaturan' %}" class="super-sidebar-item {% if menu_aktif == 'pengaturan' %}active{% endif %}">
+          <span class="super-sidebar-icon">⚙️</span>
+          <span>Pengaturan Platform</span>
+        </a>
+      </nav>
+
+      <div class="super-sidebar-footer">
+        <a href="{% url 'undangan:dashboard' %}" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">
           <span>👤</span> Dashboard User
         </a>
-        <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-secondary btn-sm" title="Buka Django Admin Bawaan">
-          <span>⚙️</span> Django Admin
+        <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">
+          <span>⚙️</span> Django Admin &nearr;
         </a>
-        <a href="{% url 'undangan:logout' %}" class="btn btn-danger btn-sm">Keluar</a>
+        <div style="display: flex; gap: 8px; margin-top: 4px;">
+          <button type="button" class="btn-theme-toggle" style="flex: 1; justify-content: center;" onclick="toggleSuperTheme()" title="Ubah tema Light/Dark">
+            <span id="theme-icon">🌙</span>
+            <span id="theme-label">Tema</span>
+          </button>
+          <a href="{% url 'undangan:logout' %}" class="btn btn-danger btn-sm" style="padding: 7px 12px;" title="Keluar">
+            Keluar
+          </a>
+        </div>
       </div>
-    </div>
-  </header>
+    </aside>
 
-  <!-- NAVIGATION TABS -->
-  <nav class="super-nav-wrapper">
-    <div class="super-nav">
-      <a href="{% url 'undangan:superadmin_index' %}" class="super-tab {% if menu_aktif == 'beranda' %}active{% endif %}">
-        <span>📊</span> Ringkasan &amp; Analitik
-      </a>
-      <a href="{% url 'undangan:superadmin_users' %}" class="super-tab {% if menu_aktif == 'users' %}active{% endif %}">
-        <span>👥</span> Kelola Pengguna (Users)
-      </a>
-      <a href="{% url 'undangan:superadmin_undangan' %}" class="super-tab {% if menu_aktif == 'undangan' %}active{% endif %}">
-        <span>💌</span> Semua Proyek Undangan
-      </a>
-      <a href="{% url 'undangan:superadmin_transaksi' %}" class="super-tab {% if menu_aktif == 'transaksi' %}active{% endif %}">
-        <span>💳</span> Transaksi &amp; Pembayaran
-      </a>
-      <a href="{% url 'undangan:superadmin_ucapan' %}" class="super-tab {% if menu_aktif == 'ucapan' %}active{% endif %}">
-        <span>💬</span> Moderasi RSVP Global
-      </a>
-      <a href="{% url 'undangan:superadmin_pengaturan' %}" class="super-tab {% if menu_aktif == 'pengaturan' %}active{% endif %}">
-        <span>⚙️</span> Pengaturan Bawaan Platform
-      </a>
+    <!-- ============================================================
+         2. AREA KONTEN SUPERADMIN
+         ============================================================ -->
+    <div class="super-main-wrapper">
+
+      <!-- DESKTOP TOPBAR -->
+      <header class="super-desktop-topbar">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="badge-superadmin">OWNER CONTROL</span>
+          <span style="font-size: 13px; color: var(--text-muted);">Pusat Kendali Pengguna, Transaksi, &amp; Proyek Undangan</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <a href="{% url 'undangan:dashboard' %}" class="btn btn-secondary btn-sm">
+            <span>👤</span> Mode User
+          </a>
+          <span style="font-size: 13px; color: var(--text-muted);">
+            Hai, <b>{{ request.user.username }}</b>
+          </span>
+        </div>
+      </header>
+
+      <!-- MOBILE TOPBAR (< 992px) -->
+      <header class="super-mobile-topbar">
+        <div class="super-brand">
+          <span style="font-size: 20px;">👑</span>
+          <div style="font-size: 16px;">Superadmin<span>Control</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" class="btn-theme-toggle btn-sm" onclick="toggleSuperTheme()">
+            <span id="theme-icon-m">🌙</span>
+          </button>
+          <a href="{% url 'undangan:dashboard' %}" class="btn btn-secondary btn-sm">
+            User &rarr;
+          </a>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT -->
+      <main class="super-main">
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+              <span>{% if msg.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
+              <div>{{ msg }}</div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="footer">
+        <p>&copy; 2026 Pusat Kendali Superadmin — Undangan Game Digital.</p>
+      </footer>
     </div>
+  </div>
+
+  <!-- ============================================================
+       3. ANDROID-STYLE BOTTOM NAVIGATION BAR (KHUSUS MOBILE < 992px)
+       ============================================================ -->
+  <nav class="super-android-bottom-bar" id="super-android-bottom-bar">
+    <a href="{% url 'undangan:superadmin_index' %}" class="super-bottom-item {% if menu_aktif == 'beranda' %}active{% endif %}">
+      <span class="b-icon">📊</span>
+      <span class="b-label">Ringkasan</span>
+    </a>
+    <a href="{% url 'undangan:superadmin_users' %}" class="super-bottom-item {% if menu_aktif == 'users' %}active{% endif %}">
+      <span class="b-icon">👥</span>
+      <span class="b-label">Users</span>
+    </a>
+    <a href="{% url 'undangan:superadmin_undangan' %}" class="super-bottom-item {% if menu_aktif == 'undangan' %}active{% endif %}">
+      <span class="b-icon">💌</span>
+      <span class="b-label">Undangan</span>
+    </a>
+    <a href="{% url 'undangan:superadmin_transaksi' %}" class="super-bottom-item {% if menu_aktif == 'transaksi' %}active{% endif %}">
+      <span class="b-icon">💳</span>
+      <span class="b-label">Transaksi</span>
+    </a>
+    <button type="button" class="super-bottom-item" onclick="openSuperBottomSheet()" id="btn-super-menu">
+      <span class="b-icon">☰</span>
+      <span class="b-label">Menu</span>
+    </button>
   </nav>
 
-  <!-- MAIN CONTAINER -->
-  <main class="super-main">
-    {% if messages %}
-      {% for msg in messages %}
-        <div class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
-          <span>{% if msg.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
-          <div>{{ msg }}</div>
-        </div>
-      {% endfor %}
-    {% endif %}
+  <!-- ============================================================
+       4. ANDROID BOTTOM SHEET DRAWER (POPUP SLIDE-UP)
+       ============================================================ -->
+  <div class="super-sheet-backdrop" id="super-sheet-backdrop" onclick="closeSuperBottomSheet()"></div>
+  <div class="super-android-bottom-sheet" id="super-android-bottom-sheet">
+    <div class="super-sheet-handle-bar" onclick="closeSuperBottomSheet()"></div>
+    <div class="super-sheet-header">
+      <div class="super-sheet-title">👑 Menu Panel Superadmin</div>
+      <button type="button" class="super-sheet-close-btn" onclick="closeSuperBottomSheet()">&times;</button>
+    </div>
 
-    {% block content %}{% endblock %}
-  </main>
+    <div class="super-sheet-grid">
+      <a href="{% url 'undangan:superadmin_index' %}" class="super-sheet-item {% if menu_aktif == 'beranda' %}active{% endif %}">
+        <span style="font-size: 24px; margin-bottom: 6px;">📊</span>
+        <span style="font-size: 11.5px; font-weight: 600;">Ringkasan</span>
+      </a>
+      <a href="{% url 'undangan:superadmin_users' %}" class="super-sheet-item {% if menu_aktif == 'users' %}active{% endif %}">
+        <span style="font-size: 24px; margin-bottom: 6px;">👥</span>
+        <span style="font-size: 11.5px; font-weight: 600;">Pengguna</span>
+      </a>
+      <a href="{% url 'undangan:superadmin_undangan' %}" class="super-sheet-item {% if menu_aktif == 'undangan' %}active{% endif %}">
+        <span style="font-size: 24px; margin-bottom: 6px;">💌</span>
+        <span style="font-size: 11.5px; font-weight: 600;">Undangan</span>
+      </a>
+      <a href="{% url 'undangan:superadmin_transaksi' %}" class="super-sheet-item {% if menu_aktif == 'transaksi' %}active{% endif %}">
+        <span style="font-size: 24px; margin-bottom: 6px;">💳</span>
+        <span style="font-size: 11.5px; font-weight: 600;">Transaksi</span>
+      </a>
+      <a href="{% url 'undangan:superadmin_ucapan' %}" class="super-sheet-item {% if menu_aktif == 'ucapan' %}active{% endif %}">
+        <span style="font-size: 24px; margin-bottom: 6px;">💬</span>
+        <span style="font-size: 11.5px; font-weight: 600;">RSVP Global</span>
+      </a>
+      <a href="{% url 'undangan:superadmin_pengaturan' %}" class="super-sheet-item {% if menu_aktif == 'pengaturan' %}active{% endif %}">
+        <span style="font-size: 24px; margin-bottom: 6px;">⚙️</span>
+        <span style="font-size: 11.5px; font-weight: 600;">Pengaturan</span>
+      </a>
+    </div>
 
-  <footer class="footer">
-    <p>&copy; 2026 Undangan Game Digital — Pusat Kendali &amp; Administrasi Platform.</p>
-  </footer>
+    <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <a href="{% url 'undangan:dashboard' %}" class="btn btn-secondary" style="justify-content: center;">
+        <span>👤</span> Buka Dashboard User
+      </a>
+      <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-secondary" style="justify-content: center;">
+        <span>⚙️</span> Buka Django Admin
+      </a>
+      <div style="display: flex; gap: 8px; margin-top: 4px;">
+        <button type="button" class="btn btn-secondary" style="flex: 1; justify-content: center;" onclick="toggleSuperTheme()">
+          Ganti Mode Tema
+        </button>
+        <a href="{% url 'undangan:logout' %}" class="btn btn-danger" style="flex: 1; justify-content: center;">
+          Keluar
+        </a>
+      </div>
+    </div>
+  </div>
 
   <script>
     function syncSuperThemeButton(theme) {
       const icon = document.getElementById('theme-icon');
+      const iconM = document.getElementById('theme-icon-m');
       const label = document.getElementById('theme-label');
-      if (!icon || !label) return;
-      if (theme === 'dark') {
-        icon.innerText = '🌙';
-        label.innerText = 'Mode Gelap';
-      } else {
-        icon.innerText = '☀️';
-        label.innerText = 'Mode Terang';
-      }
+      const iconChar = (theme === 'dark') ? '🌙' : '☀️';
+      if (icon) icon.innerText = iconChar;
+      if (iconM) iconM.innerText = iconChar;
+      if (label) label.innerText = (theme === 'dark') ? 'Gelap' : 'Terang';
     }
 
     function toggleSuperTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-      const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', targetTheme);
       try {
         localStorage.setItem('superadmin_theme', targetTheme);
-        localStorage.setItem('dashboard_theme', targetTheme);
       } catch (e) {}
       syncSuperThemeButton(targetTheme);
     }
 
+    function openSuperBottomSheet() {
+      const sheet = document.getElementById('super-android-bottom-sheet');
+      const backdrop = document.getElementById('super-sheet-backdrop');
+      if (sheet && backdrop) {
+        backdrop.style.display = 'block';
+        setTimeout(() => {
+          backdrop.classList.add('open');
+          sheet.classList.add('open');
+        }, 10);
+      }
+    }
+
+    function closeSuperBottomSheet() {
+      const sheet = document.getElementById('super-android-bottom-sheet');
+      const backdrop = document.getElementById('super-sheet-backdrop');
+      if (sheet && backdrop) {
+        sheet.classList.remove('open');
+        backdrop.classList.remove('open');
+        setTimeout(() => {
+          backdrop.style.display = 'none';
+        }, 250);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-      const activeTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const activeTheme = document.documentElement.getAttribute('data-theme') || 'dark';
       syncSuperThemeButton(activeTheme);
     });
   </script>

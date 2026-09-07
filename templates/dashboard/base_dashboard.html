@@ -24,7 +24,9 @@
        ============================================================ */
     :root, [data-theme="light"] {
       --bg: #f8fafc;
-      --topbar-bg: rgba(255, 255, 255, 0.92);
+      --sidebar-bg: #ffffff;
+      --sidebar-border: #e2e8f0;
+      --topbar-bg: rgba(255, 255, 255, 0.94);
       --card-bg: #ffffff;
       --card-inner: #f1f5f9;
       --accent: #d97706;
@@ -38,6 +40,8 @@
       --input-border: #cbd5e1;
       --banner-bg: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
       --banner-border: #fde68a;
+      --bottom-nav-bg: rgba(255, 255, 255, 0.96);
+      --sheet-bg: #ffffff;
       --success: #059669;
       --danger: #dc2626;
       --info: #2563eb;
@@ -47,7 +51,9 @@
 
     [data-theme="dark"] {
       --bg: #0b0f19;
-      --topbar-bg: rgba(15, 23, 42, 0.92);
+      --sidebar-bg: #131a2b;
+      --sidebar-border: #222d46;
+      --topbar-bg: rgba(15, 23, 42, 0.94);
       --card-bg: #151d30;
       --card-inner: #1c2742;
       --accent: #f59e0b;
@@ -61,6 +67,8 @@
       --input-border: #263554;
       --banner-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       --banner-border: rgba(245, 158, 11, 0.4);
+      --bottom-nav-bg: rgba(19, 26, 43, 0.96);
+      --sheet-bg: #151d30;
       --success: #10b981;
       --danger: #ef4444;
       --info: #3b82f6;
@@ -74,29 +82,42 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       transition: background-color 0.25s ease, color 0.25s ease;
     }
     a { color: inherit; text-decoration: none; }
 
-    /* TOPBAR */
-    .topbar {
-      background: var(--topbar-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+    /* ============================================================
+       LAYOUT WRAPPER (SIDEBAR PADA WEBSITE / DESKTOP)
+       ============================================================ */
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* SIDEBAR KIRI (DESKTOP) */
+    .dashboard-sidebar {
+      width: 270px;
+      min-width: 270px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
       position: sticky;
       top: 0;
-      z-index: 50;
+      height: 100vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      z-index: 40;
       transition: background 0.25s, border-color 0.25s;
     }
-    .topbar-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .dashboard-sidebar::-webkit-scrollbar { width: 5px; }
+    .dashboard-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* SIDEBAR HEADER & BRAND */
+    .sidebar-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--sidebar-border);
     }
     .brand {
       display: flex;
@@ -106,32 +127,180 @@
       font-size: 18px;
     }
     .brand-icon {
-      font-size: 22px;
+      font-size: 20px;
       background: var(--accent-soft);
       border: 1px solid rgba(217, 119, 6, 0.3);
       padding: 4px 8px;
       border-radius: 8px;
     }
     .brand span { color: var(--accent); }
-    .topbar-actions {
+
+    /* USER PROFILE CARD DI SIDEBAR */
+    .sidebar-user {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 12px;
+      padding: 12px 14px;
+      margin: 14px 16px 6px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .user-avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    [data-theme="light"] .user-avatar-circle { color: #000; }
+    .user-meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .user-meta-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-meta-badge {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+    }
+    .status-indicator-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-green { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+    .dot-yellow { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6); }
+    .dot-red { background: #ef4444; }
+
+    /* SIDEBAR NAVIGATION LIST */
+    .sidebar-nav {
+      flex: 1;
+      padding: 10px 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .nav-section-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding: 14px 10px 6px;
+      text-transform: uppercase;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: all 0.18s ease;
+      position: relative;
+    }
+    .sidebar-item:hover {
+      background: var(--card-inner);
+      color: var(--text);
+      transform: translateX(2px);
+    }
+    .sidebar-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .sidebar-item.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent);
+    }
+    .sidebar-icon {
+      font-size: 17px;
+      width: 22px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .sidebar-alert-dot {
+      margin-left: auto;
+      background: var(--danger);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* TOMBOL TOGGLE TEMA LIGHT / DARK */
+    /* SIDEBAR FOOTER ACTIONS */
+    .sidebar-footer {
+      padding: 16px 14px;
+      border-top: 1px solid var(--sidebar-border);
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sidebar-btn-preview {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-align: center;
+    }
+    [data-theme="light"] .sidebar-btn-preview { color: #000; }
+    .sidebar-btn-preview:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3); }
+
+    .sidebar-controls-row {
+      display: flex;
+      gap: 8px;
+    }
     .btn-theme-toggle {
+      flex: 1;
       background: var(--card-inner);
       border: 1px solid var(--border);
       color: var(--text);
       font-size: 12.5px;
       font-weight: 600;
-      padding: 7px 12px;
-      border-radius: 9px;
+      padding: 8px 10px;
+      border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       transition: all 0.2s;
     }
@@ -140,112 +309,266 @@
       background: var(--accent-soft);
       color: var(--accent);
     }
-    .btn-theme-toggle span.theme-icon { font-size: 14px; }
-
-    .btn-preview {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
-      color: #fff;
-      font-weight: 700;
-      font-size: 13.5px;
-      padding: 8px 16px;
-      border-radius: 9px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    [data-theme="light"] .btn-preview { color: #000; }
-    .btn-preview:hover { transform: translateY(-1px); }
-    .btn-logout {
+    .btn-logout-sidebar {
       background: rgba(239, 68, 68, 0.1);
       border: 1px solid rgba(239, 68, 68, 0.25);
       color: var(--danger);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
-      padding: 7px 13px;
+      padding: 8px 12px;
       border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition: background 0.2s;
     }
-    .btn-logout:hover { background: rgba(239, 68, 68, 0.2); }
+    .btn-logout-sidebar:hover { background: rgba(239, 68, 68, 0.2); }
 
-    /* NAVIGATION TABS */
-    .nav-tabs-wrapper {
-      background: var(--card-bg);
+    /* ============================================================
+       MAIN CONTENT AREA (KANAN)
+       ============================================================ */
+    .dashboard-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* DESKTOP TOP HEADER */
+    .desktop-topbar {
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
       transition: background 0.25s, border-color 0.25s;
     }
-    .nav-tabs {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      gap: 4px;
-      padding: 0 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .nav-tabs::-webkit-scrollbar { display: none; }
-    .nav-tab {
-      padding: 13px 14px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
+    .topbar-slug-box {
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.2s;
+      font-size: 13px;
+      color: var(--text-muted);
     }
-    .nav-tab:hover {
-      color: var(--text);
-    }
-    .nav-tab.active {
+    .topbar-slug-box code {
+      background: var(--card-inner);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
       color: var(--accent);
-      border-bottom-color: var(--accent);
-      background: var(--accent-soft);
+      font-weight: 700;
     }
 
-    /* MAIN CONTAINER */
+    /* MAIN CONTAINER BODY */
     .main-content {
+      padding: 28px 32px 60px;
+      flex: 1;
+      width: 100%;
       max-width: 1200px;
       margin: 0 auto;
-      width: 100%;
-      padding: 24px 20px 48px;
-      flex: 1;
     }
 
-    /* NOTIFIKASI */
-    .alert {
-      padding: 14px 18px;
-      border-radius: 12px;
-      font-size: 14px;
-      margin-bottom: 22px;
+    /* ============================================================
+       MOBILE TOPBAR & ANDROID BOTTOM NAVIGATION (MOBILE ONLY)
+       ============================================================ */
+    .mobile-topbar {
+      display: none; /* Desktop hidden */
+      background: var(--topbar-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    /* ANDROID BOTTOM NAVIGATION BAR */
+    .android-bottom-bar {
+      display: none; /* Desktop hidden */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--bottom-nav-bg);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      z-index: 999;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 4px;
+    }
+    .bottom-bar-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 0;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .bottom-bar-item .b-icon {
+      font-size: 20px;
+      line-height: 1;
+      transition: transform 0.15s;
+    }
+    .bottom-bar-item .b-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+    }
+    .bottom-bar-item.active {
+      color: var(--accent);
+    }
+    .bottom-bar-item.active .b-icon {
+      transform: scale(1.12);
+    }
+    .bottom-bar-item.active .b-label {
+      font-weight: 800;
+    }
+
+    /* ANDROID BOTTOM SHEET DRAWER (POPUP SLIDE-UP DARI BAWAH) */
+    .sheet-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .sheet-backdrop.open {
+      opacity: 1;
+    }
+
+    .android-bottom-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-height: 85vh;
+      overflow-y: auto;
+      background: var(--sheet-bg);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+      z-index: 1001;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 12px 18px 36px;
+      display: flex;
+      flex-direction: column;
+    }
+    .android-bottom-sheet.open {
+      transform: translateY(0);
+    }
+
+    /* Handle Bar di atas bottom sheet (Khas Android) */
+    .sheet-handle-bar {
+      width: 44px;
+      height: 5px;
+      border-radius: 10px;
+      background: var(--border);
+      margin: 4px auto 14px;
+    }
+    .sheet-header {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
-    [data-theme="light"] .alert-success {
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      color: #065f46;
+    .sheet-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
     }
-    [data-theme="dark"] .alert-success {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #6ee7b7;
-    }
-    [data-theme="light"] .alert-error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #991b1b;
-    }
-    [data-theme="dark"] .alert-error {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
+    .sheet-close-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
     }
 
-    /* CARD STYLING */
+    /* GRID MENU DI DALAM BOTTOM SHEET */
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .sheet-grid-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 14px 8px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .sheet-grid-item:hover, .sheet-grid-item:active {
+      background: var(--accent-soft);
+      transform: scale(0.98);
+      color: var(--accent);
+    }
+    .sheet-grid-item.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .sheet-grid-icon {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .sheet-grid-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    /* AKSI BOTTOM SHEET */
+    .sheet-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ============================================================
+       KOMPONEN FORM, CARD, ALERT & UMUM
+       ============================================================ */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -253,39 +576,32 @@
       padding: 24px;
       margin-bottom: 24px;
       box-shadow: var(--shadow);
-      transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+      transition: background 0.25s, border-color 0.25s;
     }
     .card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
     .card-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .card-subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 3px;
-    }
 
-    /* FORM ELEMENTS */
+    /* FORM */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 18px;
     }
-    .form-group {
-      margin-bottom: 18px;
-    }
+    .form-group { margin-bottom: 18px; }
     .form-label {
       display: block;
       font-size: 13px;
@@ -317,9 +633,9 @@
 
     /* BUTTONS */
     .btn {
-      padding: 11px 20px;
+      padding: 10px 18px;
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
       border: none;
@@ -342,102 +658,59 @@
       border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-secondary:hover {
-      background: var(--border);
-    }
+    .btn-secondary:hover { background: var(--border); }
     .btn-danger {
       background: rgba(239, 68, 68, 0.12);
       border: 1px solid rgba(239, 68, 68, 0.25);
       color: var(--danger);
     }
-    .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.25);
-    }
-    .btn-success {
-      background: var(--success);
-      color: #fff;
-    }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 12.5px;
-      border-radius: 8px;
-    }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+    .btn-sm { padding: 6px 12px; font-size: 12.5px; border-radius: 8px; }
 
-    /* TAB PILIHAN SUMBER MEDIA (UPLOAD / LINK) */
-    .media-source-tabs {
-      display: flex;
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 12px;
-      gap: 4px;
-    }
-    .media-source-tab {
-      flex: 1;
-      text-align: center;
-      padding: 7px 12px;
-      border-radius: 7px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      transition: all 0.2s;
-    }
-    .media-source-tab.active {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    [data-theme="light"] .media-source-tab.active { color: #000; }
-
-    /* PREVIEW THUMBNAIL */
-    .img-preview-box {
-      width: 100%;
-      height: 160px;
+    /* NOTIFIKASI ALERTS */
+    .alert {
+      padding: 14px 18px;
       border-radius: 12px;
-      border: 1px dashed var(--border);
-      background: var(--card-inner);
+      font-size: 14px;
+      margin-bottom: 22px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      margin-top: 10px;
-      position: relative;
+      gap: 10px;
     }
-    .img-preview-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    [data-theme="light"] .alert-success {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
     }
-    .img-preview-empty {
-      color: var(--text-muted);
-      font-size: 12.5px;
-      text-align: center;
-      padding: 10px;
+    [data-theme="dark"] .alert-success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+    [data-theme="light"] .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+    [data-theme="dark"] .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
     }
 
     /* BADGE */
     .badge {
       display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      font-size: 11.5px;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
-    .badge-file { background: rgba(59, 130, 246, 0.15); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.3); }
-    [data-theme="dark"] .badge-file { color: #93c5fd; }
-    .badge-link { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
-    [data-theme="dark"] .badge-link { color: #6ee7b7; }
 
-    /* FOOTER */
     .footer {
       text-align: center;
-      padding: 20px;
+      padding: 24px;
       font-size: 13px;
       color: var(--text-muted);
       border-top: 1px solid var(--border);
@@ -445,10 +718,22 @@
       margin-top: auto;
     }
 
-    @media (max-width: 768px) {
-      .topbar-container { flex-direction: column; gap: 12px; align-items: flex-start; }
-      .topbar-actions { width: 100%; justify-content: space-between; }
-      .main-content { padding: 16px 14px 36px; }
+    /* ============================================================
+       MEDIA QUERIES (DESKTOP vs MOBILE ANDROID)
+       ============================================================ */
+    @media (max-width: 991px) {
+      /* Sembunyikan sidebar dan desktop topbar */
+      .dashboard-sidebar { display: none; }
+      .desktop-topbar { display: none; }
+
+      /* Tampilkan mobile topbar & android bottom bar */
+      .mobile-topbar { display: flex; }
+      .android-bottom-bar { display: flex; }
+
+      /* Beri padding bawah pada konten agar tidak tertutup bottom bar */
+      .main-content {
+        padding: 16px 14px 84px;
+      }
       .card { padding: 18px 14px; }
     }
   </style>
@@ -456,164 +741,342 @@
 </head>
 <body>
 
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="topbar-container">
-      <a href="{% url 'undangan:dashboard' %}" class="brand">
-        <span class="brand-icon">🎮</span>
-        <div>Undangan<span>Game</span> <small style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Dashboard</small></div>
-      </a>
-      <div class="topbar-actions">
-        <!-- TOGGLE TEMA LIGHT / DARK -->
-        <button type="button" id="btn-theme-toggle" class="btn-theme-toggle" onclick="toggleTheme()" title="Ubah tema Light/Dark">
-          <span id="theme-icon" class="theme-icon">☀️</span>
-          <span id="theme-label" class="theme-label-text">Mode Terang</span>
-        </button>
+  <div class="dashboard-layout">
+
+    <!-- ============================================================
+         1. SIDEBAR NAVIGASI (KHUSUS WEBSITE / DESKTOP >= 992px)
+         ============================================================ -->
+    <aside class="dashboard-sidebar">
+      <!-- Brand Logo -->
+      <div class="sidebar-header">
+        <a href="{% url 'undangan:dashboard' %}" class="brand">
+          <span class="brand-icon">🎮</span>
+          <div>Undangan<span>Game</span></div>
+        </a>
+      </div>
+
+      <!-- User Card -->
+      <div class="sidebar-user">
+        <div class="user-avatar-circle">
+          {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+        </div>
+        <div class="user-meta">
+          <div class="user-meta-name">{{ request.user.first_name|default:request.user.username }}</div>
+          <div class="user-meta-badge">
+            {% if undangan.status_langganan == 'aktif' and undangan.is_online_aktif %}
+              <span class="status-indicator-dot dot-green"></span> Online Aktif
+            {% elif undangan.status_langganan == 'trial' and undangan.is_online_aktif %}
+              <span class="status-indicator-dot dot-yellow"></span> Trial 1 Hari
+            {% else %}
+              <span class="status-indicator-dot dot-red"></span> Offline
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigasi Menu Vertikal di Samping -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">PENGATURAN DASAR</div>
+
+        <a href="{% url 'undangan:dashboard' %}" class="sidebar-item {% if tab_aktif == 'beranda' %}active{% endif %}">
+          <span class="sidebar-icon">📊</span>
+          <span>Beranda &amp; Statistik</span>
+        </a>
+        <a href="{% url 'undangan:dashboard_pengaturan' %}" class="sidebar-item {% if tab_aktif == 'pengaturan' %}active{% endif %}">
+          <span class="sidebar-icon">⚙️</span>
+          <span>Tema &amp; Domain</span>
+        </a>
+        <a href="{% url 'undangan:dashboard_mempelai' %}" class="sidebar-item {% if tab_aktif == 'mempelai' %}active{% endif %}">
+          <span class="sidebar-icon">👰🤵</span>
+          <span>Data Mempelai</span>
+        </a>
+        <a href="{% url 'undangan:dashboard_acara' %}" class="sidebar-item {% if tab_aktif == 'acara' %}active{% endif %}">
+          <span class="sidebar-icon">📅</span>
+          <span>Jadwal Acara &amp; Maps</span>
+        </a>
+        <a href="{% url 'undangan:dashboard_galeri' %}" class="sidebar-item {% if tab_aktif == 'galeri' %}active{% endif %}">
+          <span class="sidebar-icon">📸</span>
+          <span>Galeri Foto</span>
+        </a>
+        <a href="{% url 'undangan:dashboard_rekening' %}" class="sidebar-item {% if tab_aktif == 'rekening' %}active{% endif %}">
+          <span class="sidebar-icon">💳</span>
+          <span>Amplop Digital &amp; QRIS</span>
+        </a>
+
+        <div class="nav-section-label">TAMU &amp; AKTIVASI</div>
+
+        <a href="{% url 'undangan:dashboard_tamu' %}" class="sidebar-item {% if tab_aktif == 'tamu' %}active{% endif %}">
+          <span class="sidebar-icon">💌</span>
+          <span>Daftar Tamu &amp; WA</span>
+        </a>
+        <a href="{% url 'undangan:dashboard_ucapan' %}" class="sidebar-item {% if tab_aktif == 'ucapan' %}active{% endif %}">
+          <span class="sidebar-icon">💬</span>
+          <span>Buku Tamu &amp; RSVP</span>
+        </a>
+        <a href="{% url 'undangan:dashboard_pembayaran' %}" class="sidebar-item {% if tab_aktif == 'pembayaran' %}active{% endif %}" style="{% if not undangan.is_online_aktif %}color: var(--danger); font-weight: 700;{% endif %}">
+          <span class="sidebar-icon">⚡</span>
+          <span>Aktivasi / Perpanjang</span>
+          {% if not undangan.is_online_aktif %}
+            <span class="sidebar-alert-dot">!</span>
+          {% endif %}
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer Controls -->
+      <div class="sidebar-footer">
+        <a href="{{ undangan.path_publik }}" target="_blank" class="sidebar-btn-preview" title="Buka Game Undangan">
+          <span>👀</span> Lihat Undangan Game &nearr;
+        </a>
 
         {% if request.user.is_superuser %}
-          <a href="{% url 'undangan:superadmin_index' %}" class="btn btn-sm" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; font-weight: 800;" title="Buka Pusat Kendali Superadmin">
+          <a href="{% url 'undangan:superadmin_index' %}" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; font-weight: 700; color: var(--accent); border-color: var(--accent);">
             👑 Panel Superadmin
           </a>
         {% endif %}
 
-        <a href="{{ undangan.path_publik }}" target="_blank" class="btn-preview" title="Buka Game Undangan">
-          <span>👀</span> Lihat Undangan
-        </a>
-        <span style="font-size: 13px; color: var(--text-muted);">Hai, <b>{{ request.user.first_name|default:request.user.username }}</b></span>
-        <a href="{% url 'undangan:logout' %}" class="btn-logout">Keluar</a>
+        <div class="sidebar-controls-row">
+          <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Ubah tema Light/Dark">
+            <span class="theme-icon">☀️</span>
+            <span class="theme-label-text">Terang</span>
+          </button>
+          <a href="{% url 'undangan:logout' %}" class="btn-logout-sidebar" title="Keluar">
+            Keluar
+          </a>
+        </div>
       </div>
-    </div>
-  </header>
+    </aside>
 
-  <!-- NAVIGATION TABS -->
-  <nav class="nav-tabs-wrapper">
-    <div class="nav-tabs">
-      <a href="{% url 'undangan:dashboard' %}" class="nav-tab {% if tab_aktif == 'beranda' %}active{% endif %}">
-        <span>📊</span> Beranda &amp; Statistik
-      </a>
-      <a href="{% url 'undangan:dashboard_pengaturan' %}" class="nav-tab {% if tab_aktif == 'pengaturan' %}active{% endif %}">
-        <span>⚙️</span> Tema &amp; Pengaturan
-      </a>
-      <a href="{% url 'undangan:dashboard_mempelai' %}" class="nav-tab {% if tab_aktif == 'mempelai' %}active{% endif %}">
-        <span>👰🤵</span> Mempelai
-      </a>
-      <a href="{% url 'undangan:dashboard_acara' %}" class="nav-tab {% if tab_aktif == 'acara' %}active{% endif %}">
-        <span>📅</span> Jadwal Acara
-      </a>
-      <a href="{% url 'undangan:dashboard_galeri' %}" class="nav-tab {% if tab_aktif == 'galeri' %}active{% endif %}">
-        <span>📸</span> Galeri Foto
-      </a>
-      <a href="{% url 'undangan:dashboard_rekening' %}" class="nav-tab {% if tab_aktif == 'rekening' %}active{% endif %}">
-        <span>💳</span> Amplop Digital &amp; QRIS
-      </a>
-      <a href="{% url 'undangan:dashboard_tamu' %}" class="nav-tab {% if tab_aktif == 'tamu' %}active{% endif %}">
-        <span>💌</span> Daftar Tamu &amp; WhatsApp
-      </a>
-      <a href="{% url 'undangan:dashboard_ucapan' %}" class="nav-tab {% if tab_aktif == 'ucapan' %}active{% endif %}">
-        <span>💬</span> Buku Tamu &amp; RSVP
-      </a>
-      <a href="{% url 'undangan:dashboard_pembayaran' %}" class="nav-tab {% if tab_aktif == 'pembayaran' %}active{% endif %}" style="{% if not undangan.is_online_aktif %}color: var(--danger); font-weight: 700;{% endif %}">
-        <span>💳</span> Aktivasi &amp; Pembayaran
-      </a>
+    <!-- ============================================================
+         2. AREA KONTEN UTAMA (KANAN)
+         ============================================================ -->
+    <div class="dashboard-main">
+
+      <!-- DESKTOP TOPBAR -->
+      <header class="desktop-topbar">
+        <div class="topbar-slug-box">
+          <span>Tautan Undangan:</span>
+          <code>jelajah.biz.id{{ undangan.path_publik }}</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="{{ undangan.path_publik }}" target="_blank" class="btn btn-secondary btn-sm" style="font-weight: 600;">
+            <span>🎮</span> Buka Game
+          </a>
+          <span style="font-size: 13px; color: var(--text-muted);">
+            Halo, <b>{{ request.user.first_name|default:request.user.username }}</b>
+          </span>
+        </div>
+      </header>
+
+      <!-- MOBILE TOPBAR (KHUSUS LAYAR MOBILE < 992px) -->
+      <header class="mobile-topbar">
+        <a href="{% url 'undangan:dashboard' %}" class="brand">
+          <span class="brand-icon">🎮</span>
+          <div>Undangan<span>Game</span></div>
+        </a>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" class="btn-theme-toggle btn-sm" onclick="toggleTheme()" title="Ubah tema">
+            <span class="theme-icon">☀️</span>
+          </button>
+          <a href="{{ undangan.path_publik }}" target="_blank" class="btn btn-primary btn-sm" style="padding: 6px 10px;">
+            👀 Game
+          </a>
+        </div>
+      </header>
+
+      <!-- KONTEN HALAMAN -->
+      <main class="main-content">
+        <!-- BANNER STATUS LANGGANAN & TRIAL -->
+        {% if not undangan.is_online_aktif %}
+          {% if undangan.is_masa_tenggang %}
+            <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-left: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 24px;">⚠️</span>
+                <div>
+                  <b style="color: var(--gold); font-size: 14px;">Masa Aktif Berakhir — Masa Tenggang 1 Bulan (Sisa {{ undangan.sisa_hari_tenggang }} Hari)</b>
+                  <div style="font-size: 12.5px; color: var(--text-secondary);">Undangan saat ini offline bagi tamu. Anda memiliki waktu hingga <b>{{ undangan.batas_tenggang_berakhir|date:"d M Y" }}</b> untuk memperpanjang sebelum website dan file foto galeri dibersihkan permanen dari server.</div>
+                </div>
+              </div>
+              <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-primary btn-sm" style="font-weight: 700; white-space: nowrap;">
+                ⚡ Perpanjang Sekarang
+              </a>
+            </div>
+          {% elif undangan.is_siap_dibersihkan %}
+            <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-left: 4px solid var(--danger); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 24px;">🛑</span>
+                <div>
+                  <b style="color: var(--danger); font-size: 14px;">Masa Tenggang 1 Bulan Telah Habis — Data Siap Dibersihkan</b>
+                  <div style="font-size: 12.5px; color: var(--text-secondary);">Masa toleransi 1 bulan telah lewat. Website dan seluruh file foto dapat dibersihkan permanen oleh superadmin sewaktu-waktu. Segera perpanjang untuk memulihkan!</div>
+                </div>
+              </div>
+              <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-danger btn-sm" style="font-weight: 700; white-space: nowrap;">
+                ⚡ Pulihkan &amp; Perpanjang
+              </a>
+            </div>
+          {% else %}
+            <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 24px;">⚠️</span>
+                <div>
+                  <b style="color: var(--danger); font-size: 14px;">Masa Uji Coba Gratis 1 Hari Telah Berakhir</b>
+                  <div style="font-size: 12.5px; color: var(--text-muted);">Tamu umum belum dapat membuka game Anda. Segera lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun) untuk online aktif dan membuka domain langsung.</div>
+                </div>
+              </div>
+              <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-sm" style="background: var(--danger); color: #fff; font-weight: 700;">
+                ⚡ Aktifkan Sekarang
+              </a>
+            </div>
+          {% endif %}
+        {% elif undangan.status_langganan == 'trial' %}
+          <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 20px;">⏱️</span>
+              <div>
+                <b style="color: var(--gold); font-size: 13.5px;">Masa Uji Coba Gratis: Sisa {{ undangan.sisa_waktu_trial }}</b>
+                <div style="font-size: 12px; color: var(--text-muted);">Undangan Anda saat ini aktif online. Agar tetap online dan mendapatkan domain langsung tanpa awalan /trial/, lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun).</div>
+              </div>
+            </div>
+            <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-secondary btn-sm" style="font-weight: 700; color: var(--gold); border-color: var(--gold);">
+              Aktivasi Undangan &rarr;
+            </a>
+          </div>
+        {% elif undangan.status_langganan == 'menunggu' %}
+          <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">⏳</span>
+            <div>
+              <b style="color: #3b82f6; font-size: 13.5px;">Bukti Pembayaran Sedang Diverifikasi Admin</b>
+              <div style="font-size: 12px; color: var(--text-muted);">Undangan Anda akan segera diaktifkan begitu verifikasi oleh admin selesai.</div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+              <span>{% if msg.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
+              <div>{{ msg }}</div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="footer">
+        <p>&copy; 2026 Undangan Game Digital — Platform Undangan Interaktif Mandiri.</p>
+      </footer>
     </div>
+  </div>
+
+  <!-- ============================================================
+       3. ANDROID-STYLE BOTTOM NAVIGATION BAR (KHUSUS MOBILE < 992px)
+       ============================================================ -->
+  <nav class="android-bottom-bar" id="android-bottom-bar">
+    <a href="{% url 'undangan:dashboard' %}" class="bottom-bar-item {% if tab_aktif == 'beranda' %}active{% endif %}">
+      <span class="b-icon">📊</span>
+      <span class="b-label">Beranda</span>
+    </a>
+    <a href="{% url 'undangan:dashboard_pengaturan' %}" class="bottom-bar-item {% if tab_aktif == 'pengaturan' %}active{% endif %}">
+      <span class="b-icon">⚙️</span>
+      <span class="b-label">Tema</span>
+    </a>
+    <a href="{% url 'undangan:dashboard_galeri' %}" class="bottom-bar-item {% if tab_aktif == 'galeri' %}active{% endif %}">
+      <span class="b-icon">📸</span>
+      <span class="b-label">Galeri</span>
+    </a>
+    <a href="{% url 'undangan:dashboard_tamu' %}" class="bottom-bar-item {% if tab_aktif == 'tamu' %}active{% endif %}">
+      <span class="b-icon">💌</span>
+      <span class="b-label">Tamu</span>
+    </a>
+    <button type="button" class="bottom-bar-item" onclick="openBottomSheet()" id="btn-open-menu-sheet">
+      <span class="b-icon">☰</span>
+      <span class="b-label">Menu</span>
+    </button>
   </nav>
 
-  <!-- MAIN CONTAINER -->
-  <main class="main-content">
-    <!-- BANNER STATUS LANGGANAN & TRIAL -->
-    {% if not undangan.is_online_aktif %}
-      {% if undangan.is_masa_tenggang %}
-        <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-left: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 24px;">⚠️</span>
-            <div>
-              <b style="color: var(--gold); font-size: 14px;">Masa Aktif Berakhir — Masa Tenggang 1 Bulan (Sisa {{ undangan.sisa_hari_tenggang }} Hari)</b>
-              <div style="font-size: 12.5px; color: var(--text-secondary);">Undangan saat ini offline bagi tamu. Anda memiliki waktu hingga <b>{{ undangan.batas_tenggang_berakhir|date:"d M Y" }}</b> untuk memperpanjang sebelum website dan file foto galeri dibersihkan permanen dari server.</div>
-            </div>
-          </div>
-          <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-primary btn-sm" style="font-weight: 700; white-space: nowrap;">
-            ⚡ Perpanjang Sekarang
-          </a>
-        </div>
-      {% elif undangan.is_siap_dibersihkan %}
-        <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-left: 4px solid var(--danger); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 24px;">🛑</span>
-            <div>
-              <b style="color: var(--danger); font-size: 14px;">Masa Tenggang 1 Bulan Telah Habis — Data Siap Dibersihkan</b>
-              <div style="font-size: 12.5px; color: var(--text-secondary);">Masa toleransi 1 bulan telah lewat. Website dan seluruh file foto dapat dibersihkan permanen oleh superadmin sewaktu-waktu. Segera perpanjang untuk memulihkan!</div>
-            </div>
-          </div>
-          <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-danger btn-sm" style="font-weight: 700; white-space: nowrap;">
-            ⚡ Pulihkan &amp; Perpanjang
-          </a>
-        </div>
-      {% else %}
-        <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 24px;">⚠️</span>
-            <div>
-              <b style="color: var(--danger); font-size: 14px;">Masa Uji Coba Gratis 1 Hari Telah Berakhir</b>
-              <div style="font-size: 12.5px; color: var(--text-muted);">Tamu umum belum dapat membuka game Anda. Segera lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun) untuk online aktif dan membuka domain langsung.</div>
-            </div>
-          </div>
-          <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-sm" style="background: var(--danger); color: #fff; font-weight: 700;">
-            ⚡ Aktifkan Sekarang
-          </a>
-        </div>
+  <!-- ============================================================
+       4. ANDROID BOTTOM SHEET DRAWER (POPUP SLIDE-UP)
+       ============================================================ -->
+  <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeBottomSheet()"></div>
+  <div class="android-bottom-sheet" id="android-bottom-sheet">
+    <div class="sheet-handle-bar" onclick="closeBottomSheet()"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">📱 Menu Aplikasi Undangan</div>
+      <button type="button" class="sheet-close-btn" onclick="closeBottomSheet()">&times;</button>
+    </div>
+
+    <!-- Grid Menu Khas Aplikasi Android -->
+    <div class="sheet-grid">
+      <a href="{% url 'undangan:dashboard' %}" class="sheet-grid-item {% if tab_aktif == 'beranda' %}active{% endif %}">
+        <span class="sheet-grid-icon">📊</span>
+        <span class="sheet-grid-label">Beranda</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_pengaturan' %}" class="sheet-grid-item {% if tab_aktif == 'pengaturan' %}active{% endif %}">
+        <span class="sheet-grid-icon">⚙️</span>
+        <span class="sheet-grid-label">Tema &amp; Link</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_mempelai' %}" class="sheet-grid-item {% if tab_aktif == 'mempelai' %}active{% endif %}">
+        <span class="sheet-grid-icon">👰🤵</span>
+        <span class="sheet-grid-label">Mempelai</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_acara' %}" class="sheet-grid-item {% if tab_aktif == 'acara' %}active{% endif %}">
+        <span class="sheet-grid-icon">📅</span>
+        <span class="sheet-grid-label">Acara</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_galeri' %}" class="sheet-grid-item {% if tab_aktif == 'galeri' %}active{% endif %}">
+        <span class="sheet-grid-icon">📸</span>
+        <span class="sheet-grid-label">Galeri Foto</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_rekening' %}" class="sheet-grid-item {% if tab_aktif == 'rekening' %}active{% endif %}">
+        <span class="sheet-grid-icon">💳</span>
+        <span class="sheet-grid-label">Amplop/QRIS</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_tamu' %}" class="sheet-grid-item {% if tab_aktif == 'tamu' %}active{% endif %}">
+        <span class="sheet-grid-icon">💌</span>
+        <span class="sheet-grid-label">Daftar Tamu</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_ucapan' %}" class="sheet-grid-item {% if tab_aktif == 'ucapan' %}active{% endif %}">
+        <span class="sheet-grid-icon">💬</span>
+        <span class="sheet-grid-label">Buku Tamu</span>
+      </a>
+      <a href="{% url 'undangan:dashboard_pembayaran' %}" class="sheet-grid-item {% if tab_aktif == 'pembayaran' %}active{% endif %}">
+        <span class="sheet-grid-icon">⚡</span>
+        <span class="sheet-grid-label">Aktivasi</span>
+      </a>
+    </div>
+
+    <!-- Aksi Bottom Sheet -->
+    <div class="sheet-actions">
+      <a href="{{ undangan.path_publik }}" target="_blank" class="sidebar-btn-preview" style="text-align: center;">
+        👀 Pratinjau Game Undangan &nearr;
+      </a>
+      {% if request.user.is_superuser %}
+        <a href="{% url 'undangan:superadmin_index' %}" class="btn btn-secondary" style="justify-content: center; color: var(--accent); border-color: var(--accent); font-weight: 700;">
+          👑 Panel Superadmin
+        </a>
       {% endif %}
-    {% elif undangan.status_langganan == 'trial' %}
-      <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 20px;">⏱️</span>
-          <div>
-            <b style="color: var(--gold); font-size: 13.5px;">Masa Uji Coba Gratis: Sisa {{ undangan.sisa_waktu_trial }}</b>
-            <div style="font-size: 12px; color: var(--text-muted);">Undangan Anda saat ini aktif online. Agar tetap online dan mendapatkan domain langsung tanpa awalan /trial/, lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun).</div>
-          </div>
-        </div>
-        <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn btn-secondary btn-sm" style="font-weight: 700; color: var(--gold); border-color: var(--gold);">
-          Aktivasi Undangan &rarr;
+      <div style="display: flex; gap: 10px; margin-top: 4px;">
+        <button type="button" class="btn btn-secondary" style="flex: 1; justify-content: center;" onclick="toggleTheme()">
+          <span class="theme-icon">☀️</span> Mode Tema
+        </button>
+        <a href="{% url 'undangan:logout' %}" class="btn btn-danger" style="flex: 1; justify-content: center;">
+          Keluar
         </a>
       </div>
-    {% elif undangan.status_langganan == 'menunggu' %}
-      <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 20px;">⏳</span>
-        <div>
-          <b style="color: #3b82f6; font-size: 13.5px;">Bukti Pembayaran Sedang Diverifikasi Admin</b>
-          <div style="font-size: 12px; color: var(--text-muted);">Undangan Anda akan segera diaktifkan begitu verifikasi oleh admin selesai.</div>
-        </div>
-      </div>
-    {% endif %}
-
-    {% if messages %}
-      {% for msg in messages %}
-        <div class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
-          <span>{% if msg.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
-          <div>{{ msg }}</div>
-        </div>
-      {% endfor %}
-    {% endif %}
-
-    {% block content %}{% endblock %}
-  </main>
-
-  <footer class="footer">
-    <p>&copy; 2026 Undangan Game Digital — Platform Undangan Interaktif Mandiri.</p>
-  </footer>
+    </div>
+  </div>
 
   <script>
     // FUNGSI TEMA LIGHT / DARK
     function syncThemeButton(theme) {
-      const icon = document.getElementById('theme-icon');
-      const label = document.getElementById('theme-label');
-      if (!icon || !label) return;
-      if (theme === 'dark') {
-        icon.innerText = '🌙';
-        label.innerText = 'Mode Gelap';
-      } else {
-        icon.innerText = '☀️';
-        label.innerText = 'Mode Terang';
-      }
+      const icons = document.querySelectorAll('.theme-icon');
+      const labels = document.querySelectorAll('.theme-label-text');
+      icons.forEach(el => {
+        el.innerText = (theme === 'dark') ? '🌙' : '☀️';
+      });
+      labels.forEach(el => {
+        el.innerText = (theme === 'dark') ? 'Gelap' : 'Terang';
+      });
     }
 
     function toggleTheme() {
@@ -624,6 +1087,31 @@
         localStorage.setItem('dashboard_theme', targetTheme);
       } catch (e) {}
       syncThemeButton(targetTheme);
+    }
+
+    // FUNGSI ANDROID BOTTOM SHEET
+    function openBottomSheet() {
+      const sheet = document.getElementById('android-bottom-sheet');
+      const backdrop = document.getElementById('sheet-backdrop');
+      if (sheet && backdrop) {
+        backdrop.style.display = 'block';
+        setTimeout(() => {
+          backdrop.classList.add('open');
+          sheet.classList.add('open');
+        }, 10);
+      }
+    }
+
+    function closeBottomSheet() {
+      const sheet = document.getElementById('android-bottom-sheet');
+      const backdrop = document.getElementById('sheet-backdrop');
+      if (sheet && backdrop) {
+        sheet.classList.remove('open');
+        backdrop.classList.remove('open');
+        setTimeout(() => {
+          backdrop.style.display = 'none';
+        }, 250);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
