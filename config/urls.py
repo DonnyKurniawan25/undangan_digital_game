@@ -10,3 +10,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = "undangan.views.custom_404"
+handler500 = "undangan.views.custom_500"

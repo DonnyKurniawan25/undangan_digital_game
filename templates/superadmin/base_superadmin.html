@@ -17,6 +17,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- SweetAlert2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     :root, [data-theme="light"] {
       --bg: #f8fafc;
@@ -258,7 +262,7 @@
 
     /* MOBILE TOPBAR (< 992px) */
     .super-mobile-topbar {
-      display: none; /* Hidden on desktop */
+      display: none;
       background: var(--topbar-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
@@ -281,7 +285,7 @@
 
     /* ANDROID BOTTOM NAVIGATION BAR (MOBILE) */
     .super-android-bottom-bar {
-      display: none; /* Hidden on desktop */
+      display: none;
       position: fixed;
       bottom: 0;
       left: 0;
@@ -404,6 +408,63 @@
       font-weight: 700;
     }
 
+    /* FORM & FIELD HIGHLIGHTS */
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+    }
+    .form-label.required::after, label[required]::after {
+      content: " *";
+      color: var(--danger);
+      font-weight: 800;
+    }
+    .form-help {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 8px;
+      padding: 10px 13px;
+      color: var(--text);
+      font-size: 13.5px;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+    .form-input.is-invalid, .form-select.is-invalid, .form-textarea.is-invalid {
+      border-color: #ef4444 !important;
+      background-color: rgba(239, 68, 68, 0.05) !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+    }
+    .field-error-msg {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #ef4444;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
     /* BUTTONS & GENERAL UI */
     .btn {
       padding: 8px 16px;
@@ -516,24 +577,6 @@
     .data-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
     [data-theme="light"] .data-table tr:hover td { background: rgba(0, 0, 0, 0.02); }
 
-    /* FORM ELEMENTS */
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 8px;
-      padding: 9px 13px;
-      color: var(--text);
-      font-size: 13.5px;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-    }
-
     .badge {
       display: inline-block;
       padding: 3px 8px;
@@ -553,6 +596,16 @@
       background: var(--card-bg);
       margin-top: auto;
     }
+
+    /* CUSTOM SWEETALERT */
+    .swal2-popup {
+      border-radius: 18px !important;
+      font-family: inherit !important;
+      padding: 24px !important;
+      border: 1px solid var(--border) !important;
+    }
+    [data-theme="dark"] .swal2-popup { background: #111827 !important; color: #f8fafc !important; }
+    [data-theme="light"] .swal2-popup { background: #ffffff !important; color: #0f172a !important; }
 
     /* RESPONSIVE MEDIA QUERIES */
     @media (max-width: 991px) {
@@ -647,7 +700,6 @@
          ============================================================ -->
     <div class="super-main-wrapper">
 
-      <!-- DESKTOP TOPBAR -->
       <header class="super-desktop-topbar">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span class="badge-superadmin">OWNER CONTROL</span>
@@ -663,7 +715,6 @@
         </div>
       </header>
 
-      <!-- MOBILE TOPBAR (< 992px) -->
       <header class="super-mobile-topbar">
         <div class="super-brand">
           <span style="font-size: 20px;">👑</span>
@@ -679,7 +730,6 @@
         </div>
       </header>
 
-      <!-- MAIN CONTENT -->
       <main class="super-main">
         {% if messages %}
           {% for msg in messages %}
@@ -829,6 +879,103 @@
     document.addEventListener('DOMContentLoaded', () => {
       const activeTheme = document.documentElement.getAttribute('data-theme') || 'dark';
       syncSuperThemeButton(activeTheme);
+
+      // SweetAlert untuk Flash Messages
+      {% if messages %}
+        {% for msg in messages %}
+          Swal.fire({
+            icon: "{% if msg.tags == 'error' %}error{% elif msg.tags == 'warning' %}warning{% else %}success{% endif %}",
+            title: "{% if msg.tags == 'error' %}Perhatian Admin!{% elif msg.tags == 'warning' %}Peringatan{% else %}Berhasil!{% endif %}",
+            html: "{{ msg|escapejs }}",
+            confirmButtonText: "Mengerti",
+            confirmButtonColor: "var(--accent)",
+            background: "var(--card-bg)",
+            color: "var(--text)"
+          });
+        {% endfor %}
+      {% endif %}
+
+      // Validasi Form Superadmin
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.addEventListener('input', (e) => {
+          if (e.target.classList.contains('is-invalid')) {
+            e.target.classList.remove('is-invalid');
+            const errSpan = e.target.parentElement.querySelector('.field-error-msg');
+            if (errSpan) errSpan.remove();
+          }
+        });
+
+        form.addEventListener('submit', function(e) {
+          form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+          form.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+
+          let firstInvalid = null;
+          let invalidMessages = [];
+
+          const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+          requiredFields.forEach(field => {
+            let isValEmpty = false;
+            if (field.type === 'file') {
+              isValEmpty = !field.files || field.files.length === 0;
+            } else {
+              isValEmpty = !field.value || field.value.trim() === '';
+            }
+
+            if (isValEmpty) {
+              field.classList.add('is-invalid');
+
+              let labelText = '';
+              const group = field.closest('.form-group') || field.parentElement;
+              const labelEl = group.querySelector('.form-label') || form.querySelector(`label[for="${field.id}"]`);
+              if (labelEl) {
+                labelText = labelEl.innerText.replace('*', '').trim();
+              } else if (field.placeholder) {
+                labelText = field.placeholder;
+              } else {
+                labelText = field.name || 'Kolom ini';
+              }
+
+              const errDiv = document.createElement('div');
+              errDiv.className = 'field-error-msg';
+              errDiv.innerHTML = `⚠️ Kolom <b>${labelText}</b> wajib diisi!`;
+              field.parentElement.appendChild(errDiv);
+
+              if (!firstInvalid) firstInvalid = field;
+              invalidMessages.push(labelText);
+            }
+          });
+
+          if (firstInvalid) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => { firstInvalid.focus(); }, 300);
+
+            Swal.fire({
+              icon: 'warning',
+              title: 'Formulir Belum Lengkap!',
+              html: `
+                <div style="text-align: left; font-size: 13.5px; line-height: 1.6;">
+                  Terdapat data yang belum lengkap:<br>
+                  <ul style="margin: 8px 0 12px 20px; color: #ef4444; font-weight: 700;">
+                    ${invalidMessages.map(m => `<li>${m}</li>`).join('')}
+                  </ul>
+                  <span style="color: var(--text-muted); font-size: 12.5px;">
+                    Harap lengkapi kolom yang bergaris merah.
+                  </span>
+                </div>
+              `,
+              confirmButtonText: 'Perbaiki',
+              confirmButtonColor: 'var(--accent)',
+              background: 'var(--card-bg)',
+              color: 'var(--text)'
+            });
+            return false;
+          }
+        });
+      });
     });
   </script>
   {% block extra_js %}{% endblock %}

@@ -291,3 +291,13 @@ def api_ucapan(request):
         jumlah_orang=jumlah_orang,
     )
     return JsonResponse({"ok": True, "ucapan": _serialisasi(ucapan)}, status=201)
+
+
+def custom_404(request, exception=None):
+    """Tampilan kustom 404 berdesain game yang cantik saat halaman tidak ditemukan."""
+    return render(request, "404.html", status=404)
+
+
+def custom_500(request):
+    """Tampilan kustom 500 saat terjadi kendala teknis internal pada server."""
+    return render(request, "500.html", status=500)

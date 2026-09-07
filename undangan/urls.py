@@ -71,6 +71,10 @@ urlpatterns = [
     # API Endpoint
     path("api/ucapan/", views.api_ucapan, name="api_ucapan"),
 
+    # Pratinjau Halaman Error Kustom
+    path("404/", views.custom_404, name="error_404"),
+    path("500/", views.custom_500, name="error_500"),
+
     # Rute Langsung Kustom (Berbayar Penuh): /<slug>/ (misal: jelajah.biz.id/rana&cahyo)
     # Diletakkan paling akhir agar rute sistem lainnya di atas dievaluasi terlebih dahulu
     path("<str:slug_undangan>/", views.undangan_publik_root, name="undangan_publik_root"),

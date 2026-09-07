@@ -7,6 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- SweetAlert2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     :root {
       --bg: #0f172a;
@@ -76,18 +80,24 @@
     }
     .form-group {
       margin-bottom: 16px;
+      position: relative;
     }
     .form-label {
       display: block;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       color: #cbd5e1;
       margin-bottom: 7px;
+    }
+    .form-label.required::after {
+      content: " *";
+      color: var(--danger);
+      font-weight: 800;
     }
     .form-input {
       width: 100%;
       background: var(--input-bg);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 10px;
       padding: 11px 14px;
       color: var(--text);
@@ -97,7 +107,21 @@
     .form-input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      box-shadow: 0 0 0 3.5px rgba(245, 158, 11, 0.25);
+    }
+    .form-input.is-invalid {
+      border-color: #ef4444 !important;
+      background-color: rgba(239, 68, 68, 0.05) !important;
+      box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.25) !important;
+    }
+    .field-error-msg {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #ef4444;
+      font-weight: 700;
+      margin-top: 6px;
     }
     .btn-submit {
       width: 100%;
@@ -144,6 +168,14 @@
       border: 1px solid rgba(16, 185, 129, 0.3);
       color: #6ee7b7;
     }
+
+    .swal2-popup {
+      border-radius: 18px !important;
+      font-family: inherit !important;
+      background: #1e293b !important;
+      color: #f8fafc !important;
+      border: 1px solid var(--border) !important;
+    }
   </style>
 </head>
 <body>
@@ -165,30 +197,30 @@
       {% endfor %}
     {% endif %}
 
-    <form method="POST" action="{% url 'undangan:register' %}">
+    <form method="POST" action="{% url 'undangan:register' %}" id="register-form">
       {% csrf_token %}
       <div class="form-group">
-        <label class="form-label" for="nama">Nama Lengkap Anda</label>
+        <label class="form-label required" for="nama">Nama Lengkap Anda</label>
         <input type="text" id="nama" name="nama" class="form-input" required placeholder="Contoh: Budi Pratama" autofocus>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="username">Username Akun</label>
+        <label class="form-label required" for="username">Username Akun</label>
         <input type="text" id="username" name="username" class="form-input" required placeholder="Contoh: budipratama" autocomplete="username">
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="email">Alamat Email</label>
+        <label class="form-label required" for="email">Alamat Email</label>
         <input type="email" id="email" name="email" class="form-input" required placeholder="budi@example.com" autocomplete="email">
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password">Kata Sandi</label>
+        <label class="form-label required" for="password">Kata Sandi</label>
         <input type="password" id="password" name="password" class="form-input" required placeholder="Minimal 6 karakter" autocomplete="new-password">
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password_confirm">Konfirmasi Kata Sandi</label>
+        <label class="form-label required" for="password_confirm">Konfirmasi Kata Sandi</label>
         <input type="password" id="password_confirm" name="password_confirm" class="form-input" required placeholder="Ulangi kata sandi" autocomplete="new-password">
       </div>
 
@@ -203,5 +235,87 @@
     </div>
   </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      {% if messages %}
+        {% for msg in messages %}
+          Swal.fire({
+            icon: "{% if msg.tags == 'error' %}error{% elif msg.tags == 'warning' %}warning{% else %}success{% endif %}",
+            title: "{% if msg.tags == 'error' %}Pendaftaran Gagal{% elif msg.tags == 'warning' %}Peringatan{% else %}Berhasil!{% endif %}",
+            html: "{{ msg|escapejs }}",
+            confirmButtonText: "Mengerti",
+            confirmButtonColor: "var(--accent)"
+          });
+        {% endfor %}
+      {% endif %}
+
+      const form = document.getElementById('register-form');
+      if (form) {
+        form.addEventListener('input', (e) => {
+          if (e.target.classList.contains('is-invalid')) {
+            e.target.classList.remove('is-invalid');
+            const err = e.target.parentElement.querySelector('.field-error-msg');
+            if (err) err.remove();
+          }
+        });
+
+        form.addEventListener('submit', function(e) {
+          form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+          form.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+
+          let firstInvalid = null;
+          let invalidLabels = [];
+
+          const requiredInputs = form.querySelectorAll('input[required]');
+          requiredInputs.forEach(input => {
+            if (!input.value || input.value.trim() === '') {
+              input.classList.add('is-invalid');
+              const group = input.closest('.form-group') || input.parentElement;
+              const labelEl = group.querySelector('.form-label');
+              const labelText = labelEl ? labelEl.innerText.replace('*', '').trim() : input.placeholder;
+
+              const errDiv = document.createElement('div');
+              errDiv.className = 'field-error-msg';
+              errDiv.innerHTML = `⚠️ Kolom <b>${labelText}</b> wajib diisi!`;
+              group.appendChild(errDiv);
+
+              if (!firstInvalid) firstInvalid = input;
+              invalidLabels.push(labelText);
+            }
+          });
+
+          // Validasi konfirmasi password
+          const pass = document.getElementById('password');
+          const passConfirm = document.getElementById('password_confirm');
+          if (pass && passConfirm && pass.value && passConfirm.value) {
+            if (pass.value !== passConfirm.value) {
+              passConfirm.classList.add('is-invalid');
+              const group = passConfirm.closest('.form-group') || passConfirm.parentElement;
+              const errDiv = document.createElement('div');
+              errDiv.className = 'field-error-msg';
+              errDiv.innerHTML = `⚠️ Konfirmasi kata sandi tidak cocok dengan kata sandi di atas!`;
+              group.appendChild(errDiv);
+
+              if (!firstInvalid) firstInvalid = passConfirm;
+              invalidLabels.push("Konfirmasi Kata Sandi");
+            }
+          }
+
+          if (firstInvalid) {
+            e.preventDefault();
+            firstInvalid.focus();
+
+            Swal.fire({
+              icon: 'warning',
+              title: 'Harap Periksa Data Anda!',
+              html: `Kolom belum lengkap atau tidak cocok:<br><b style="color: #ef4444;">${invalidLabels.join(', ')}</b>`,
+              confirmButtonText: 'Perbaiki',
+              confirmButtonColor: 'var(--accent)'
+            });
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
