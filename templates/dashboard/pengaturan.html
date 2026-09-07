@@ -103,11 +103,17 @@
       <div class="form-grid">
         <div>
           <label class="form-label">Opsi 1: Unggah Berkas Musik (.mp3 / .wav)</label>
-          <input type="file" name="musik" accept="audio/*" class="form-input">
+          <div class="file-dropzone" id="dropzone-musik" style="min-height: 105px; padding: 16px;">
+            <input type="file" id="musik_file" name="musik" accept="audio/*" style="display: none;">
+            <div class="dropzone-icon-wrap" style="width: 38px; height: 38px; font-size: 18px; margin-bottom: 6px;">🎵</div>
+            <div class="dropzone-title" style="font-size: 13px;">Klik atau tarik berkas musik ke sini</div>
+            <div class="dropzone-hint" style="font-size: 11px;">Mendukung format MP3, WAV (Maksimal 10MB)</div>
+            <div id="badge-musik" class="dropzone-badge" style="display: none;"></div>
+          </div>
           {% if undangan.musik %}
             <div style="margin-top: 8px; font-size: 12px; color: #34d399;">
-              ✅ Musik aktif: <code>{{ undangan.musik.name }}</code>
-              <label style="display: block; margin-top: 6px; color: #f87171;">
+              ✅ Musik aktif saat ini: <code>{{ undangan.musik.name }}</code>
+              <label style="display: block; margin-top: 6px; color: #f87171; cursor: pointer;">
                 <input type="checkbox" name="hapus_musik" value="1"> Hapus file musik ini (kembali ke musik bawaan)
               </label>
             </div>
@@ -135,4 +141,13 @@
     </div>
   </form>
 </div>
+
+<script>
+  initDropzone({
+    dropzoneId: 'dropzone-musik',
+    inputId: 'musik_file',
+    badgeId: 'badge-musik',
+    maxMb: 10
+  });
+</script>
 {% endblock %}

@@ -165,9 +165,22 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="bukti_bayar">Unggah Bukti Transfer / Struk (Foto/Screenshot)</label>
-        <input type="file" id="bukti_bayar" name="bukti_bayar" accept="image/*" class="form-input" required>
-        <div class="form-help">Format foto JPG, PNG, atau WebP. Maksimal 5MB.</div>
+        <label class="form-label required" for="bukti_bayar">Unggah Bukti Transfer / Struk (Foto/Screenshot)</label>
+        <div class="file-dropzone" id="dropzone-bukti">
+          <input type="file" id="bukti_bayar" name="bukti_bayar" accept="image/*" style="display: none;" required>
+          <div class="dropzone-icon-wrap">🧾</div>
+          <div class="dropzone-title">Tarik bukti transfer ke sini atau <span>Pilih Berkas</span></div>
+          <div class="dropzone-hint">Format JPG, PNG, atau WebP (Maksimal 5MB)</div>
+          <div id="badge-bukti" class="dropzone-badge" style="display: none;"></div>
+        </div>
+
+        <!-- Pratinjau Bukti Bayar -->
+        <div id="preview-bukti-wrapper" style="margin-top: 14px; display: none;">
+          <div class="img-preview-box" style="max-height: 220px; max-width: 220px; margin: 0 auto;">
+            <span class="img-preview-badge">🧾 Bukti Terpilih</span>
+            <img id="preview-bukti" src="" alt="Pratinjau Bukti">
+          </div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -283,5 +296,18 @@
       }
     });
   })();
+
+  // Inisialisasi Dropzone Bukti Pembayaran
+  initDropzone({
+    dropzoneId: 'dropzone-bukti',
+    inputId: 'bukti_bayar',
+    previewImgId: 'preview-bukti',
+    badgeId: 'badge-bukti',
+    maxMb: 5,
+    onFileChange: function(file) {
+      const wrap = document.getElementById('preview-bukti-wrapper');
+      if (wrap) wrap.style.display = 'block';
+    }
+  });
 </script>
 {% endblock %}

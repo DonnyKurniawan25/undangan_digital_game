@@ -35,16 +35,34 @@
       </div>
 
       <!-- KODE QRIS OPSIONAL -->
-      <div style="padding: 14px; background: var(--card-inner); border-radius: 12px; border: 1px solid var(--border); margin-top: 14px;">
-        <label class="form-label" style="color: var(--accent);">📱 Gambar QRIS (Opsional)</label>
-        <div class="form-grid">
-          <div>
-            <label class="form-label" style="font-size: 12px;">Upload Berkas QR</label>
-            <input type="file" name="qr" accept="image/*" class="form-input">
+      <div style="padding: 16px; background: var(--card-inner); border-radius: 14px; border: 1px solid var(--border); margin-top: 14px;">
+        <label class="form-label" style="color: var(--accent); font-weight: 700;">📱 Gambar QRIS / Barcode (Opsional)</label>
+
+        <div class="media-source-tabs" id="tabs-rek">
+          <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload QR</button>
+          <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link</button>
+        </div>
+
+        <div id="box-rek-upload">
+          <div class="file-dropzone" id="dropzone-qr" style="min-height: 105px; padding: 16px;">
+            <input type="file" id="qr_file" name="qr" accept="image/*" style="display: none;">
+            <div class="dropzone-icon-wrap" style="width: 38px; height: 38px; font-size: 18px; margin-bottom: 6px;">📱</div>
+            <div class="dropzone-title" style="font-size: 13px;">Klik atau tarik berkas QR ke sini</div>
+            <div class="dropzone-hint" style="font-size: 11px;">Mendukung JPG, PNG, WEBP (Maksimal 3MB)</div>
+            <div id="badge-qr" class="dropzone-badge" style="display: none;"></div>
           </div>
-          <div>
-            <label class="form-label" style="font-size: 12px;">Atau Tautan URL Gambar QR</label>
-            <input type="text" name="qr_url" class="form-input" placeholder="https://drive.google.com/...">
+        </div>
+
+        <div id="box-rek-link" style="display: none;">
+          <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
+          <div class="form-help">Mendukung link gambar langsung atau Google Drive publik.</div>
+        </div>
+
+        <!-- Pratinjau QR -->
+        <div id="preview-qr-wrapper" style="margin-top: 12px; display: none;">
+          <div class="img-preview-box" style="width: 120px; height: 120px; aspect-ratio: 1/1; margin: 0 auto;">
+            <img id="preview-qr" src="" alt="Pratinjau QR">
+            <div id="preview-qr-empty" class="img-preview-empty" style="display: none;"></div>
           </div>
         </div>
       </div>
@@ -109,4 +127,19 @@
     {% endif %}
   </div>
 </div>
+
+<script>
+  setupMediaSourceTabs('tabs-rek', 'box-rek-upload', 'box-rek-link');
+  initDropzone({
+    dropzoneId: 'dropzone-qr',
+    inputId: 'qr_file',
+    previewImgId: 'preview-qr',
+    badgeId: 'badge-qr',
+    maxMb: 3,
+    onFileChange: function(file) {
+      const wrap = document.getElementById('preview-qr-wrapper');
+      if (wrap) wrap.style.display = 'block';
+    }
+  });
+</script>
 {% endblock %}

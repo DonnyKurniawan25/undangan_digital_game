@@ -57,30 +57,50 @@
       </div>
 
       <!-- FOTO MEMPELAI PRIA (DUAL SOURCE) -->
-      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);">
-        <label class="form-label" style="color: var(--accent);">📷 Foto Mempelai Pria</label>
+      <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <label class="form-label" style="color: var(--accent); margin-bottom: 0; font-weight: 700;">📷 Foto Mempelai Pria</label>
+          <span style="font-size: 11.5px; color: var(--text-muted);">Format foto potret</span>
+        </div>
 
         <div class="media-source-tabs" id="tabs-pria">
           <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
           <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
         </div>
 
+        <!-- METODE 1: UPLOAD BERKAS VIA DROPZONE -->
         <div id="box-pria-upload">
-          <input type="file" name="pria_foto" accept="image/*" class="form-input" onchange="previewLocal(this, 'preview-pria')">
-          <div class="form-help">Pilih foto dari komputer atau galeri ponsel Anda.</div>
+          <div class="file-dropzone" id="dropzone-pria">
+            <input type="file" id="pria_foto" name="pria_foto" accept="image/*" style="display: none;">
+            <div class="dropzone-icon-wrap">☁️</div>
+            <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
+            <div class="dropzone-hint">Mendukung JPG, PNG, WEBP (Maksimal 5MB)</div>
+            <div id="badge-pria" class="dropzone-badge" style="display: none;"></div>
+          </div>
         </div>
 
+        <!-- METODE 2: TEMPEL LINK URL ONLINE -->
         <div id="box-pria-link" style="display: none;">
-          <input type="text" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link URL gambar" oninput="previewUrl(this.value, 'preview-pria')">
-          <div class="form-help">Mendukung link Google Drive, Imgur, Cloudinary, atau web hosting gambar.</div>
+          <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
+          <div class="form-help">
+            💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
+          </div>
         </div>
 
-        <!-- Preview Thumbnail -->
-        <div class="img-preview-box" style="margin-top: 12px;">
-          <img id="preview-pria" src="{{ pria.url_tampil }}" alt="Preview Pria" style="{% if not pria.url_tampil %}display:none;{% endif %}">
-          <span id="preview-pria-empty" class="img-preview-empty" style="{% if pria.url_tampil %}display:none;{% endif %}">
-            Belum ada foto yang dipilih
-          </span>
+        <!-- PRATINJAU BINGKAI FOTO ELEGAN -->
+        <div style="margin-top: 14px;">
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-align: center;">
+            Pratinjau Foto Mempelai Pria
+          </div>
+          <div class="img-preview-box">
+            <span class="img-preview-badge">✨ Pratinjau</span>
+            <img id="preview-pria" src="{{ pria.url_tampil }}" alt="Preview Pria" style="{% if not pria.url_tampil %}display:none;{% endif %}">
+            <div id="preview-pria-empty" class="img-preview-empty" style="{% if pria.url_tampil %}display:none;{% endif %}">
+              <span class="empty-icon">🤵</span>
+              <b>Belum Ada Foto</b>
+              <span style="font-size: 11px; margin-top: 4px;">Upload atau tempel link untuk melihat pratinjau</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -128,30 +148,50 @@
       </div>
 
       <!-- FOTO MEMPELAI WANITA (DUAL SOURCE) -->
-      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);">
-        <label class="form-label" style="color: var(--accent);">📷 Foto Mempelai Wanita</label>
+      <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <label class="form-label" style="color: var(--accent); margin-bottom: 0; font-weight: 700;">📷 Foto Mempelai Wanita</label>
+          <span style="font-size: 11.5px; color: var(--text-muted);">Format foto potret</span>
+        </div>
 
         <div class="media-source-tabs" id="tabs-wanita">
           <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
           <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
         </div>
 
+        <!-- METODE 1: UPLOAD BERKAS VIA DROPZONE -->
         <div id="box-wanita-upload">
-          <input type="file" name="wanita_foto" accept="image/*" class="form-input" onchange="previewLocal(this, 'preview-wanita')">
-          <div class="form-help">Pilih foto dari komputer atau galeri ponsel Anda.</div>
+          <div class="file-dropzone" id="dropzone-wanita">
+            <input type="file" id="wanita_foto" name="wanita_foto" accept="image/*" style="display: none;">
+            <div class="dropzone-icon-wrap">☁️</div>
+            <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
+            <div class="dropzone-hint">Mendukung JPG, PNG, WEBP (Maksimal 5MB)</div>
+            <div id="badge-wanita" class="dropzone-badge" style="display: none;"></div>
+          </div>
         </div>
 
+        <!-- METODE 2: TEMPEL LINK URL ONLINE -->
         <div id="box-wanita-link" style="display: none;">
-          <input type="text" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link URL gambar" oninput="previewUrl(this.value, 'preview-wanita')">
-          <div class="form-help">Mendukung link Google Drive, Imgur, Cloudinary, atau web hosting gambar.</div>
+          <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
+          <div class="form-help">
+            💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
+          </div>
         </div>
 
-        <!-- Preview Thumbnail -->
-        <div class="img-preview-box" style="margin-top: 12px;">
-          <img id="preview-wanita" src="{{ wanita.url_tampil }}" alt="Preview Wanita" style="{% if not wanita.url_tampil %}display:none;{% endif %}">
-          <span id="preview-wanita-empty" class="img-preview-empty" style="{% if wanita.url_tampil %}display:none;{% endif %}">
-            Belum ada foto yang dipilih
-          </span>
+        <!-- PRATINJAU BINGKAI FOTO ELEGAN -->
+        <div style="margin-top: 14px;">
+          <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-align: center;">
+            Pratinjau Foto Mempelai Wanita
+          </div>
+          <div class="img-preview-box">
+            <span class="img-preview-badge">✨ Pratinjau</span>
+            <img id="preview-wanita" src="{{ wanita.url_tampil }}" alt="Preview Wanita" style="{% if not wanita.url_tampil %}display:none;{% endif %}">
+            <div id="preview-wanita-empty" class="img-preview-empty" style="{% if wanita.url_tampil %}display:none;{% endif %}">
+              <span class="empty-icon">👰</span>
+              <b>Belum Ada Foto</b>
+              <span style="font-size: 11px; margin-top: 4px;">Upload atau tempel link untuk melihat pratinjau</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -169,39 +209,25 @@
   setupMediaSourceTabs('tabs-pria', 'box-pria-upload', 'box-pria-link', 'preview-pria');
   setupMediaSourceTabs('tabs-wanita', 'box-wanita-upload', 'box-wanita-link', 'preview-wanita');
 
-  // Preview berkas lokal
-  function previewLocal(input, imgId) {
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = document.getElementById(imgId);
-        const empty = document.getElementById(imgId + '-empty');
-        img.src = e.target.result;
-        img.style.display = 'block';
-        if (empty) empty.style.display = 'none';
-      }
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
+  // Modern Dropzone Initialization
+  initDropzone({
+    dropzoneId: 'dropzone-pria',
+    inputId: 'pria_foto',
+    previewImgId: 'preview-pria',
+    emptyId: 'preview-pria-empty',
+    badgeId: 'badge-pria',
+    originalUrl: '{{ pria.url_tampil|default:"" }}',
+    maxMb: 5
+  });
 
-  // Preview URL online
-  function previewUrl(url, imgId) {
-    const img = document.getElementById(imgId);
-    const empty = document.getElementById(imgId + '-empty');
-    if (!url) {
-      img.style.display = 'none';
-      if (empty) empty.style.display = 'block';
-      return;
-    }
-    // Konversi cepat preview gdrive jika terdeteksi
-    let finalUrl = url.trim();
-    const gdriveMatch = finalUrl.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]+)/);
-    if (gdriveMatch) {
-      finalUrl = 'https://lh3.googleusercontent.com/d/' + gdriveMatch[1];
-    }
-    img.src = finalUrl;
-    img.style.display = 'block';
-    if (empty) empty.style.display = 'none';
-  }
+  initDropzone({
+    dropzoneId: 'dropzone-wanita',
+    inputId: 'wanita_foto',
+    previewImgId: 'preview-wanita',
+    emptyId: 'preview-wanita-empty',
+    badgeId: 'badge-wanita',
+    originalUrl: '{{ wanita.url_tampil|default:"" }}',
+    maxMb: 5
+  });
 </script>
 {% endblock %}
