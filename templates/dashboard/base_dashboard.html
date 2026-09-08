@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Dashboard Undangan{% endblock %} — Undangan Game Digital</title>
+  <title>{% block title %}Dashboard{% endblock %} — Jelajah Undangan</title>
   
   <!-- Cegah Flash of Unstyled Theme (FOUC) - Default: Light -->
   <script>
@@ -589,8 +589,8 @@
       padding: 28px 32px 60px;
       flex: 1;
       width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     /* ============================================================
@@ -1174,7 +1174,7 @@
       <div class="sidebar-header">
         <a href="{% url 'undangan:dashboard' %}" class="brand">
           <span class="brand-icon">🎮</span>
-          <div>Undangan<span>Game</span></div>
+          <div>Jelajah<span>Undangan</span></div>
         </a>
       </div>
 
@@ -1188,7 +1188,7 @@
             {% if undangan.status_langganan == 'aktif' and undangan.is_online_aktif %}
               <span class="status-indicator-dot dot-green"></span> Online Aktif
             {% elif undangan.status_langganan == 'trial' and undangan.is_online_aktif %}
-              <span class="status-indicator-dot dot-yellow"></span> Trial 1 Hari
+              <span class="status-indicator-dot dot-yellow"></span> Trial 1 Bulan
             {% else %}
               <span class="status-indicator-dot dot-red"></span> Offline
             {% endif %}
@@ -1245,7 +1245,7 @@
 
       <div class="sidebar-footer">
         <a href="{{ undangan.path_publik }}" target="_blank" class="sidebar-btn-preview" title="Buka Game Undangan">
-          <span>👀</span> Lihat Undangan Game &nearr;
+          <span>👀</span> Lihat Jelajah Undangan &nearr;
         </a>
 
         {% if request.user.is_superuser %}
@@ -1279,7 +1279,7 @@
         </div>
         <div style="display: flex; align-items: center; gap: 12px;">
           <a href="{{ undangan.path_publik }}" target="_blank" class="btn btn-secondary btn-sm" style="font-weight: 600;">
-            <span>🎮</span> Buka Game
+            <span>🎮</span> Buka Undangan
           </a>
           <span style="font-size: 13px; color: var(--text-muted);">
             Halo, <b>{{ request.user.first_name|default:request.user.username }}</b>
@@ -1291,7 +1291,7 @@
       <header class="mobile-topbar">
         <a href="{% url 'undangan:dashboard' %}" class="brand">
           <span class="brand-icon">🎮</span>
-          <div>Undangan<span>Game</span></div>
+          <div>Jelajah<span>Undangan</span></div>
         </a>
         <div style="display: flex; align-items: center; gap: 8px;">
           <button type="button" class="btn-theme-toggle btn-sm" onclick="toggleTheme()" title="Ubah tema">
@@ -1338,7 +1338,7 @@
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 24px;">⚠️</span>
                 <div>
-                  <b style="color: var(--danger); font-size: 14px;">Masa Uji Coba Gratis 1 Hari Telah Berakhir</b>
+                  <b style="color: var(--danger); font-size: 14px;">Masa Uji Coba Gratis 1 Bulan Telah Berakhir</b>
                   <div style="font-size: 12.5px; color: var(--text-muted);">Tamu umum belum dapat membuka game Anda. Segera lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun) untuk online aktif dan membuka domain langsung.</div>
                 </div>
               </div>
@@ -1383,7 +1383,7 @@
       </main>
 
       <footer class="footer">
-        <p>&copy; 2026 Undangan Game Digital — Platform Undangan Interaktif Mandiri.</p>
+        <p>&copy; 2026 Jelajah Undangan — Platform Undangan Digital Interaktif Mandiri.</p>
       </footer>
     </div>
   </div>
@@ -1466,7 +1466,7 @@
 
     <div class="sheet-actions">
       <a href="{{ undangan.path_publik }}" target="_blank" class="sidebar-btn-preview" style="text-align: center;">
-        👀 Pratinjau Game Undangan &nearr;
+        👀 Pratinjau Jelajah Undangan &nearr;
       </a>
       {% if request.user.is_superuser %}
         <a href="{% url 'undangan:superadmin_index' %}" class="btn btn-secondary" style="justify-content: center; color: var(--accent); border-color: var(--accent); font-weight: 700;">

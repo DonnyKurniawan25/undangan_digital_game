@@ -1,13 +1,13 @@
 @echo off
 setlocal enabledelayedexpansion
 
-title Undangan Digital Game - Django Server
+title Jelajah Undangan - Django Server
 
 :: Pindah ke direktori file .bat berada
 cd /d "%~dp0"
 
 echo ================================================================
-echo             UNDANGAN DIGITAL GAME - DJANGO SERVER
+echo               JELAJAH UNDANGAN - DJANGO SERVER
 echo ================================================================
 echo.
 

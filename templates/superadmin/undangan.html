@@ -52,7 +52,7 @@
   </a>
   <a href="{% url 'undangan:superadmin_undangan' %}?status=trial{% if q %}&q={{ q }}{% endif %}{% if tema_filter %}&tema={{ tema_filter }}{% endif %}"
      class="btn {% if status_filter == 'trial' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
-    ⏳ Trial 1 Hari ({{ jml_trial }})
+    ⏳ Trial 1 Bulan ({{ jml_trial }})
   </a>
   <a href="{% url 'undangan:superadmin_undangan' %}?status=tenggang{% if q %}&q={{ q }}{% endif %}{% if tema_filter %}&tema={{ tema_filter }}{% endif %}"
      class="btn {% if status_filter == 'tenggang' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm"
@@ -156,7 +156,7 @@
                   </div>
                 {% elif und.status_langganan == 'trial' and und.is_online_aktif %}
                   <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3);">
-                    ⏳ Trial 1 Hari ({{ und.sisa_waktu_trial }})
+                    ⏳ Trial 1 Bulan ({{ und.sisa_waktu_trial }})
                   </span>
                   <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
                     Uji coba gratis

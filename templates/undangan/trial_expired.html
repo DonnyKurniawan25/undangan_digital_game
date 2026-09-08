@@ -119,7 +119,7 @@
       <h1 class="expired-title">Masa Uji Coba Berakhir</h1>
 
       <p class="expired-desc">
-        Undangan pernikahan interaktif ini telah melewati masa uji coba gratis (1 hari) dan saat ini sedang menunggu proses aktivasi penuh oleh kedua mempelai.
+        Undangan pernikahan interaktif ini telah melewati masa uji coba gratis (1 bulan) dan saat ini sedang menunggu proses aktivasi penuh oleh kedua mempelai.
       </p>
     {% endif %}
 
@@ -135,7 +135,7 @@
           {% if undangan.is_masa_tenggang %}
             Masa aktif Anda telah habis. Anda memiliki <b>masa tenggang 1 bulan (sisa {{ undangan.sisa_hari_tenggang }} hari)</b> sebelum website dan seluruh foto galeri dibersihkan permanen dari server. Pilih paket 1 Bulan, 6 Bulan, atau 1 Tahun sekarang!
           {% else %}
-            Tamu publik belum dapat membuka game ini. Segera lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun) untuk online aktif dan membuka tautan langsung tanpa awalan <code>/trial/</code>!
+            Tamu publik belum dapat membuka game ini. Segera lakukan aktivasi (pilihan 1 Bulan, 6 Bulan, atau 1 Tahun) untuk online aktif dan membuka tautan kustom langsung tanpa awalan <code>/trial/</code>!
           {% endif %}
         </p>
         <a href="{% url 'undangan:dashboard_pembayaran' %}" class="btn-action">
@@ -145,7 +145,7 @@
     {% else %}
       <div>
         <a href="{% url 'undangan:landing' %}" style="color: var(--text-muted); font-size: 13px; text-decoration: none;">
-          &larr; Beranda Undangan Game Digital
+          &larr; Beranda Jelajah Undangan
         </a>
       </div>
     {% endif %}

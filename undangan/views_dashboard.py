@@ -224,7 +224,7 @@ def dashboard_pengaturan(request):
             if undangan.status_langganan != Undangan.STATUS_AKTIF:
                 messages.warning(
                     request,
-                    "Kustomisasi nama tautan langsung (tanpa kata /trial/) hanya dapat diubah setelah melakukan aktivasi pembayaran Rp 30.000. Selama masa uji coba, nama tautan tetap menggunakan awalan /trial/."
+                    "Kustomisasi nama tautan langsung (tanpa kata /trial/) hanya dapat diubah setelah melakukan aktivasi pembayaran. Selama masa uji coba gratis 1 bulan, nama tautan tetap menggunakan awalan /trial/."
                 )
             else:
                 # Sanitasi slug baru (mendukung huruf, angka, strip, dan simbol &)
@@ -249,16 +249,19 @@ def dashboard_pengaturan(request):
         undangan.musik_url = musik_url
         undangan.catatan_penutup = catatan_penutup
 
-        # Periksa file upload musik jika ada
+        # Periksa file upload musik jika ada (hanya boleh untuk user berbayar)
         if "musik" in request.FILES:
-            undangan.musik = request.FILES["musik"]
+            if undangan.status_langganan == Undangan.STATUS_AKTIF:
+                undangan.musik = request.FILES["musik"]
+            else:
+                messages.warning(request, "Upload file musik hanya tersedia untuk pengguna berbayar. Gunakan opsi tautan URL musik online.")
 
         # Opsi hapus file musik lokal jika diminta
         if request.POST.get("hapus_musik") == "1":
             undangan.musik = None
 
         undangan.save()
-        messages.success(request, "Pengaturan undangan dan tema game berhasil diperbarui!")
+        messages.success(request, "Pengaturan Jelajah Undangan berhasil diperbarui!")
         return redirect("undangan:dashboard_pengaturan")
 
     konteks = {
@@ -289,7 +292,10 @@ def dashboard_mempelai(request):
         pria.instagram = request.POST.get("pria_instagram", "").replace("@", "").strip()
         pria.foto_url = request.POST.get("pria_foto_url", "").strip()
         if "pria_foto" in request.FILES:
-            pria.foto = request.FILES["pria_foto"]
+            if undangan.status_langganan == Undangan.STATUS_AKTIF:
+                pria.foto = request.FILES["pria_foto"]
+            else:
+                messages.warning(request, "Upload file foto hanya tersedia untuk pengguna berbayar. Gunakan opsi tempel link URL gambar.")
         pria.save()
 
         # Simpan Mempelai Wanita
@@ -301,7 +307,10 @@ def dashboard_mempelai(request):
         wanita.instagram = request.POST.get("wanita_instagram", "").replace("@", "").strip()
         wanita.foto_url = request.POST.get("wanita_foto_url", "").strip()
         if "wanita_foto" in request.FILES:
-            wanita.foto = request.FILES["wanita_foto"]
+            if undangan.status_langganan == Undangan.STATUS_AKTIF:
+                wanita.foto = request.FILES["wanita_foto"]
+            else:
+                messages.warning(request, "Upload file foto hanya tersedia untuk pengguna berbayar. Gunakan opsi tempel link URL gambar.")
         wanita.save()
 
         messages.success(request, "Data mempelai pria & wanita berhasil disimpan!")
@@ -388,6 +397,9 @@ def dashboard_galeri(request):
         urutan = int(request.POST.get("urutan", 0) or 0)
 
         if sumber == "upload":
+            if undangan.status_langganan != Undangan.STATUS_AKTIF:
+                messages.warning(request, "Upload file foto ke server hanya tersedia untuk pengguna berbayar. Selama masa uji coba, silakan gunakan opsi tempel link URL gambar online.")
+                return redirect("undangan:dashboard_galeri")
             berkas = request.FILES.get("gambar")
             if berkas:
                 FotoGaleri.objects.create(
@@ -459,7 +471,10 @@ def dashboard_rekening(request):
                 urutan=urutan,
             )
             if "qr" in request.FILES:
-                rek.qr = request.FILES["qr"]
+                if undangan.status_langganan == Undangan.STATUS_AKTIF:
+                    rek.qr = request.FILES["qr"]
+                else:
+                    messages.warning(request, "Upload file QRIS hanya tersedia untuk pengguna berbayar. Gunakan opsi tempel link URL gambar.")
             rek.save()
             messages.success(request, f"Rekening / E-Wallet {nama_bank} berhasil ditambahkan!")
         else:

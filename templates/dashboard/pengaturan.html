@@ -6,7 +6,7 @@
 <div style="margin-bottom: 24px;">
   <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Tema &amp; Pengaturan Umum</h1>
   <p style="color: var(--text-muted); font-size: 14px;">
-    Atur tema game 2D, judul acara, alamat tautan kustom, serta musik pengiring undangan Anda.
+    Atur tema Jelajah Undangan, judul acara, alamat tautan kustom, serta musik pengiring undangan Anda.
   </p>
 </div>
 
@@ -52,15 +52,15 @@
           </div>
         {% else %}
           <div class="form-help" style="color: var(--text-muted);">
-            ⚠️ Selama masa uji coba (1 hari), tautan Anda beralamat di <code>jelajah.biz.id/trial/{{ undangan.slug }}/</code>. Untuk mengkustomisasi nama domain langsung (seperti <code>jelajah.biz.id/{{ undangan.slug }}/</code>), silakan lakukan <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 700; text-decoration: underline;">Aktivasi Pembayaran (1 Bulan / 6 Bulan / 1 Tahun)</a>.
+            ⚠️ Selama masa uji coba gratis (1 bulan), tautan Anda beralamat di <code>jelajah.biz.id/trial/{{ undangan.slug }}/</code>. Untuk mengkustomisasi nama domain langsung (seperti <code>jelajah.biz.id/{{ undangan.slug }}/</code> tanpa awalan /trial/), silakan lakukan <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 700; text-decoration: underline;">Aktivasi Pembayaran (1 Bulan / 6 Bulan / 1 Tahun)</a>.
           </div>
         {% endif %}
       </div>
     </div>
 
-    <!-- Pilihan Tema Game -->
+    <!-- Pilihan Tema Jelajah Undangan -->
     <div class="form-group" style="margin-top: 10px;">
-      <label class="form-label" for="tema">Pilihan Tema Game Interaktif</label>
+      <label class="form-label" for="tema">Pilihan Tema Jelajah Undangan</label>
       <select id="tema" name="tema" class="form-select">
         {% for kode, label in daftar_tema %}
           <option value="{{ kode }}" {% if undangan.tema == kode %}selected{% endif %}>
@@ -97,31 +97,47 @@
     <div class="form-group" style="padding: 16px; background: var(--card-inner); border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;">
       <label class="form-label" style="color: var(--accent); font-size: 14px;">🎵 Musik Latar Belakang (.mp3)</label>
       <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
-        Musik akan diputar secara otomatis saat tamu menekan tombol "Buka Undangan". Anda dapat mengunggah berkas musik lokal atau mengisi tautan audio online.
+        Musik akan diputar secara otomatis saat tamu menekan tombol "Buka Undangan".
+        {% if undangan.status_langganan == 'aktif' %}
+          Anda dapat mengunggah berkas musik lokal atau mengisi tautan audio online.
+        {% else %}
+          Selama masa uji coba, gunakan tautan audio online. Upload file musik tersedia setelah aktivasi pembayaran.
+        {% endif %}
       </p>
 
       <div class="form-grid">
-        <div>
-          <label class="form-label">Opsi 1: Unggah Berkas Musik (.mp3 / .wav)</label>
-          <div class="file-dropzone" id="dropzone-musik" style="min-height: 105px; padding: 16px;">
-            <input type="file" id="musik_file" name="musik" accept="audio/*" style="display: none;">
-            <div class="dropzone-icon-wrap" style="width: 38px; height: 38px; font-size: 18px; margin-bottom: 6px;">🎵</div>
-            <div class="dropzone-title" style="font-size: 13px;">Klik atau tarik berkas musik ke sini</div>
-            <div class="dropzone-hint" style="font-size: 11px;">Mendukung format MP3, WAV (Maksimal 10MB)</div>
-            <div id="badge-musik" class="dropzone-badge" style="display: none;"></div>
-          </div>
-          {% if undangan.musik %}
-            <div style="margin-top: 8px; font-size: 12px; color: #34d399;">
-              ✅ Musik aktif saat ini: <code>{{ undangan.musik.name }}</code>
-              <label style="display: block; margin-top: 6px; color: #f87171; cursor: pointer;">
-                <input type="checkbox" name="hapus_musik" value="1"> Hapus file musik ini (kembali ke musik bawaan)
-              </label>
+        {% if undangan.status_langganan == 'aktif' %}
+          <div>
+            <label class="form-label">Opsi 1: Unggah Berkas Musik (.mp3 / .wav)</label>
+            <div class="file-dropzone" id="dropzone-musik" style="min-height: 105px; padding: 16px;">
+              <input type="file" id="musik_file" name="musik" accept="audio/*" style="display: none;">
+              <div class="dropzone-icon-wrap" style="width: 38px; height: 38px; font-size: 18px; margin-bottom: 6px;">🎵</div>
+              <div class="dropzone-title" style="font-size: 13px;">Klik atau tarik berkas musik ke sini</div>
+              <div class="dropzone-hint" style="font-size: 11px;">Mendukung format MP3, WAV (Maksimal 10MB)</div>
+              <div id="badge-musik" class="dropzone-badge" style="display: none;"></div>
             </div>
-          {% endif %}
-        </div>
+            {% if undangan.musik %}
+              <div style="margin-top: 8px; font-size: 12px; color: #34d399;">
+                ✅ Musik aktif saat ini: <code>{{ undangan.musik.name }}</code>
+                <label style="display: block; margin-top: 6px; color: #f87171; cursor: pointer;">
+                  <input type="checkbox" name="hapus_musik" value="1"> Hapus file musik ini (kembali ke musik bawaan)
+                </label>
+              </div>
+            {% endif %}
+          </div>
+        {% else %}
+          <div>
+            <label class="form-label" style="color: var(--text-muted);">Opsi 1: Unggah Berkas Musik 🔒</label>
+            <div style="background: rgba(245, 158, 11, 0.06); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px; text-align: center;">
+              <span style="font-size: 24px; display: block; margin-bottom: 6px;">🔒</span>
+              <b style="font-size: 12.5px; color: var(--text-muted);">Upload file musik tersedia setelah aktivasi pembayaran</b>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Gunakan opsi tautan audio online di sebelah kanan.</div>
+            </div>
+          </div>
+        {% endif %}
 
         <div>
-          <label class="form-label">Opsi 2: Tautan Audio Online (URL)</label>
+          <label class="form-label">{% if undangan.status_langganan == 'aktif' %}Opsi 2: {% endif %}Tautan Audio Online (URL)</label>
           <input type="url" name="musik_url" class="form-input" value="{{ undangan.musik_url }}" placeholder="https://example.com/lagu.mp3">
           <div class="form-help">Gunakan opsi ini jika file audio sudah Anda simpan di cloud hosting.</div>
         </div>
@@ -143,11 +159,13 @@
 </div>
 
 <script>
+  {% if undangan.status_langganan == 'aktif' %}
   initDropzone({
     dropzoneId: 'dropzone-musik',
     inputId: 'musik_file',
     badgeId: 'badge-musik',
     maxMb: 10
   });
+  {% endif %}
 </script>
 {% endblock %}

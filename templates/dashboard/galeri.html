@@ -6,7 +6,11 @@
 <div style="margin-bottom: 24px;">
   <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Galeri Foto Prewedding</h1>
   <p style="color: var(--text-muted); font-size: 14px;">
-    Tinggal upload berkas dari HP/Laptop atau tempel tautan link gambar online. Foto-foto ini akan tampil di papan lukis / galeri dalam game pernikahan Anda!
+    {% if undangan.status_langganan == 'aktif' %}
+      Tinggal upload berkas dari HP/Laptop atau tempel tautan link gambar online. Foto-foto ini akan tampil di papan lukis / galeri Jelajah Undangan pernikahan Anda!
+    {% else %}
+      Tempel tautan link gambar online untuk menambahkan foto ke galeri. Foto-foto ini akan tampil di papan lukis / galeri Jelajah Undangan pernikahan Anda!
+    {% endif %}
   </p>
 </div>
 
@@ -14,40 +18,60 @@
 <div class="card" style="border-color: rgba(245, 158, 11, 0.3);">
   <div class="card-header">
     <h2 class="card-title">➕ Tambah Foto ke Galeri</h2>
-    <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">Bebas: Upload atau Link</span>
+    {% if undangan.status_langganan == 'aktif' %}
+      <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">Bebas: Upload atau Link</span>
+    {% else %}
+      <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🔗 Hanya Link (Uji Coba)</span>
+    {% endif %}
   </div>
+
+  {% if undangan.status_langganan != 'aktif' %}
+    <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <span style="font-size: 22px;">💡</span>
+      <div style="flex: 1; min-width: 200px;">
+        <b style="color: var(--accent); font-size: 13px;">Masa Uji Coba: Hanya Tautan Link</b>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+          Selama masa uji coba, Anda hanya dapat menambahkan foto melalui tautan link URL (Google Drive, Imgur, dll). Fitur upload file langsung ke server tersedia setelah <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 700;">aktivasi pembayaran</a>.
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
   <form method="POST" enctype="multipart/form-data" id="form-tambah-galeri">
     {% csrf_token %}
 
-    <!-- TAB SUMBER GAMBAR -->
-    <div class="media-source-tabs" id="tabs-galeri" style="max-width: 480px; margin-bottom: 18px;">
-      <button type="button" class="media-source-tab active" data-tab="upload" onclick="gantiMetode('upload')">
-        📁 Opsi A: Upload Berkas dari HP / Laptop
-      </button>
-      <button type="button" class="media-source-tab" data-tab="link" onclick="gantiMetode('link')">
-        🔗 Opsi B: Tempel Link Gambar (URL)
-      </button>
-    </div>
+    {% if undangan.status_langganan == 'aktif' %}
+      <!-- TAB SUMBER GAMBAR (HANYA UNTUK BERBAYAR) -->
+      <div class="media-source-tabs" id="tabs-galeri" style="max-width: 480px; margin-bottom: 18px;">
+        <button type="button" class="media-source-tab active" data-tab="upload" onclick="gantiMetode('upload')">
+          📁 Opsi A: Upload Berkas dari HP / Laptop
+        </button>
+        <button type="button" class="media-source-tab" data-tab="link" onclick="gantiMetode('link')">
+          🔗 Opsi B: Tempel Link Gambar (URL)
+        </button>
+      </div>
+    {% endif %}
 
-    <input type="hidden" name="sumber" id="sumber_media" value="upload">
+    <input type="hidden" name="sumber" id="sumber_media" value="{% if undangan.status_langganan == 'aktif' %}upload{% else %}link{% endif %}">
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
       <div>
-        <!-- AREA METODE 1: UPLOAD BERKAS -->
-        <div id="area-upload">
-          <label class="form-label" for="gambar_file">Pilih Berkas Foto Galeri</label>
-          <div class="file-dropzone" id="dropzone-galeri">
-            <input type="file" id="gambar_file" name="gambar" accept="image/*" style="display: none;">
-            <div class="dropzone-icon-wrap">🖼️</div>
-            <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
-            <div class="dropzone-hint">Mendukung format JPG, PNG, WebP (Maksimal 5MB)</div>
-            <div id="badge-galeri" class="dropzone-badge" style="display: none;"></div>
+        {% if undangan.status_langganan == 'aktif' %}
+          <!-- AREA METODE 1: UPLOAD BERKAS (KHUSUS BERBAYAR) -->
+          <div id="area-upload">
+            <label class="form-label" for="gambar_file">Pilih Berkas Foto Galeri</label>
+            <div class="file-dropzone" id="dropzone-galeri">
+              <input type="file" id="gambar_file" name="gambar" accept="image/*" style="display: none;">
+              <div class="dropzone-icon-wrap">🖼️</div>
+              <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
+              <div class="dropzone-hint">Mendukung format JPG, PNG, WebP (Maksimal 5MB)</div>
+              <div id="badge-galeri" class="dropzone-badge" style="display: none;"></div>
+            </div>
           </div>
-        </div>
+        {% endif %}
 
         <!-- AREA METODE 2: TEMPEL LINK URL -->
-        <div id="area-link" style="display: none;">
+        <div id="area-link" style="{% if undangan.status_langganan == 'aktif' %}display: none;{% endif %}">
           <label class="form-label" for="gambar_url">Tautan Gambar Eksternal (URL)</label>
           <input type="text" id="gambar_url" name="gambar_url" class="form-input" placeholder="https://images.unsplash.com/... atau link Google Drive" oninput="previewUrlMedia(this.value, 'img-preview', 'img-preview-empty')">
           <div class="form-help">
@@ -76,7 +100,7 @@
           <div id="img-preview-empty" class="img-preview-empty">
             <span class="empty-icon">🖼️</span>
             <b>Belum Ada Foto Dipilih</b>
-            <span style="font-size: 11.5px; margin-top: 4px;">Pilih file atau masukkan tautan URL untuk melihat pratinjau di sini</span>
+            <span style="font-size: 11.5px; margin-top: 4px;">{% if undangan.status_langganan == 'aktif' %}Pilih file atau masukkan tautan URL untuk melihat pratinjau di sini{% else %}Masukkan tautan URL gambar untuk melihat pratinjau di sini{% endif %}</span>
           </div>
         </div>
         <div style="margin-top: 14px; text-align: right;">
@@ -95,7 +119,7 @@
     <h2 class="card-title">
       📸 Koleksi Foto Galeri Anda ({{ galeri_list.count }} Foto)
     </h2>
-    <span style="font-size: 13px; color: var(--text-muted);">Foto akan tersusun berurutan di galeri game</span>
+    <span style="font-size: 13px; color: var(--text-muted);">Foto akan tersusun berurutan di galeri Jelajah Undangan</span>
   </div>
 
   {% if galeri_list %}
@@ -149,13 +173,18 @@
       <span style="font-size: 40px; display: block; margin-bottom: 10px;">🖼️</span>
       <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Belum Ada Foto Galeri</h3>
       <p style="color: var(--text-muted); font-size: 14px; max-width: 460px; margin: 0 auto 18px;">
-        Galeri foto Anda masih kosong. Gunakan form di atas untuk mengunggah berkas foto prewedding Anda atau memasukkan link gambar online.
+        {% if undangan.status_langganan == 'aktif' %}
+          Galeri foto Anda masih kosong. Gunakan form di atas untuk mengunggah berkas foto prewedding Anda atau memasukkan link gambar online.
+        {% else %}
+          Galeri foto Anda masih kosong. Gunakan form di atas untuk memasukkan link URL gambar online (Google Drive, Imgur, atau link langsung).
+        {% endif %}
       </p>
     </div>
   {% endif %}
 </div>
 
 <script>
+  {% if undangan.status_langganan == 'aktif' %}
   function gantiMetode(metode) {
     const tabUpload = document.querySelector('[data-tab="upload"]');
     const tabLink = document.querySelector('[data-tab="link"]');
@@ -187,5 +216,6 @@
     badgeId: 'badge-galeri',
     maxMb: 5
   });
+  {% endif %}
 </script>
 {% endblock %}

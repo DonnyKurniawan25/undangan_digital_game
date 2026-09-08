@@ -1,7 +1,7 @@
-# Undangan Pernikahan Interaktif
+# Jelajah Undangan — Platform Undangan Pernikahan Digital Interaktif
 
-Undangan digital berbentuk game bernuansa pernikahan adat Indonesia. Tamu
-memilih karakter, berjalan mengelilingi taman, lalu mendekati objek untuk
+**Jelajah Undangan** (https://jelajah.biz.id) adalah platform undangan digital interaktif bernuansa pernikahan adat Indonesia. Tamu
+memilih karakter, berjalan mengelilingi taman virtual 2D, lalu mendekati objek untuk
 membuka isi undangan.
 
 ## Dua template

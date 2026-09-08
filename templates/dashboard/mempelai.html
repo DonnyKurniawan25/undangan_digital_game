@@ -6,9 +6,25 @@
 <div style="margin-bottom: 24px;">
   <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;">Data Kedua Mempelai</h1>
   <p style="color: var(--text-muted); font-size: 14px;">
-    Lengkapi profil pengantin pria dan wanita. Foto mempelai dapat diunggah langsung dari perangkat ATAU ditempelkan link tautannya secara bebas.
+    {% if undangan.status_langganan == 'aktif' %}
+      Lengkapi profil pengantin pria dan wanita. Foto mempelai dapat diunggah langsung dari perangkat ATAU ditempelkan link tautannya secara bebas.
+    {% else %}
+      Lengkapi profil pengantin pria dan wanita. Selama masa uji coba, foto mempelai dapat ditambahkan melalui tautan link URL gambar online.
+    {% endif %}
   </p>
 </div>
+
+{% if undangan.status_langganan != 'aktif' %}
+  <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+    <span style="font-size: 22px;">💡</span>
+    <div style="flex: 1; min-width: 200px;">
+      <b style="color: var(--accent); font-size: 13px;">Masa Uji Coba: Foto Hanya via Link URL</b>
+      <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+        Selama masa uji coba, gunakan tautan link URL gambar (Google Drive, Imgur, dll) untuk menampilkan foto mempelai. Fitur upload file langsung ke server tersedia setelah <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 700;">aktivasi pembayaran</a>.
+      </div>
+    </div>
+  </div>
+{% endif %}
 
 <form method="POST" enctype="multipart/form-data">
   {% csrf_token %}
@@ -56,36 +72,46 @@
         </div>
       </div>
 
-      <!-- FOTO MEMPELAI PRIA (DUAL SOURCE) -->
+      <!-- FOTO MEMPELAI PRIA -->
       <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
           <label class="form-label" style="color: var(--accent); margin-bottom: 0; font-weight: 700;">📷 Foto Mempelai Pria</label>
           <span style="font-size: 11.5px; color: var(--text-muted);">Format foto potret</span>
         </div>
 
-        <div class="media-source-tabs" id="tabs-pria">
-          <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
-          <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
-        </div>
-
-        <!-- METODE 1: UPLOAD BERKAS VIA DROPZONE -->
-        <div id="box-pria-upload">
-          <div class="file-dropzone" id="dropzone-pria">
-            <input type="file" id="pria_foto" name="pria_foto" accept="image/*" style="display: none;">
-            <div class="dropzone-icon-wrap">☁️</div>
-            <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
-            <div class="dropzone-hint">Mendukung JPG, PNG, WEBP (Maksimal 5MB)</div>
-            <div id="badge-pria" class="dropzone-badge" style="display: none;"></div>
+        {% if undangan.status_langganan == 'aktif' %}
+          <div class="media-source-tabs" id="tabs-pria">
+            <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
+            <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
           </div>
-        </div>
 
-        <!-- METODE 2: TEMPEL LINK URL ONLINE -->
-        <div id="box-pria-link" style="display: none;">
-          <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
-          <div class="form-help">
-            💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
+          <!-- METODE 1: UPLOAD BERKAS VIA DROPZONE (BERBAYAR) -->
+          <div id="box-pria-upload">
+            <div class="file-dropzone" id="dropzone-pria">
+              <input type="file" id="pria_foto" name="pria_foto" accept="image/*" style="display: none;">
+              <div class="dropzone-icon-wrap">☁️</div>
+              <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
+              <div class="dropzone-hint">Mendukung JPG, PNG, WEBP (Maksimal 5MB)</div>
+              <div id="badge-pria" class="dropzone-badge" style="display: none;"></div>
+            </div>
           </div>
-        </div>
+
+          <!-- METODE 2: TEMPEL LINK URL ONLINE -->
+          <div id="box-pria-link" style="display: none;">
+            <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
+            <div class="form-help">
+              💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
+            </div>
+          </div>
+        {% else %}
+          <!-- TRIAL: HANYA LINK URL -->
+          <div>
+            <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
+            <div class="form-help">
+              💡 Tempel link gambar dari Google Drive, Imgur, atau URL langsung. Link Google Drive publik otomatis dikonversi.
+            </div>
+          </div>
+        {% endif %}
 
         <!-- PRATINJAU BINGKAI FOTO ELEGAN -->
         <div style="margin-top: 14px;">
@@ -98,7 +124,7 @@
             <div id="preview-pria-empty" class="img-preview-empty" style="{% if pria.url_tampil %}display:none;{% endif %}">
               <span class="empty-icon">🤵</span>
               <b>Belum Ada Foto</b>
-              <span style="font-size: 11px; margin-top: 4px;">Upload atau tempel link untuk melihat pratinjau</span>
+              <span style="font-size: 11px; margin-top: 4px;">{% if undangan.status_langganan == 'aktif' %}Upload atau tempel link untuk melihat pratinjau{% else %}Tempel link URL untuk melihat pratinjau{% endif %}</span>
             </div>
           </div>
         </div>
@@ -147,36 +173,46 @@
         </div>
       </div>
 
-      <!-- FOTO MEMPELAI WANITA (DUAL SOURCE) -->
+      <!-- FOTO MEMPELAI WANITA -->
       <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
           <label class="form-label" style="color: var(--accent); margin-bottom: 0; font-weight: 700;">📷 Foto Mempelai Wanita</label>
           <span style="font-size: 11.5px; color: var(--text-muted);">Format foto potret</span>
         </div>
 
-        <div class="media-source-tabs" id="tabs-wanita">
-          <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
-          <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
-        </div>
-
-        <!-- METODE 1: UPLOAD BERKAS VIA DROPZONE -->
-        <div id="box-wanita-upload">
-          <div class="file-dropzone" id="dropzone-wanita">
-            <input type="file" id="wanita_foto" name="wanita_foto" accept="image/*" style="display: none;">
-            <div class="dropzone-icon-wrap">☁️</div>
-            <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
-            <div class="dropzone-hint">Mendukung JPG, PNG, WEBP (Maksimal 5MB)</div>
-            <div id="badge-wanita" class="dropzone-badge" style="display: none;"></div>
+        {% if undangan.status_langganan == 'aktif' %}
+          <div class="media-source-tabs" id="tabs-wanita">
+            <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload Berkas</button>
+            <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link URL</button>
           </div>
-        </div>
 
-        <!-- METODE 2: TEMPEL LINK URL ONLINE -->
-        <div id="box-wanita-link" style="display: none;">
-          <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
-          <div class="form-help">
-            💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
+          <!-- METODE 1: UPLOAD BERKAS VIA DROPZONE (BERBAYAR) -->
+          <div id="box-wanita-upload">
+            <div class="file-dropzone" id="dropzone-wanita">
+              <input type="file" id="wanita_foto" name="wanita_foto" accept="image/*" style="display: none;">
+              <div class="dropzone-icon-wrap">☁️</div>
+              <div class="dropzone-title">Tarik foto ke sini atau <span>Pilih Berkas</span></div>
+              <div class="dropzone-hint">Mendukung JPG, PNG, WEBP (Maksimal 5MB)</div>
+              <div id="badge-wanita" class="dropzone-badge" style="display: none;"></div>
+            </div>
           </div>
-        </div>
+
+          <!-- METODE 2: TEMPEL LINK URL ONLINE -->
+          <div id="box-wanita-link" style="display: none;">
+            <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
+            <div class="form-help">
+              💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
+            </div>
+          </div>
+        {% else %}
+          <!-- TRIAL: HANYA LINK URL -->
+          <div>
+            <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
+            <div class="form-help">
+              💡 Tempel link gambar dari Google Drive, Imgur, atau URL langsung. Link Google Drive publik otomatis dikonversi.
+            </div>
+          </div>
+        {% endif %}
 
         <!-- PRATINJAU BINGKAI FOTO ELEGAN -->
         <div style="margin-top: 14px;">
@@ -189,7 +225,7 @@
             <div id="preview-wanita-empty" class="img-preview-empty" style="{% if wanita.url_tampil %}display:none;{% endif %}">
               <span class="empty-icon">👰</span>
               <b>Belum Ada Foto</b>
-              <span style="font-size: 11px; margin-top: 4px;">Upload atau tempel link untuk melihat pratinjau</span>
+              <span style="font-size: 11px; margin-top: 4px;">{% if undangan.status_langganan == 'aktif' %}Upload atau tempel link untuk melihat pratinjau{% else %}Tempel link URL untuk melihat pratinjau{% endif %}</span>
             </div>
           </div>
         </div>
@@ -205,7 +241,8 @@
 </form>
 
 <script>
-  // Tab switch
+  {% if undangan.status_langganan == 'aktif' %}
+  // Tab switch (hanya untuk user berbayar)
   setupMediaSourceTabs('tabs-pria', 'box-pria-upload', 'box-pria-link', 'preview-pria');
   setupMediaSourceTabs('tabs-wanita', 'box-wanita-upload', 'box-wanita-link', 'preview-wanita');
 
@@ -229,5 +266,6 @@
     originalUrl: '{{ wanita.url_tampil|default:"" }}',
     maxMb: 5
   });
+  {% endif %}
 </script>
 {% endblock %}

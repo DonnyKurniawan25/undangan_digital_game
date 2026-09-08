@@ -4,8 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#f5e6ca">
-<title>{% if pria and wanita %}{{ pria.nama_panggilan }} &amp; {{ wanita.nama_panggilan }} — Pantai Sasak Lombok{% else %}{{ pengaturan.judul }} — Pantai Lombok{% endif %}</title>
-<meta name="description" content="Undangan pernikahan interaktif tema Pantai Sasak Lombok. Jelajahi pantai dan lumbung pelaminan bersama karakter Anda.">
+<title>{% if pria and wanita %}{{ pria.nama_panggilan }} &amp; {{ wanita.nama_panggilan }} — Pantai Lombok | Jelajah Undangan{% else %}{{ pengaturan.judul }} — Pantai Lombok | Jelajah Undangan{% endif %}</title>
+<meta name="description" content="Jelajah Undangan — Undangan pernikahan interaktif tema Pantai Sasak Lombok. Jelajahi pantai dan lumbung pelaminan bersama karakter Anda.">
+<meta name="author" content="Jelajah Undangan">
+<meta property="og:site_name" content="Jelajah Undangan">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{% if pria and wanita %}{{ pria.nama_panggilan }} &amp; {{ wanita.nama_panggilan }} — Pantai Lombok | Jelajah Undangan{% else %}{{ pengaturan.judul }} — Pantai Lombok | Jelajah Undangan{% endif %}">
+<meta property="og:description" content="Undangan pernikahan interaktif tema Pantai Lombok di Jelajah Undangan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +20,7 @@
 
 {% if is_owner_or_admin and not is_online_aktif %}
 <div style="position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 99999; background: rgba(15, 23, 42, 0.92); border: 1px solid #f59e0b; color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-family: sans-serif; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
-  <span>⏳ <b>Pratinjau Pemilik:</b> Uji coba 1 hari berakhir (offline bagi tamu).</span>
+  <span>⏳ <b>Pratinjau Pemilik:</b> Uji coba 1 bulan berakhir (offline bagi tamu).</span>
   <a href="{% url 'undangan:dashboard_pembayaran' %}" style="background: #f59e0b; color: #000; font-weight: 700; padding: 4px 10px; border-radius: 999px; text-decoration: none; font-size: 11px;">Aktifkan 1 Bulan (Rp 30rb)</a>
 </div>
 {% endif %}

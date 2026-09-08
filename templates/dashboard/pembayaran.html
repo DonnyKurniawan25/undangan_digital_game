@@ -29,7 +29,7 @@
         {% elif undangan.is_siap_dibersihkan %}
           🛑 Masa Tenggang 1 Bulan Habis (Data Siap Dibersihkan)
         {% elif undangan.status_langganan == 'trial' and undangan.is_online_aktif %}
-          ⏱️ Masa Uji Coba Gratis 1 Hari (Sisa Waktu: {{ undangan.sisa_waktu_trial }})
+          ⏱️ Masa Uji Coba Gratis 1 Bulan (Sisa Waktu: {{ undangan.sisa_waktu_trial }})
         {% else %}
           ⚠️ Masa Aktif Berakhir
         {% endif %}
@@ -37,7 +37,7 @@
 
       <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5;">
         {% if undangan.is_online_aktif %}
-          Tamu undangan dapat mengakses dan memainkan game undangan di domain publik <code>{{ undangan.get_url_publik }}</code>.
+          Tamu undangan dapat mengakses Jelajah Undangan di domain publik <code>{{ undangan.get_url_publik }}</code>.
         {% elif undangan.is_masa_tenggang %}
           Website undangan saat ini <b>offline</b> untuk tamu umum. Anda diberi kesempatan <b>1 bulan</b> hingga <b>{{ undangan.batas_tenggang_berakhir|date:"d F Y" }}</b> untuk memperpanjang.
           Jika tidak diperpanjang dalam batas waktu tersebut, website dan seluruh file foto galeri akan dibersihkan permanen oleh superadmin dari server.

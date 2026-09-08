@@ -55,7 +55,7 @@ def landing(request):
 def _tampilkan_undangan_game(request, undangan_obj, slug_tamu=None):
     """
     Fungsi pembantu internal untuk merender dunia game interaktif per undangan.
-    Memeriksa masa aktif online (trial 1 hari / aktif penuh).
+    Memeriksa masa aktif online (trial 1 bulan / aktif penuh).
     """
     is_owner_or_admin = request.user.is_authenticated and (
         request.user == undangan_obj.user or request.user.is_superuser

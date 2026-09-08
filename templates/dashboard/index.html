@@ -8,7 +8,7 @@
     Selamat Datang, {{ request.user.first_name|default:request.user.username }}! 👋
   </h1>
   <p style="color: var(--text-muted); font-size: 14px;">
-    Undangan game Anda siap dikustomisasi dan dibagikan kepada keluarga serta sahabat tercinta.
+    Jelajah Undangan Anda siap dikustomisasi dan dibagikan kepada keluarga serta sahabat tercinta.
   </p>
 </div>
 
@@ -23,7 +23,7 @@
           </span>
         {% else %}
           <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent); border: 1px solid rgba(245, 158, 11, 0.3);">
-            ⏳ Tautan Uji Coba 1 Hari (jelajah.biz.id/trial/{{ undangan.slug }}/)
+            ⏳ Tautan Uji Coba 1 Bulan (jelajah.biz.id/trial/{{ undangan.slug }}/)
           </span>
         {% endif %}
       </div>
@@ -37,7 +37,7 @@
         📋 Salin Tautan
       </button>
       <a href="{{ undangan.path_publik }}" target="_blank" class="btn btn-primary btn-sm">
-        🎮 Mainkan Game Sekarang
+        🎮 Buka Jelajah Undangan
       </a>
     </div>
   </div>
@@ -102,7 +102,7 @@
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 18px;">⚙️</span>
           <div>
-            <b style="font-size: 13.5px;">1. Pilih Tema Game &amp; Judul</b>
+            <b style="font-size: 13.5px;">1. Pilih Tema &amp; Judul Undangan</b>
             <div style="font-size: 12px; color: var(--text-muted);">Tema saat ini: {{ undangan.get_tema_display }}</div>
           </div>
         </div>

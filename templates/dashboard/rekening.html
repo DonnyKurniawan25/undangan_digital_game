@@ -38,25 +38,35 @@
       <div style="padding: 16px; background: var(--card-inner); border-radius: 14px; border: 1px solid var(--border); margin-top: 14px;">
         <label class="form-label" style="color: var(--accent); font-weight: 700;">📱 Gambar QRIS / Barcode (Opsional)</label>
 
-        <div class="media-source-tabs" id="tabs-rek">
-          <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload QR</button>
-          <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link</button>
-        </div>
-
-        <div id="box-rek-upload">
-          <div class="file-dropzone" id="dropzone-qr" style="min-height: 105px; padding: 16px;">
-            <input type="file" id="qr_file" name="qr" accept="image/*" style="display: none;">
-            <div class="dropzone-icon-wrap" style="width: 38px; height: 38px; font-size: 18px; margin-bottom: 6px;">📱</div>
-            <div class="dropzone-title" style="font-size: 13px;">Klik atau tarik berkas QR ke sini</div>
-            <div class="dropzone-hint" style="font-size: 11px;">Mendukung JPG, PNG, WEBP (Maksimal 3MB)</div>
-            <div id="badge-qr" class="dropzone-badge" style="display: none;"></div>
+        {% if undangan.status_langganan == 'aktif' %}
+          <div class="media-source-tabs" id="tabs-rek">
+            <button type="button" class="media-source-tab active" data-tab="upload">📁 Upload QR</button>
+            <button type="button" class="media-source-tab" data-tab="link">🔗 Tempel Link</button>
           </div>
-        </div>
 
-        <div id="box-rek-link" style="display: none;">
-          <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
-          <div class="form-help">Mendukung link gambar langsung atau Google Drive publik.</div>
-        </div>
+          <div id="box-rek-upload">
+            <div class="file-dropzone" id="dropzone-qr" style="min-height: 105px; padding: 16px;">
+              <input type="file" id="qr_file" name="qr" accept="image/*" style="display: none;">
+              <div class="dropzone-icon-wrap" style="width: 38px; height: 38px; font-size: 18px; margin-bottom: 6px;">📱</div>
+              <div class="dropzone-title" style="font-size: 13px;">Klik atau tarik berkas QR ke sini</div>
+              <div class="dropzone-hint" style="font-size: 11px;">Mendukung JPG, PNG, WEBP (Maksimal 3MB)</div>
+              <div id="badge-qr" class="dropzone-badge" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div id="box-rek-link" style="display: none;">
+            <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
+            <div class="form-help">Mendukung link gambar langsung atau Google Drive publik.</div>
+          </div>
+        {% else %}
+          <!-- TRIAL: HANYA LINK URL -->
+          <div style="margin-top: 8px;">
+            <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://drive.google.com/... atau link gambar QRIS" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
+            <div class="form-help">
+              💡 Tempel link gambar QRIS dari Google Drive, Imgur, atau URL langsung. Upload file QR tersedia setelah <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 600;">aktivasi pembayaran</a>.
+            </div>
+          </div>
+        {% endif %}
 
         <!-- Pratinjau QR -->
         <div id="preview-qr-wrapper" style="margin-top: 12px; display: none;">
@@ -129,6 +139,7 @@
 </div>
 
 <script>
+  {% if undangan.status_langganan == 'aktif' %}
   setupMediaSourceTabs('tabs-rek', 'box-rek-upload', 'box-rek-link');
   initDropzone({
     dropzoneId: 'dropzone-qr',
@@ -141,5 +152,6 @@
       if (wrap) wrap.style.display = 'block';
     }
   });
+  {% endif %}
 </script>
 {% endblock %}

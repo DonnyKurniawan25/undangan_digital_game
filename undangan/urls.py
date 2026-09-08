@@ -46,7 +46,7 @@ urlpatterns = [
     path("superadmin/ucapan/<int:pk>/hapus/", views_superadmin.superadmin_ucapan_hapus, name="superadmin_ucapan_hapus"),
     path("superadmin/pengaturan/", views_superadmin.superadmin_pengaturan, name="superadmin_pengaturan"),
 
-    # Rute Khusus Masa Uji Coba (Trial 1 Hari): /trial/<slug>/ (misal: jelajah.biz.id/trial/rana&cahyo)
+    # Rute Khusus Masa Uji Coba (Trial 1 Bulan): /trial/<slug>/ (misal: jelajah.biz.id/trial/rana&cahyo)
     path("trial/<str:slug_undangan>/", views.undangan_publik_trial, name="undangan_publik_trial"),
     path("trial/<str:slug_undangan>/<str:slug_tamu>/", views.undangan_publik_trial, name="undangan_publik_trial_tamu"),
 

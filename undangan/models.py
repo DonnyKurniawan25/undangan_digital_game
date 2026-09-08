@@ -130,7 +130,7 @@ class Undangan(models.Model):
     STATUS_AKTIF = "aktif"
     STATUS_KADALUARSA = "kadaluarsa"
     STATUS_LANGGANAN = [
-        (STATUS_TRIAL, "Masa Uji Coba (1 Hari)"),
+        (STATUS_TRIAL, "Masa Uji Coba (1 Bulan)"),
         (STATUS_MENUNGGU, "Menunggu Konfirmasi Pembayaran"),
         (STATUS_AKTIF, "Aktif Penuh (Berbayar)"),
         (STATUS_KADALUARSA, "Masa Aktif Habis"),
@@ -145,7 +145,7 @@ class Undangan(models.Model):
     trial_berakhir = models.DateTimeField(
         null=True,
         blank=True,
-        help_text="Batas waktu uji coba gratis 1 hari sejak dibuat.",
+        help_text="Batas waktu uji coba gratis 1 bulan (30 hari) sejak dibuat.",
     )
     aktif_berakhir = models.DateTimeField(
         null=True,
@@ -165,7 +165,7 @@ class Undangan(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.trial_berakhir:
-            self.trial_berakhir = timezone.now() + datetime.timedelta(days=1)
+            self.trial_berakhir = timezone.now() + datetime.timedelta(days=30)
         super().save(*args, **kwargs)
 
     @property
@@ -175,7 +175,7 @@ class Undangan(models.Model):
         # Jika berbayar aktif
         if self.status_langganan == self.STATUS_AKTIF:
             return bool(self.aktif_berakhir and self.aktif_berakhir > skrg)
-        # Jika masih dalam masa uji coba 1 hari
+        # Jika masih dalam masa uji coba 1 bulan
         if self.status_langganan == self.STATUS_TRIAL:
             return bool(self.trial_berakhir and self.trial_berakhir > skrg)
         # Jika menunggu verifikasi pembayaran
@@ -210,10 +210,10 @@ class Undangan(models.Model):
             return "Menunggu Verifikasi Pembayaran"
         if self.status_langganan == self.STATUS_TRIAL:
             if self.trial_berakhir and self.trial_berakhir > skrg:
-                return "Masa Uji Coba Gratis (1 Hari)"
+                return f"Masa Uji Coba Gratis ({self.sisa_waktu_trial})"
             if self.is_masa_tenggang:
                 return f"Uji Coba Berakhir — Tenggang ({self.sisa_hari_tenggang} Hari Lagi)"
-            return "Trial > 1 Bulan (Siap Dibersihkan)"
+            return "Trial Kedaluwarsa (Siap Dibersihkan)"
         return "Tidak Aktif"
 
     @property
