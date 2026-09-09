@@ -1,45 +1,62 @@
 /* ==========================================================================
-   Landing page — JavaScript
-   Scroll reveal, counter animation, navbar scroll, floating particles
+   Jelajah Undangan — Landing Page Interactive Engine
    ========================================================================== */
 
 (function () {
   "use strict";
 
-  // ---- Scroll-reveal via IntersectionObserver ----
-  function initReveal() {
-    var els = document.querySelectorAll(".reveal");
-    if (!els.length) return;
+  // ---- 1. Scroll Reveal Animations ----
+  function initScrollReveal() {
+    var revealElements = document.querySelectorAll(".reveal");
+    if (!revealElements.length) return;
 
-    var observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-    );
-    els.forEach(function (el) { observer.observe(el); });
+    // Check if IntersectionObserver is supported
+    if ("IntersectionObserver" in window) {
+      var revealObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+      );
+
+      revealElements.forEach(function (el) {
+        revealObserver.observe(el);
+      });
+    } else {
+      // Fallback for older browsers
+      revealElements.forEach(function (el) {
+        el.classList.add("visible");
+      });
+    }
   }
 
-  // ---- Animated counter ----
+  // ---- 2. Animated Numerical Counters ----
   function animateCounter(el) {
-    var target = parseInt(el.getAttribute("data-target"), 10);
+    var target = parseInt(el.getAttribute("data-target"), 10) || 0;
     var suffix = el.getAttribute("data-suffix") || "";
-    var duration = 2000;
+    var duration = 1800; // ms
     var startTime = null;
 
     function step(timestamp) {
       if (!startTime) startTime = timestamp;
       var progress = Math.min((timestamp - startTime) / duration, 1);
-      // Ease-out cubic
-      var eased = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.floor(eased * target) + suffix;
-      if (progress < 1) requestAnimationFrame(step);
+      // Easing: easeOutExpo
+      var eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      var currentVal = Math.floor(eased * target);
+      el.textContent = currentVal.toLocaleString("id-ID") + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = target.toLocaleString("id-ID") + suffix;
+      }
     }
+
     requestAnimationFrame(step);
   }
 
@@ -47,97 +64,166 @@
     var counters = document.querySelectorAll("[data-counter]");
     if (!counters.length) return;
 
-    var observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            animateCounter(entry.target);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-    counters.forEach(function (el) { observer.observe(el); });
+    if ("IntersectionObserver" in window) {
+      var counterObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              animateCounter(entry.target);
+              counterObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+
+      counters.forEach(function (el) {
+        counterObserver.observe(el);
+      });
+    } else {
+      counters.forEach(function (el) {
+        animateCounter(el);
+      });
+    }
   }
 
-  // ---- Navbar scroll effect ----
+  // ---- 3. Glassmorphic Navbar on Scroll ----
   function initNavbar() {
-    var nav = document.querySelector(".navbar");
-    if (!nav) return;
+    var navbar = document.getElementById("navbar");
+    if (!navbar) return;
 
-    function onScroll() {
-      if (window.scrollY > 60) {
-        nav.classList.add("scrolled");
+    function handleScroll() {
+      if (window.scrollY > 40) {
+        navbar.classList.add("scrolled");
       } else {
-        nav.classList.remove("scrolled");
+        navbar.classList.remove("scrolled");
       }
     }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
   }
 
-  // ---- Mobile nav toggle ----
-  function initNavToggle() {
-    var toggle = document.querySelector(".nav-toggle");
-    var links = document.querySelector(".nav-links");
-    if (!toggle || !links) return;
+  // ---- 4. Mobile Navigation Drawer Toggle ----
+  function initMobileNav() {
+    var toggleBtn = document.getElementById("nav-toggle");
+    var navLinks = document.getElementById("nav-links");
+    if (!toggleBtn || !navLinks) return;
 
-    toggle.addEventListener("click", function () {
-      links.classList.toggle("open");
+    function toggleMenu() {
+      var isOpen = navLinks.classList.contains("open");
+      if (isOpen) {
+        navLinks.classList.remove("open");
+        toggleBtn.classList.remove("open");
+        document.body.style.overflow = "";
+      } else {
+        navLinks.classList.add("open");
+        toggleBtn.classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+    }
+
+    toggleBtn.addEventListener("click", toggleMenu);
+
+    // Close on navigation link click
+    var links = navLinks.querySelectorAll("a");
+    links.forEach(function (link) {
+      link.addEventListener("click", function () {
+        navLinks.classList.remove("open");
+        toggleBtn.classList.remove("open");
+        document.body.style.overflow = "";
+      });
     });
-    // Close on link click
-    links.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", function () {
-        links.classList.remove("open");
+
+    // Close when clicking outside
+    document.addEventListener("click", function (e) {
+      if (navLinks.classList.contains("open") && !navLinks.contains(e.target) && !toggleBtn.contains(e.target)) {
+        navLinks.classList.remove("open");
+        toggleBtn.classList.remove("open");
+        document.body.style.overflow = "";
+      }
+    });
+  }
+
+  // ---- 5. Interactive Theme Filter ----
+  function initThemeFilter() {
+    var filterButtons = document.querySelectorAll(".theme-filter-btn");
+    var themeCards = document.querySelectorAll(".theme-card");
+    if (!filterButtons.length || !themeCards.length) return;
+
+    filterButtons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var filter = btn.getAttribute("data-filter");
+
+        // Set active button
+        filterButtons.forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+
+        // Filter cards
+        themeCards.forEach(function (card) {
+          var category = card.getAttribute("data-category");
+          if (filter === "all" || category === filter) {
+            card.style.display = "flex";
+            setTimeout(function () {
+              card.style.opacity = "1";
+              card.style.transform = "translateY(0)";
+            }, 50);
+          } else {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(20px)";
+            setTimeout(function () {
+              card.style.display = "none";
+            }, 300);
+          }
+        });
       });
     });
   }
 
-  // ---- Floating particles ----
-  function initParticles() {
-    var container = document.querySelector(".hero-particles");
-    if (!container) return;
+  // ---- 6. FAQ Accordion Engine ----
+  function initFAQ() {
+    var faqItems = document.querySelectorAll(".faq-item");
+    if (!faqItems.length) return;
 
-    var colors = ["particle--gold", "particle--sage", "particle--blush"];
+    faqItems.forEach(function (item) {
+      var questionBtn = item.querySelector(".faq-question");
+      var answer = item.querySelector(".faq-answer");
+      if (!questionBtn || !answer) return;
 
-    for (var i = 0; i < 20; i++) {
-      var p = document.createElement("div");
-      p.className = "particle " + colors[i % colors.length];
-      var size = 4 + Math.random() * 10;
-      p.style.width = size + "px";
-      p.style.height = size + "px";
-      p.style.left = Math.random() * 100 + "%";
-      p.style.animationDuration = (8 + Math.random() * 14) + "s";
-      p.style.animationDelay = (Math.random() * 12) + "s";
-      container.appendChild(p);
-    }
-  }
+      questionBtn.addEventListener("click", function () {
+        var isActive = item.classList.contains("active");
 
-  // ---- Smooth scroll for anchor links ----
-  function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
-      a.addEventListener("click", function (e) {
-        // href="#" murni bukan pemilih yang sah; querySelector("#") melempar
-        // SyntaxError dan menghentikan penanganan klik berikutnya.
-        var tujuan = a.getAttribute("href");
-        if (!tujuan || tujuan === "#") return;
-        var target = document.querySelector(tujuan);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Optional: close other accordions
+        faqItems.forEach(function (otherItem) {
+          if (otherItem !== item && otherItem.classList.contains("active")) {
+            otherItem.classList.remove("active");
+            var otherAnswer = otherItem.querySelector(".faq-answer");
+            if (otherAnswer) otherAnswer.style.maxHeight = null;
+            var otherBtn = otherItem.querySelector(".faq-question");
+            if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        if (isActive) {
+          item.classList.remove("active");
+          answer.style.maxHeight = null;
+          questionBtn.setAttribute("aria-expanded", "false");
+        } else {
+          item.classList.add("active");
+          answer.style.maxHeight = answer.scrollHeight + 30 + "px";
+          questionBtn.setAttribute("aria-expanded", "true");
         }
       });
     });
   }
 
-  // ---- Init ----
+  // ---- Initialize All Modules on DOM Ready ----
   document.addEventListener("DOMContentLoaded", function () {
-    initNavbar();
-    initNavToggle();
-    initParticles();
-    initReveal();
+    initScrollReveal();
     initCounters();
-    initSmoothScroll();
+    initNavbar();
+    initMobileNav();
+    initThemeFilter();
+    initFAQ();
   });
 })();

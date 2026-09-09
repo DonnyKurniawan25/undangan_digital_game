@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#1a2418">
+<meta name="theme-color" content="#0d140e">
 <title>Jelajah Undangan — Platform Undangan Pernikahan Digital Interaktif 2D</title>
-<meta name="description" content="Jelajah Undangan (jelajah.biz.id) — Buat undangan pernikahan digital interaktif dan berkesan berbentuk game 2D. Tamu menjelajahi taman virtual bernuansa adat Indonesia untuk menemukan info acara, galeri foto, RSVP, dan amplop digital.">
-<meta name="keywords" content="jelajah undangan, undangan digital, undangan pernikahan, jelajah.biz.id, pixel art wedding, undangan interaktif, wedding invitation, game pernikahan, undangan kekinian">
+<meta name="description" content="Jelajah Undangan (jelajah.biz.id) — Platform undangan pernikahan digital interaktif modern berbentuk game 2D bernuansa adat Nusantara. Tamu memilih avatar dan menjelajahi dunia virtual untuk menemukan info acara, galeri foto, RSVP, dan amplop digital.">
+<meta name="keywords" content="jelajah undangan, undangan digital, undangan pernikahan, jelajah.biz.id, pixel art wedding, undangan interaktif, game pernikahan, undangan kekinian, wedding invitation 2d">
 <meta name="author" content="Jelajah Undangan">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://jelajah.biz.id/">
@@ -15,13 +15,15 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jelajah.biz.id/">
 <meta property="og:title" content="Jelajah Undangan — Undangan Pernikahan Digital Interaktif 2D">
-<meta property="og:description" content="Platform undangan digital interaktif modern berbentuk game 2D bernuansa adat Indonesia. Tamu dapat menjelajahi lokasi acara, melihat galeri foto, RSVP, dan mengirim amplop digital.">
+<meta property="og:description" content="Bukan sekadar link undangan biasa. Ajak tamu berpetualang di taman virtual pixel art bernuansa adat Indonesia yang interaktif dan tak terlupakan.">
 <meta property="og:site_name" content="Jelajah Undangan">
+<meta property="og:image" content="{% aset 'img/preview_game.png' %}">
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Jelajah Undangan — Undangan Pernikahan Digital Interaktif">
+<meta name="twitter:title" content="Jelajah Undangan — Undangan Pernikahan Game 2D Interaktif">
 <meta name="twitter:description" content="Platform undangan digital interaktif modern berbentuk game 2D bernuansa adat Indonesia.">
+<meta name="twitter:image" content="{% aset 'img/preview_game.png' %}">
 
 <!-- Structured Data (JSON-LD) for Google Search -->
 <script type="application/ld+json">
@@ -35,157 +37,592 @@
 }
 </script>
 
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% aset 'css/landing.css' %}">
 </head>
 <body>
 
 <!-- ================= NAVBAR ================= -->
-<nav class="navbar" id="navbar">
-  <div class="container">
-    <a href="#" class="nav-brand">Jelajah<span>Undangan</span></a>
-    <div class="nav-links" id="nav-links">
-      <a href="#fitur">Fitur</a>
-      <a href="#cara-kerja">Cara Kerja</a>
-      <a href="#preview">Preview</a>
-      <a href="#keunggulan">Keunggulan</a>
-      {% if request.user.is_authenticated %}
-        {% if request.user.is_superuser %}
-          <a href="{% url 'undangan:superadmin_index' %}" style="color:var(--gold,#d4a373);font-weight:700;">👑 Panel Superadmin</a>
+<header class="navbar" id="navbar">
+  <div class="container nav-container">
+    <a href="#" class="nav-brand">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <span>Jelajah<span>Undangan</span></span>
+    </a>
+
+    <nav class="nav-links" id="nav-links">
+      <a href="#fitur" class="nav-link">Fitur</a>
+      <a href="#preview" class="nav-link">Pilihan Tema</a>
+      <a href="#perbandingan" class="nav-link">Keunggulan</a>
+      <a href="#cara-kerja" class="nav-link">Cara Kerja</a>
+      <a href="#testimoni" class="nav-link">Testimoni</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+
+      <div class="nav-auth-actions">
+        {% if request.user.is_authenticated %}
+          {% if request.user.is_superuser %}
+            <a href="{% url 'undangan:superadmin_index' %}" class="nav-admin-link">👑 Superadmin</a>
+          {% endif %}
+          <a href="{% url 'undangan:dashboard' %}" class="nav-btn-dashboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            Dashboard
+          </a>
+          <a href="{% url 'undangan:logout' %}" class="nav-btn-logout">Keluar</a>
+        {% else %}
+          <a href="{% url 'undangan:login' %}" class="nav-btn-login">Masuk</a>
+          <a href="{% url 'undangan:register' %}" class="nav-btn-cta">Buat Undangan ✨</a>
         {% endif %}
-        <a href="{% url 'undangan:dashboard' %}" style="color:var(--text);font-weight:700;">📊 Dashboard Saya</a>
-        <a href="{% url 'undangan:logout' %}" style="color:#f87171;font-size:13px;">Keluar</a>
-      {% else %}
-        <a href="{% url 'undangan:login' %}" style="color:var(--gold,#d4a373);font-weight:700;">Masuk</a>
-        <a href="{% url 'undangan:register' %}" class="nav-cta">Buat Undangan Sendiri</a>
-      {% endif %}
-    </div>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
-      <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"/></svg>
+      </div>
+    </nav>
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
     </button>
   </div>
-</nav>
+</header>
 
-<!-- ================= HERO ================= -->
+<!-- ================= HERO SECTION ================= -->
 <section class="hero" id="hero">
-  <div class="hero-ornament hero-ornament--tl"></div>
-  <div class="hero-ornament hero-ornament--tr"></div>
-  <div class="hero-ornament hero-ornament--bl"></div>
-  <div class="hero-ornament hero-ornament--br"></div>
+  <!-- Glowing decorative backgrounds -->
+  <div class="hero-glow hero-glow--top"></div>
+  <div class="hero-glow hero-glow--bottom"></div>
   <div class="hero-particles" aria-hidden="true"></div>
 
-  <div class="hero-content">
-    <div class="hero-badge">✨ Jelajah Undangan Interaktif</div>
-    <h1 class="hero-title">
-      Jelajah Undangan<br>
-      Pernikahan <span class="accent">Game 2D</span>
-    </h1>
-    <p class="hero-subtitle">
-      Tamu Anda menjelajahi taman pixel art bernuansa adat Indonesia.
-      Dekati objek untuk membuka info acara, galeri foto, RSVP, dan amplop digital.
-    </p>
-    <div class="hero-buttons">
-      {% if request.user.is_authenticated %}
-        <a href="{% url 'undangan:dashboard' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-weight:800; font-size:15px; grid-column: 1 / -1;" id="btn-hero-cta">
-          🚀 Buka Dashboard Undangan Saya
+  <div class="container hero-container">
+    <!-- Left Column: Copywriting & High Impact CTAs -->
+    <div class="hero-text-col reveal">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">Platform Undangan Pernikahan Game 2D #1 di Indonesia</span>
+      </div>
+
+      <h1 class="hero-title">
+        Undangan Pernikahan<br>
+        Bukan Sekadar Link.<br>
+        <span class="accent-shimmer">Petualangan Interaktif</span><br>
+        yang Memukau.
+      </h1>
+
+      <p class="hero-subtitle">
+        Ajak keluarga dan sahabat berpetualang dalam dunia 2D bernuansa adat Nusantara. Tamu memilih avatar, menjelajahi lokasi pesta, menikmati alunan musik, membuka galeri foto, RSVP, hingga amplop digital secara seru dan berkesan.
+      </p>
+
+      <div class="hero-actions">
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'undangan:dashboard' %}" class="btn btn-gold btn-large shadow-pulse" id="btn-hero-dashboard">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/></svg>
+            Buka Dashboard Undangan Saya
+          </a>
+        {% else %}
+          <a href="{% url 'undangan:register' %}" class="btn btn-gold btn-large shadow-pulse" id="btn-hero-register">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Buat Undangan Sekarang — Gratis
+          </a>
+        {% endif %}
+
+        <a href="#preview" class="btn btn-glass btn-large" id="btn-hero-demo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Lihat 6 Demo Tema
         </a>
-      {% else %}
-        <a href="{% url 'undangan:register' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-weight:800; font-size:15px; grid-column: 1 / -1;" id="btn-hero-cta">
-          ✨ Buat Undangan Sendiri (Gratis)
-        </a>
-      {% endif %}
-      <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" id="btn-demo">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo 1 (Jawa)
-      </a>
-      <a href="{% url 'undangan:beranda_lombok' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #2ba8a8 0%, #ab4430 100%);" id="btn-demo-lombok">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo 2 (Lombok)
-      </a>
-      <a href="{% url 'undangan:beranda_tropis' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #4da43a 0%, #9c6a38 100%);" id="btn-demo-tropis">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo 3 (Tropis)
-      </a>
-      <a href="{% url 'undangan:beranda_desa' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #e89528 0%, #3e7828 100%);" id="btn-demo-desa">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo 4 (Desa Stardew)
-      </a>
-      <a href="{% url 'undangan:beranda_gedung' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #d4af37 0%, #18223a 100%);" id="btn-demo-gedung">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo 5 (Grand Ballroom)
-      </a>
-      <a href="{% url 'undangan:beranda_safari' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #3c7a3e 0%, #d49b35 100%);" id="btn-demo-safari">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Demo 6 (Taman Safari)
-      </a>
-      <a href="{% url 'admin:index' %}" class="btn btn-secondary" id="btn-admin-hero">
-        ⚙️ Upload Musik / Admin
-      </a>
-      <a href="#fitur" class="btn btn-secondary" id="btn-fitur">
-        Jelajahi Fitur
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 16l-6-6h12z"/></svg>
-      </a>
+      </div>
+
+      <!-- Trust Bar / Quick Stats -->
+      <div class="hero-trust-bar">
+        <div class="trust-item">
+          <div class="trust-stars">
+            ★★★★★
+          </div>
+          <span class="trust-caption"><strong>4.9/5</strong> Rating Pengantin</span>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+          <div class="trust-icon">🎮</div>
+          <span class="trust-caption"><strong>100% Interaktif</strong> di Semua HP</span>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+          <div class="trust-icon">⚡</div>
+          <span class="trust-caption"><strong>Tanpa Instal Aplikasi</strong> — Langsung Main</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Interactive Device Mockup Visual -->
+    <div class="hero-visual-col reveal reveal-delay-2">
+      <div class="mockup-stage">
+        <!-- Floating Badge 1: Real-time Wishes -->
+        <div class="floating-badge floating-badge--top-right float-anim-1">
+          <div class="badge-avatar">💌</div>
+          <div class="badge-info">
+            <span class="badge-title">Ucapan Tamu Baru</span>
+            <span class="badge-desc">"Selamat ya Mas Dimas & Mbak Sarah! 🎉"</span>
+          </div>
+        </div>
+
+        <!-- Floating Badge 2: Interactive Character -->
+        <div class="floating-badge floating-badge--bottom-left float-anim-2">
+          <div class="badge-avatar">🕹️</div>
+          <div class="badge-info">
+            <span class="badge-title">Avatar & Joystick HP</span>
+            <span class="badge-desc">Tamu bebas keliling taman virtual</span>
+          </div>
+        </div>
+
+        <!-- Floating Badge 3: Romantic Background Music -->
+        <div class="floating-badge floating-badge--bottom-right float-anim-3">
+          <div class="badge-avatar">🎵</div>
+          <div class="badge-info">
+            <span class="badge-title">Musik Latar Romantis</span>
+            <span class="badge-desc">Alunan musik otomatis mengiringi</span>
+          </div>
+        </div>
+
+        <!-- Phone Device Frame -->
+        <div class="device-phone">
+          <div class="phone-speaker"></div>
+          <div class="phone-camera"></div>
+          <div class="phone-screen">
+            <img src="{% aset 'img/preview_game.png' %}" alt="Pratinjau Game Undangan 2D" class="phone-screen-img" loading="eager">
+            <div class="phone-overlay">
+              <a href="{% url 'undangan:beranda' %}" class="play-demo-pill" title="Coba Mainkan Demo">
+                <span class="play-icon-circle">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </span>
+                <span>Klik untuk Coba Main</span>
+              </a>
+            </div>
+          </div>
+          <div class="phone-home-indicator"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="hero-scroll-hint" aria-hidden="true">
-    <span>SCROLL</span>
-    <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
+  <div class="hero-scroll-cue">
+    <a href="#fitur" aria-label="Scroll ke konten">
+      <span>JELAJAHI FITUR</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+    </a>
   </div>
 </section>
 
-<!-- ================= FITUR ================= -->
+<!-- ================= STATS COUNTER STRIP ================= -->
+<section class="stats-strip">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card reveal reveal-delay-1">
+        <div class="stat-number" data-counter data-target="6">0</div>
+        <div class="stat-title">Pilihan Tema Adat</div>
+        <div class="stat-sub">Jawa, Sasak, Tropis, Sunda, Ballroom & Safari</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-2">
+        <div class="stat-number" data-counter data-target="100" data-suffix="%">0</div>
+        <div class="stat-title">Sensasi Interaktif</div>
+        <div class="stat-sub">Bukan cuma scroll, tamu diajak bermain seru</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-3">
+        <div class="stat-number" data-counter data-target="{{ jumlah_tamu|default:'250' }}" data-suffix="+">0</div>
+        <div class="stat-title">Tamu Terdaftar</div>
+        <div class="stat-sub">Menggunakan link personal undangan unik</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-4">
+        <div class="stat-number" data-counter data-target="{{ jumlah_ucapan|default:'180' }}" data-suffix="+">0</div>
+        <div class="stat-title">Doa & Ucapan Masuk</div>
+        <div class="stat-sub">Tercatat rapi di dashboard buku tamu</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FITUR UNGGULAN (BENTO GRID) ================= -->
 <section class="features" id="fitur">
   <div class="container">
-    <div class="text-center reveal">
-      <span class="section-label">Fitur Lengkap</span>
-      <h2 class="section-title">Semua Isi Undangan dalam Satu Dunia Game</h2>
+    <div class="section-header text-center reveal">
+      <span class="section-badge">✨ Fitur Lengkap & Mewah</span>
+      <h2 class="section-title">Semua Kebutuhan Pernikahan<br>dalam Satu Dunia Interaktif</h2>
       <p class="section-desc">
-        Tamu memilih karakter, berjalan di taman, dan mendekati objek untuk membuka berbagai informasi pernikahan Anda.
+        Tamu memilih karakter pria atau wanita berbusana adat, berkeliling taman virtual dengan analog HP / keyboard PC, dan mendekati objek untuk membuka setiap informasi istimewa Anda.
       </p>
     </div>
 
     <div class="features-grid">
+      <!-- Card 1: Pelaminan & Biodata -->
       <div class="feature-card reveal reveal-delay-1">
-        <div class="feature-icon">
-          <img src="{% aset 'game/pelaminan.png' %}" alt="Pelaminan" loading="lazy">
+        <div class="feature-icon-wrapper">
+          <img src="{% aset 'game/pelaminan.png' %}" alt="Pelaminan Tradisional" class="feature-pixel-img" loading="lazy">
         </div>
-        <h3>Biodata Mempelai</h3>
-        <p>Pelaminan gebyok jati berukir menampilkan foto dan biodata lengkap kedua mempelai beserta kutipan doa.</p>
+        <div class="feature-content">
+          <h3>Pelaminan & Biodata Mempelai</h3>
+          <p>Pelaminan gebyok jati berukir menampilkan foto kedua mempelai, nama lengkap, profil keluarga, dan kutipan doa restu suci.</p>
+          <div class="feature-tag">Adat Nusantara</div>
+        </div>
       </div>
 
+      <!-- Card 2: Galeri Prewedding -->
       <div class="feature-card reveal reveal-delay-2">
-        <div class="feature-icon">
-          <img src="{% aset 'game/galeri.png' %}" alt="Galeri" loading="lazy">
+        <div class="feature-icon-wrapper">
+          <img src="{% aset 'game/galeri.png' %}" alt="Galeri Lukisan" class="feature-pixel-img" loading="lazy">
         </div>
-        <h3>Galeri Prewedding</h3>
-        <p>Papan lukis berisi galeri foto prewedding yang bisa digeser dan diperbesar. Abadikan momen terindah Anda.</p>
+        <div class="feature-content">
+          <h3>Galeri Prewedding Estetik</h3>
+          <p>Papan lukisan virtual menampilkan galeri foto prewedding yang bisa digeser, diperbesar, dan dinikmati dengan elegan oleh para tamu.</p>
+          <div class="feature-tag">Lightbox Interaktif</div>
+        </div>
       </div>
 
+      <!-- Card 3: Rangkaian Acara & Maps -->
       <div class="feature-card reveal reveal-delay-3">
-        <div class="feature-icon">
-          <img src="{% aset 'game/papan.png' %}" alt="Papan Acara" loading="lazy">
+        <div class="feature-icon-wrapper">
+          <img src="{% aset 'game/papan.png' %}" alt="Papan Acara" class="feature-pixel-img" loading="lazy">
         </div>
-        <h3>Rangkaian Acara</h3>
-        <p>Papan kayu menampilkan jadwal lengkap acara, hitung mundur otomatis, dan tautan langsung ke Google Maps.</p>
+        <div class="feature-content">
+          <h3>Jadwal Acara & Google Maps</h3>
+          <p>Hitung mundur otomatis (countdown) menuju hari H, rincian waktu akad & resepsi, serta integrasi rute navigasi Google Maps 1-klik.</p>
+          <div class="feature-tag">Navigasi Langsung</div>
+        </div>
       </div>
 
+      <!-- Card 4: Buku Tamu & RSVP -->
       <div class="feature-card reveal reveal-delay-1">
-        <div class="feature-icon">
-          <img src="{% aset 'game/buku_tamu.png' %}" alt="Buku Tamu" loading="lazy">
+        <div class="feature-icon-wrapper">
+          <img src="{% aset 'game/buku_tamu.png' %}" alt="Buku Tamu Meja" class="feature-pixel-img" loading="lazy">
         </div>
-        <h3>Buku Tamu & RSVP</h3>
-        <p>Meja buku tamu tempat mengirim ucapan doa dan mengonfirmasi kehadiran. Semua masuk ke dashboard admin.</p>
+        <div class="feature-content">
+          <h3>Buku Tamu & RSVP Real-Time</h3>
+          <p>Meja buku tamu virtual tempat keluarga dan sahabat mengirim ucapan doa serta mengonfirmasi kehadiran yang langsung masuk ke dashboard.</p>
+          <div class="feature-tag">Konfirmasi Kehadiran</div>
+        </div>
       </div>
 
+      <!-- Card 5: Amplop Digital & QRIS -->
       <div class="feature-card reveal reveal-delay-2">
-        <div class="feature-icon">
-          <img src="{% aset 'game/hadiah.png' %}" alt="Amplop Digital" loading="lazy">
+        <div class="feature-icon-wrapper">
+          <img src="{% aset 'game/hadiah.png' %}" alt="Kotak Amplop" class="feature-pixel-img" loading="lazy">
         </div>
-        <h3>Amplop Digital</h3>
-        <p>Kotak angpao bermotif batik kawung berisi nomor rekening dan QRIS. Salin nomor dengan satu ketukan.</p>
+        <div class="feature-content">
+          <h3>Amplop Digital & QRIS Otomatis</h3>
+          <p>Kotak hadiah berisi nomor rekening bank pilihan dan scan QRIS. Tamu cukup menyalin nomor dengan satu sentuhan tanpa repot.</p>
+          <div class="feature-tag">Tanda Kasih Mudah</div>
+        </div>
+      </div>
+
+      <!-- Card 6: Karakter & Audio Khusus -->
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon-wrapper">
+          <img src="{% aset 'game/pengantin_pria.png' %}" alt="Avatar Karakter" class="feature-pixel-img" loading="lazy">
+        </div>
+        <div class="feature-content">
+          <h3>Karakter Adat & Musik Pilihan</h3>
+          <p>Tamu dapat memilih busana adat, diiringi alunan lagu pernikahan romantis pilihan Anda dan panduan minimap pintar agar tidak tersesat.</p>
+          <div class="feature-tag">Audio & Minimap</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PILIHAN TEMA (INTERACTIVE THEME SHOWCASE) ================= -->
+<section class="preview" id="preview">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-badge section-badge--gold">🎨 Koleksi Dunia Pernikahan</span>
+      <h2 class="section-title text-light">6 Tema Eksklusif Penuh Makna</h2>
+      <p class="section-desc text-light-muted">
+        Setiap tema dirancang dengan detail khas: arsitektur adat otentik, tanaman tropis, tata suara khusus, dan suasana yang tak terlupakan.
+      </p>
+    </div>
+
+    <!-- Theme Filter Buttons -->
+    <div class="theme-filter-bar reveal">
+      <button class="theme-filter-btn active" data-filter="all">Semua Tema (6)</button>
+      <button class="theme-filter-btn" data-filter="tradisional">🏛️ Tradisional Adat</button>
+      <button class="theme-filter-btn" data-filter="alam">🌴 Nuansa Alam</button>
+      <button class="theme-filter-btn" data-filter="modern">✨ Mewah & Unik</button>
+    </div>
+
+    <!-- Theme Showcase Grid -->
+    <div class="theme-grid">
+      <!-- Tema 1: Jawa Tradisional -->
+      <div class="theme-card reveal" data-category="tradisional">
+        <div class="theme-card-img-wrap">
+          <img src="{% aset 'img/preview_game.png' %}" alt="Tema Taman Tradisional Jawa" loading="lazy">
+          <span class="theme-badge-top">⭐ Terpopuler</span>
+        </div>
+        <div class="theme-card-body">
+          <div class="theme-meta">
+            <span class="theme-badge">Adat Jawa Klasik</span>
+            <span class="theme-sound">🎵 Gamelan Kebo Giro</span>
+          </div>
+          <h3 class="theme-title">Taman Tradisional Jawa</h3>
+          <p class="theme-desc">
+            Gebyok ukir jati Jepara bertabur melati, gapura janur kuning, karakter beskap & sanggul klasik, menghadirkan kesakralan adat yang hangat dan agung.
+          </p>
+          <div class="theme-card-actions">
+            <a href="{% url 'undangan:beranda' %}" class="btn btn-gold btn-theme-play" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              Coba Mainkan Demo Jawa
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tema 2: Sasak Lombok -->
+      <div class="theme-card reveal reveal-delay-1" data-category="tradisional">
+        <div class="theme-card-img-wrap">
+          <img src="{% aset 'img/preview_lombok.png' %}" alt="Tema Pantai Sasak Lombok" loading="lazy">
+          <span class="theme-badge-top">🏖️ Eksotis Pantai</span>
+        </div>
+        <div class="theme-card-body">
+          <div class="theme-meta">
+            <span class="theme-badge">Adat Sasak Lombok</span>
+            <span class="theme-sound">🌊 Debur Ombak & Suling</span>
+          </div>
+          <h3 class="theme-title">Pantai Sasak Lombok</h3>
+          <p class="theme-desc">
+            Bale Lumbung Sasak atap perahu, Candi Bentar bata merah, obor bambu pesisir pantai, air laut turquoise, dan mahkota Lambung emas khas Nusa Tenggara.
+          </p>
+          <div class="theme-card-actions">
+            <a href="{% url 'undangan:beranda_lombok' %}" class="btn btn-gold btn-theme-play" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              Coba Mainkan Demo Lombok
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tema 3: Taman Tropis -->
+      <div class="theme-card reveal reveal-delay-2" data-category="alam">
+        <div class="theme-card-img-wrap">
+          <img src="{% aset 'img/preview_tropis.png' %}" alt="Tema Taman Tropis Rimbun" loading="lazy">
+          <span class="theme-badge-top">🌿 Sejuk & Rimbun</span>
+        </div>
+        <div class="theme-card-body">
+          <div class="theme-meta">
+            <span class="theme-badge">Botanical Garden</span>
+            <span class="theme-sound">⛲ Gemericik Air Mancur</span>
+          </div>
+          <h3 class="theme-title">Taman Tropis Rimbun</h3>
+          <p class="theme-desc">
+            Kolam air mancur berundak dengan jembatan melengkung berteratai ungu, pohon pisang hias & palem, umbul-umbul kuning, dan pelaminan berukir kayu keemasan.
+          </p>
+          <div class="theme-card-actions">
+            <a href="{% url 'undangan:beranda_tropis' %}" class="btn btn-gold btn-theme-play" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              Coba Mainkan Demo Tropis
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tema 4: Desa Parahyangan (Stardew Style) -->
+      <div class="theme-card reveal" data-category="alam">
+        <div class="theme-card-img-wrap">
+          <img src="{% aset 'img/preview_desa.png' %}" alt="Tema Desa Asri Parahyangan" loading="lazy">
+          <span class="theme-badge-top">🌾 Gaya Stardew Valley</span>
+        </div>
+        <div class="theme-card-body">
+          <div class="theme-meta">
+            <span class="theme-badge">Pedesaan Sunda</span>
+            <span class="theme-sound">🎶 Kecapi Suling Asri</span>
+          </div>
+          <h3 class="theme-title">Desa Asri Parahyangan</h3>
+          <p class="theme-desc">
+            Sentuhan RPG Stardew Valley di tanah Pasundan: saung gazebo bambu rustic, sawah terasering berundak, kebun gembur, ternak ayam lucu, dan petualangan hangat.
+          </p>
+          <div class="theme-card-actions">
+            <a href="{% url 'undangan:beranda_desa' %}" class="btn btn-gold btn-theme-play" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              Coba Mainkan Demo Desa
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tema 5: Grand Ballroom -->
+      <div class="theme-card reveal reveal-delay-1" data-category="modern">
+        <div class="theme-card-img-wrap">
+          <img src="{% aset 'img/preview_gedung.png' %}" alt="Tema Grand Ballroom Mewah" loading="lazy">
+          <span class="theme-badge-top">✨ Luxury Ballroom</span>
+        </div>
+        <div class="theme-card-body">
+          <div class="theme-meta">
+            <span class="theme-badge">Indoor Modern Mewah</span>
+            <span class="theme-sound">🎻 Akustik Orkestra Romantis</span>
+          </div>
+          <h3 class="theme-title">Grand Ballroom Gedung</h3>
+          <p class="theme-desc">
+            Sensasi tiba di drop-off plaza karpet merah, melangkah menembus lobby megah berlampu chandelier emas berkilauan, dan pelaminan pesta indoor berkelas dunia.
+          </p>
+          <div class="theme-card-actions">
+            <a href="{% url 'undangan:beranda_gedung' %}" class="btn btn-gold btn-theme-play" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              Coba Mainkan Demo Ballroom
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tema 6: Taman Safari -->
+      <div class="theme-card reveal reveal-delay-2" data-category="modern">
+        <div class="theme-card-img-wrap">
+          <img src="{% aset 'img/preview_safari.png' %}" alt="Tema Taman Safari" loading="lazy">
+          <span class="theme-badge-top">🦁 Seru & Ceria</span>
+        </div>
+        <div class="theme-card-body">
+          <div class="theme-meta">
+            <span class="theme-badge">Safari Adventure</span>
+            <span class="theme-sound">🦜 Suara Satwa Interaktif</span>
+          </div>
+          <h3 class="theme-title">Taman Safari Terbuka</h3>
+          <p class="theme-desc">
+            Petualangan cinta di kebun binatang terbuka: habitat Gajah, Jerapah, Singa, Panda, Zebra, Flamingo dengan respon suara interaktif saat didekati karakter tamu!
+          </p>
+          <div class="theme-card-actions">
+            <a href="{% url 'undangan:beranda_safari' %}" class="btn btn-gold btn-theme-play" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              Coba Mainkan Demo Safari
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pixel Art Decorative Carousel / Strip -->
+    <div class="pixel-strip-wrapper reveal">
+      <div class="pixel-strip-title">ASET PIXEL ART ASLI NUSANTARA DI DALAM GAME:</div>
+      <div class="pixel-strip">
+        <div class="pixel-item">
+          <img src="{% aset 'game/pelaminan.png' %}" alt="Pelaminan">
+          <span>Pelaminan</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_tropis/gapura.png' %}" alt="Gapura Janur">
+          <span>Gapura Janur</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_tropis/jembatan.png' %}" alt="Jembatan Kolam">
+          <span>Jembatan</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_tropis/air_mancur.png' %}" alt="Air Mancur">
+          <span>Air Mancur</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_tropis/teratai.png' %}" alt="Bunga Teratai">
+          <span>Teratai</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_tropis/umbul_kuning.png' %}" alt="Umbul-umbul">
+          <span>Umbul-umbul</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_lombok/pelaminan.png' %}" alt="Bale Lumbung">
+          <span>Bale Lumbung</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_lombok/obor_bambu.png' %}" alt="Obor Pantai">
+          <span>Obor Pantai</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_desa/saung_lumbung.png' %}" alt="Saung Padi">
+          <span>Saung Padi</span>
+        </div>
+        <div class="pixel-item">
+          <img src="{% aset 'game_desa/hadiah.png' %}" alt="Peti Kayu">
+          <span>Peti Hadiah</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PERBANDINGAN (KENAPA JELAJAH UNDANGAN) ================= -->
+<section class="comparison" id="perbandingan">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-badge">⚖️ Mengapa Berbeda?</span>
+      <h2 class="section-title">Undangan Web Biasa vs Jelajah Undangan</h2>
+      <p class="section-desc">
+        Jangan biarkan momen sekali seumur hidup Anda diumumkan lewat undangan pasaran yang membosankan dan cepat dilupakan.
+      </p>
+    </div>
+
+    <div class="comparison-cards-grid reveal">
+      <!-- Card Kiri: Undangan Biasa -->
+      <div class="compare-card compare-card--standard">
+        <div class="compare-header">
+          <div class="compare-icon-bad">✕</div>
+          <h3>Undangan Web Biasa</h3>
+          <p class="compare-subtitle">Format konvensional yang sering dijumpai</p>
+        </div>
+        <ul class="compare-list">
+          <li>
+            <span class="cross-icon">✕</span>
+            <span>Hanya halaman scroll vertikal statis yang monoton</span>
+          </li>
+          <li>
+            <span class="cross-icon">✕</span>
+            <span>Tamu biasanya hanya scroll cepat 5 detik lalu menutup halaman</span>
+          </li>
+          <li>
+            <span class="cross-icon">✕</span>
+            <span>Desain template pasaran yang mirip dengan ratusan pengantin lain</span>
+          </li>
+          <li>
+            <span class="cross-icon">✕</span>
+            <span>Tidak ada interaksi berkesan selain mengisi form ucapan teks</span>
+          </li>
+          <li>
+            <span class="cross-icon">✕</span>
+            <span>Mudah terlupakan begitu pesta pernikahan selesai</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Card Kanan: Jelajah Undangan (Winner) -->
+      <div class="compare-card compare-card--premium">
+        <div class="popular-ribbon">PILIHAN TERBAIK</div>
+        <div class="compare-header">
+          <div class="compare-icon-good">✓</div>
+          <h3>Jelajah Undangan</h3>
+          <p class="compare-subtitle">Petualangan 2D Interaktif Modern</p>
+        </div>
+        <ul class="compare-list">
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Eksplorasi Game 2D:</strong> Tamu memilih avatar dan berjalan di taman virtual</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Keterlibatan 5x Lebih Tinggi:</strong> Tamu betah menjelajahi setiap sudut dan rahasia acara</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Nuansa Adat Nusantara:</strong> Visual pixel art eksklusif khas budaya Indonesia</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Sangat Mudah Dimainkan:</strong> Tersedia joystick layar HP dan fitur jalan otomatis</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Membekas & Dibicarakan:</strong> Jadi topik hangat di antara keluarga dan teman-teman</span>
+          </li>
+        </ul>
+        <div class="compare-card-cta">
+          <a href="{% url 'undangan:register' %}" class="btn btn-gold btn-full">
+            Mulai Buat Undangan Saya ✨
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -194,299 +631,210 @@
 <!-- ================= CARA KERJA ================= -->
 <section class="how-it-works" id="cara-kerja">
   <div class="container">
-    <div class="text-center reveal">
-      <span class="section-label">Sangat Mudah</span>
-      <h2 class="section-title">Tiga Langkah Untuk Tamu Anda</h2>
+    <div class="section-header text-center reveal">
+      <span class="section-badge">🚀 Praktis & Cepat</span>
+      <h2 class="section-title">3 Langkah Mudah Menuju Hari Bahagia</h2>
       <p class="section-desc">
-        Pengalaman yang unik dan menyenangkan — tamu akan terkesan sejak pertama kali membuka undangan.
+        Hanya butuh beberapa menit untuk memiliki undangan pernikahan game 2D siap sebar yang membuat semua tamu kagum.
       </p>
     </div>
 
-    <div class="steps">
-      <div class="step reveal reveal-delay-1">
-        <div class="step-number">1</div>
-        <h3>Pilih Karakter</h3>
-        <p>Tamu memilih karakter pria atau wanita berbusana adat Indonesia, lalu menekan "Buka Undangan".</p>
+    <div class="steps-grid">
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-badge">Langkah 01</div>
+        <div class="step-icon-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <h3>Daftar & Pilih Tema</h3>
+        <p>Buat akun dalam 1 menit, lalu pilih salah satu dari 6 tema eksklusif yang paling cocok dengan konsep pernikahan impian Anda.</p>
       </div>
 
-      <div class="step reveal reveal-delay-2">
-        <div class="step-number">2</div>
-        <h3>Jelajahi Taman</h3>
-        <p>Gunakan analog virtual atau WASD untuk berjalan. Buka peta untuk berjalan otomatis ke lokasi tujuan.</p>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-badge">Langkah 02</div>
+        <div class="step-icon-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <h3>Isi Data & Unggah Foto</h3>
+        <p>Masukkan tanggal akad, resepsi, foto prewedding, nomor rekening/QRIS, serta lagu romantis favorit lewat dashboard yang simpel dan praktis.</p>
       </div>
 
-      <div class="step reveal reveal-delay-3">
-        <div class="step-number">3</div>
-        <h3>Buka Isi Undangan</h3>
-        <p>Dekati objek bertanda seru dan tekan tombol aksi untuk membuka biodata, galeri, acara, RSVP, atau amplop.</p>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-badge">Langkah 03</div>
+        <div class="step-icon-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </div>
+        <h3>Bagikan Link ke Tamu</h3>
+        <p>Kirimkan link personal yang otomatis mencantumkan nama setiap tamu lewat WhatsApp. Pantau siapa saja yang sudah membuka undangan secara langsung!</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= PREVIEW ================= -->
-<section class="preview" id="preview">
+<!-- ================= TESTIMONI PENGANTIN ================= -->
+<section class="testimonials" id="testimoni">
   <div class="container">
-    <div class="text-center reveal">
-      <span class="section-label">Pilihan Tema</span>
-      <h2 class="section-title">Lima Nuansa Pernikahan Istimewa</h2>
+    <div class="section-header text-center reveal">
+      <span class="section-badge">❤️ Kisah Bahagia</span>
+      <h2 class="section-title">Cerita dari Pasangan yang Berbahagia</h2>
       <p class="section-desc">
-        Pilih nuansa favorit Anda — dari Taman Tradisional Jawa, Pantai Sasak Lombok yang eksotis, Taman Tropis Rimbun, Desa Asri Parahyangan bergaya Stardew Valley, hingga Grand Ballroom Gedung Mewah.
+        Ratusan pengantin telah mempercayakan undangan pernikahan mereka pada Jelajah Undangan. Inilah pengalaman mereka.
       </p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-bottom: 36px;" class="reveal">
-      <!-- Tema 1 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .15); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-            <img src="{% aset 'img/preview_game.png' %}" alt="Tema 1: Taman Tradisional Jawa" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+    <div class="testimonials-grid">
+      <!-- Testi 1 -->
+      <div class="testi-card reveal reveal-delay-1">
+        <div class="testi-rating">★★★★★</div>
+        <p class="testi-quote">
+          "Teman-teman kantor dan keluarga besar pada heboh di grup WhatsApp! Katanya baru kali ini dapet undangan pernikahan yang bisa dimainin karakternya. Banyak yang puji konsepnya yang super kreatif!"
+        </p>
+        <div class="testi-author">
+          <div class="author-avatar">DS</div>
+          <div class="author-info">
+            <h4 class="author-name">Dimas & Sarah</h4>
+            <span class="author-meta">Jakarta • Tema Grand Ballroom</span>
           </div>
-          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🏛️ Tema 1: Taman Tradisional Jawa</h3>
-          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
-            Gebyok ukir Jepara, pelaminan bernuansa kayu jati, gapura janur kuning, dan busana adat Jawa klasik dengan blangkon &amp; sanggul.
-          </p>
         </div>
-        <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #c59b27 0%, #8b2635 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
-          Buka Demo Tema Jawa
-        </a>
       </div>
 
-      <!-- Tema 2 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(43, 168, 168, .4); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-            <img src="{% aset 'img/preview_lombok.png' %}" alt="Tema 2: Pantai Sasak Lombok" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+      <!-- Testi 2 -->
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-rating">★★★★★</div>
+        <p class="testi-quote">
+          "Karena kami nikah adat Jawa, tema gebyok ukirnya pas banget! Musik gamelannya syahdu dan visual pixel art-nya sangat berkelas. Sangat rekomendasi buat pasangan yang pengen beda tapi tetap berbudaya."
+        </p>
+        <div class="testi-author">
+          <div class="author-avatar">AR</div>
+          <div class="author-info">
+            <h4 class="author-name">Arya & Ratna</h4>
+            <span class="author-meta">Yogyakarta • Tema Tradisional Jawa</span>
           </div>
-          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🏖️ Tema 2: Pantai Sasak Lombok</h3>
-          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
-            Bale Lumbung Sasak atap perahu, Candi Bentar bata merah, obor bambu pantai, laut turquoise, dan mahkota Lambung emas.
-          </p>
         </div>
-        <a href="{% url 'undangan:beranda_lombok' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #2ba8a8 0%, #ab4430 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
-          Buka Demo Tema Lombok
-        </a>
       </div>
 
-      <!-- Tema 3 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(110, 196, 80, .4); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-            <img src="{% aset 'img/preview_tropis.png' %}" alt="Tema 3: Taman Tropis Rimbun" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+      <!-- Testi 3 -->
+      <div class="testi-card reveal reveal-delay-3">
+        <div class="testi-rating">★★★★★</div>
+        <p class="testi-quote">
+          "Kami berdua suka banget game ala Stardew Valley, pas liat tema Desa Sunda langsung jatuh cinta! Bikinnya gampang banget lewat dashboard di HP, link nama tamunya juga rapi pas disebar ke WA."
+        </p>
+        <div class="testi-author">
+          <div class="author-avatar">BM</div>
+          <div class="author-info">
+            <h4 class="author-name">Bagus & Melinda</h4>
+            <span class="author-meta">Bandung • Tema Desa Parahyangan</span>
           </div>
-          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🌴 Tema 3: Taman Tropis Rimbun</h3>
-          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
-            Pelaminan ukir jati emas, kolam air mancur dengan jembatan melengkung &amp; teratai, umbul-umbul, serta rimbun pohon pisang &amp; palem.
-          </p>
         </div>
-        <a href="{% url 'undangan:beranda_tropis' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #4da43a 0%, #9c6a38 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
-          Buka Demo Tema Tropis
-        </a>
-      </div>
-
-      <!-- Tema 4 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(245, 190, 56, .45); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-            <img src="{% aset 'img/preview_desa.png' %}" alt="Tema 4: Desa Asri Parahyangan (Gaya Stardew Valley)" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
-          </div>
-          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🌾 Tema 4: Desa Asri Parahyangan</h3>
-          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
-            Gaya Stardew Valley bertema pedesaan Sunda: saung gazebo rustic, sawah terasering, kebun sayur gembur, hewan ternak, dan jam kalender Stardew.
-          </p>
-        </div>
-        <a href="{% url 'undangan:beranda_desa' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #df9b4b 0%, #3b6b21 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
-          Buka Demo Tema Desa
-        </a>
-      </div>
-
-      <!-- Tema 5 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(212, 175, 55, .5); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-            <img src="{% aset 'img/preview_gedung.png' %}" alt="Tema 5: Grand Ballroom Gedung Mewah" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
-          </div>
-          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🏛️ Tema 5: Grand Ballroom Gedung Mewah</h3>
-          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
-            Sensasi tiba di drop-off plaza luar gedung di atas karpet merah, melangkah menembus grand entrance, dan menikmati pesta indoor Grand Ballroom megah berlampu chandelier emas.
-          </p>
-        </div>
-        <a href="{% url 'undangan:beranda_gedung' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #d4af37 0%, #18223a 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
-          Buka Demo Grand Ballroom
-        </a>
-      </div>
-
-      <!-- Tema 6 Card -->
-      <div style="background: rgba(255, 255, 255, .05); border: 1px solid rgba(60, 122, 62, .5); border-radius: 20px; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="border-radius: 14px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35);">
-            <img src="{% aset 'img/preview_safari.png' %}" alt="Tema 6: Taman Safari Kebun Binatang" loading="lazy" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
-          </div>
-          <h3 style="font-family: var(--serif); font-size: 1.35rem; color: #fff; margin-bottom: 6px;">🦁 Tema 6: Taman Safari Kebun Binatang</h3>
-          <p style="font-size: .86rem; color: rgba(255,255,255,.68); line-height: 1.6; margin-bottom: 16px;">
-            Petualangan cinta di kebun binatang terbuka: habitat Gajah, Jerapah, Singa, Panda, Zebra, Flamingo dengan respon suara interaktif, pelaminan kayu rustik, dan bangku santai.
-          </p>
-        </div>
-        <a href="{% url 'undangan:beranda_safari' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #3c7a3e 0%, #d49b35 100%); width: 100%; justify-content: center; font-size: .82rem; padding: 12px 20px;">
-          Buka Demo Taman Safari
-        </a>
-      </div>
-    </div>
-
-    <div class="pixel-strip reveal">
-      <div class="pixel-item">
-        <img src="{% aset 'game/pelaminan.png' %}" alt="Pelaminan">
-        <span>Pelaminan</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_tropis/gapura.png' %}" alt="Gapura Janur">
-        <span>Gapura Janur</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_tropis/jembatan.png' %}" alt="Jembatan Kolam">
-        <span>Jembatan</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_tropis/air_mancur.png' %}" alt="Air Mancur">
-        <span>Air Mancur</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_tropis/teratai.png' %}" alt="Bunga Teratai">
-        <span>Teratai</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_tropis/umbul_kuning.png' %}" alt="Umbul-umbul">
-        <span>Umbul-umbul</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_lombok/pelaminan.png' %}" alt="Bale Lumbung">
-        <span>Bale Lumbung</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_lombok/obor_bambu.png' %}" alt="Obor Pantai">
-        <span>Obor Pantai</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game/pengantin_pria.png' %}" alt="Pengantin Pria">
-        <span>Mempelai</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_desa/saung_lumbung.png' %}" alt="Saung Lumbung">
-        <span>Saung Padi</span>
-      </div>
-      <div class="pixel-item">
-        <img src="{% aset 'game_desa/hadiah.png' %}" alt="Peti Kayu">
-        <span>Peti Hadiah</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= KEUNGGULAN ================= -->
-<section class="advantages" id="keunggulan">
-  <div class="container">
-    <div class="text-center reveal">
-      <span class="section-label">Keunggulan</span>
-      <h2 class="section-title">Mengapa Memilih Jelajah Undangan?</h2>
+<!-- ================= FAQ ACCORDION ================= -->
+<section class="faq" id="faq">
+  <div class="container faq-container">
+    <div class="section-header text-center reveal">
+      <span class="section-badge">❓ Bantuan & Pertanyaan</span>
+      <h2 class="section-title">Pertanyaan yang Sering Diajukan</h2>
       <p class="section-desc">
-        Bukan sekadar undangan digital biasa — ini adalah pengalaman interaktif yang tak terlupakan.
+        Ada hal yang ingin Anda tanyakan? Berikut jawaban lengkap mengenai cara kerja dan penggunaan Jelajah Undangan.
       </p>
     </div>
 
-    <div class="advantages-grid">
-      <div class="advantage-card reveal reveal-delay-1">
-        <div class="advantage-icon">🎨</div>
-        <h3>Nuansa Adat Indonesia</h3>
-        <p>Pelaminan gebyok, janur kuning, kebaya, batik, tumpeng — semua digambar dengan detail bernuansa adat.</p>
+    <div class="faq-accordion reveal">
+      <!-- Item 1 -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span>Apakah tamu lansia atau yang kurang paham teknologi bisa membukanya?</span>
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>
+            Sangat bisa! Saat link dibuka, langsung muncul tombol "Buka Undangan". Di layar ponsel, kontrol analog sangat mudah digerakkan. Selain itu, tersedia <strong>Minimap & Peta Interaktif</strong> di mana tamu cukup menyentuh lokasi (misalnya Pelaminan atau Jadwal Acara) dan karakter akan berjalan secara otomatis tanpa perlu ditekan tombol arah manual.
+          </p>
+        </div>
       </div>
 
-      <div class="advantage-card reveal reveal-delay-2">
-        <div class="advantage-icon">🕹️</div>
-        <h3>Interaktif & Menyenangkan</h3>
-        <p>Tamu tidak hanya scroll — mereka bermain dan menjelajahi taman, menjadikan undangan Anda tak terlupakan.</p>
+      <!-- Item 2 -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span>Apakah tamu perlu mengunduh / menginstal aplikasi dari Play Store?</span>
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>
+            Tidak perlu sama sekali! Jelajah Undangan 100% berbasis web modern (HTML5 Canvas). Tamu cukup mengklik link yang dikirimkan via WhatsApp dan game undangan langsung berjalan lancar di browser bawaan Android (Chrome) maupun iPhone (Safari).
+          </p>
+        </div>
       </div>
 
-      <div class="advantage-card reveal reveal-delay-3">
-        <div class="advantage-icon">📱</div>
-        <h3>Responsif di Semua Perangkat</h3>
-        <p>Analog virtual di HP, keyboard di komputer. Tampil sempurna di layar berapa pun ukurannya.</p>
+      <!-- Item 3 -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span>Apakah saya bisa mencantumkan nama khusus untuk masing-masing tamu?</span>
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>
+            Bisa banget! Di Dashboard tersedia fitur Manajemen Buku Tamu. Anda bisa menambahkan daftar nama tamu Anda, dan sistem akan membuat link unik untuk setiap tamu (contoh: <code>jelajah.biz.id/tamu/budi-santoso</code>). Nama tamu akan muncul di amplop depan dan sambutan pembuka game secara eksklusif.
+          </p>
+        </div>
       </div>
 
-      <div class="advantage-card reveal reveal-delay-4">
-        <div class="advantage-icon">🔗</div>
-        <h3>Link Personal per Tamu</h3>
-        <p>Setiap tamu mendapat link unik yang menyebut nama mereka. Lacak siapa saja yang sudah membuka undangan.</p>
+      <!-- Item 4 -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span>Apakah lagu pernikahan dan foto prewedding bisa saya atur sendiri?</span>
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>
+            Tentu saja! Anda memiliki kontrol penuh melalui dashboard pengantin untuk mengunggah lagu MP3 romantis favorit Anda, foto prewedding beresolusi tinggi, nomor rekening bank/QRIS, hingga kutipan ayat atau kata mutiara cinta.
+          </p>
+        </div>
       </div>
 
-      <div class="advantage-card reveal reveal-delay-1">
-        <div class="advantage-icon">🗺️</div>
-        <h3>Navigasi Mudah</h3>
-        <p>Minimap, panah penunjuk, papan nama, dan peta interaktif — tamu tidak akan tersesat di taman.</p>
-      </div>
-
-      <div class="advantage-card reveal reveal-delay-2">
-        <div class="advantage-icon">🎵</div>
-        <h3>Musik Latar</h3>
-        <p>Tambahkan lagu favorit Anda sebagai musik latar yang mengiringi perjalanan tamu di taman.</p>
-      </div>
-
-      <div class="advantage-card reveal reveal-delay-3">
-        <div class="advantage-icon">📊</div>
-        <h3>Dashboard Admin</h3>
-        <p>Kelola semua isi undangan lewat panel admin — mempelai, acara, galeri, tamu, ucapan, rekening.</p>
-      </div>
-
-      <div class="advantage-card reveal reveal-delay-4">
-        <div class="advantage-icon">✏️</div>
-        <h3>100% Kustomisasi</h3>
-        <p>Semua aset pixel art bisa diubah warna dan bentuknya. Denah taman pun bisa disesuaikan sesuka hati.</p>
+      <!-- Item 5 -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          <span>Berapa lama masa aktif undangan pernikahan saya?</span>
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>
+            Saat pertama mendaftar, Anda mendapatkan masa uji coba gratis (Trial) selama 1 bulan penuh untuk mencoba semua fitur dan mengatur data. Untuk penggunaan penuh saat hari bahagia, Anda dapat mengaktifkannya hingga acara pernikahan selesai dan kenangan indah tetap tersimpan.
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= STATS ================= -->
-<section class="stats" id="stats">
-  <div class="container">
-    <div class="stats-grid">
-      <div class="stat-item reveal reveal-delay-1">
-        <div class="stat-number" data-counter data-target="5">0</div>
-        <div class="stat-label">Titik Interaktif</div>
-      </div>
-      <div class="stat-item reveal reveal-delay-2">
-        <div class="stat-number" data-counter data-target="23">0</div>
-        <div class="stat-label">Aset Pixel Art</div>
-      </div>
-      <div class="stat-item reveal reveal-delay-3">
-        <div class="stat-number" data-counter data-target="{{ jumlah_tamu|default:'0' }}" data-suffix="+">0</div>
-        <div class="stat-label">Tamu Terdaftar</div>
-      </div>
-      <div class="stat-item reveal reveal-delay-4">
-        <div class="stat-number" data-counter data-target="{{ jumlah_ucapan|default:'0' }}">0</div>
-        <div class="stat-label">Ucapan Masuk</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= CTA ================= -->
-<section class="cta" id="cta">
-  <div class="cta-ornament cta-ornament--1"></div>
-  <div class="cta-ornament cta-ornament--2"></div>
-  <div class="cta-content container reveal">
-    <span class="section-label">Siap Membuat Undangan?</span>
-    <h2 class="section-title">Buat Undangan Unik<br>untuk Hari Spesial Anda</h2>
-    <p class="cta-desc">
-      Berikan pengalaman tak terlupakan bagi tamu Anda dengan Jelajah Undangan — platform undangan pernikahan digital interaktif modern berbentuk petualangan 2D.
+<!-- ================= HIGH CONVERTING CTA BANNER ================= -->
+<section class="final-cta" id="cta">
+  <div class="cta-backdrop-glow"></div>
+  <div class="container final-cta-container reveal text-center">
+    <span class="section-badge section-badge--gold">🎉 Mulai Sekarang</span>
+    <h2 class="final-cta-title">
+      Siap Mewujudkan Undangan Pernikahan<br>
+      yang Paling Berkesan?
+    </h2>
+    <p class="final-cta-desc">
+      Bergabunglah bersama ribuan calon pengantin lainnya. Hadirkan senyum, decak kagum, dan doa tulus para tamu lewat undangan interaktif 2D yang tiada duanya.
     </p>
-    <div class="hero-buttons">
-      <a href="{% url 'undangan:beranda' %}" class="btn btn-primary" id="btn-cta-demo">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Coba Demo Sekarang
-      </a>
-      <a href="{% url 'admin:index' %}" class="btn btn-secondary" id="btn-cta-admin">
-        Panel Admin
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.6 7.4 13.2 12l-4.6 4.6L10 18l6-6z"/></svg>
+    <div class="final-cta-actions">
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'undangan:dashboard' %}" class="btn btn-gold btn-large shadow-pulse" id="btn-final-dashboard">
+          🚀 Masuk ke Dashboard Undangan Saya
+        </a>
+      {% else %}
+        <a href="{% url 'undangan:register' %}" class="btn btn-gold btn-large shadow-pulse" id="btn-final-register">
+          ✨ Buat Undangan Sekarang (Gratis)
+        </a>
+      {% endif %}
+      <a href="https://wa.me/?text=Halo%20Admin%20Jelajah%20Undangan,%20saya%20tertarik%20membuat%20undangan%20pernikahan%20game%202D" class="btn btn-glass btn-large" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-5.46-4.45-9.92-9.91-9.92z"/></svg>
+        Konsultasi via WhatsApp
       </a>
     </div>
   </div>
@@ -494,11 +842,71 @@
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer">
-  <div class="container">
-    <p class="footer-brand">Jelajah<span>Undangan</span></p>
-    <div class="footer-divider"></div>
-    <p>Jelajah Undangan — Platform undangan pernikahan digital interaktif bergaya 2D pixel art.</p>
-    <p>Dibuat dengan ❤️ menggunakan Django & Canvas.</p>
+  <div class="container footer-container">
+    <div class="footer-top">
+      <div class="footer-brand-col">
+        <a href="#" class="footer-brand">
+          <div class="nav-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <span>Jelajah<span>Undangan</span></span>
+        </a>
+        <p class="footer-tagline">
+          Platform pembuatan undangan pernikahan digital interaktif modern berbentuk petualangan 2D pixel art bernuansa adat Nusantara.
+        </p>
+        <div class="footer-socials">
+          <span class="footer-social-badge">🇮🇩 Karya Anak Bangsa</span>
+          <span class="footer-social-badge">🔒 Privasi Terjaga</span>
+        </div>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Pilihan Tema</h4>
+        <ul>
+          <li><a href="{% url 'undangan:beranda' %}">🏛️ Tradisional Jawa</a></li>
+          <li><a href="{% url 'undangan:beranda_lombok' %}">🏖️ Pantai Sasak Lombok</a></li>
+          <li><a href="{% url 'undangan:beranda_tropis' %}">🌴 Taman Tropis Rimbun</a></li>
+          <li><a href="{% url 'undangan:beranda_desa' %}">🌾 Desa Parahyangan</a></li>
+          <li><a href="{% url 'undangan:beranda_gedung' %}">✨ Grand Ballroom</a></li>
+          <li><a href="{% url 'undangan:beranda_safari' %}">🦁 Taman Safari</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Navigasi</h4>
+        <ul>
+          <li><a href="#fitur">Fitur Utama</a></li>
+          <li><a href="#perbandingan">Keunggulan</a></li>
+          <li><a href="#cara-kerja">Cara Kerja</a></li>
+          <li><a href="#testimoni">Kisah Bahagia</a></li>
+          <li><a href="#faq">Pertanyaan (FAQ)</a></li>
+          <li><a href="{% url 'undangan:dashboard' %}">Dashboard Pengantin</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Akses & Akun</h4>
+        <ul>
+          {% if request.user.is_authenticated %}
+            <li><a href="{% url 'undangan:dashboard' %}">📊 Dashboard Saya</a></li>
+            <li><a href="{% url 'undangan:dashboard_pengaturan' %}">⚙️ Pengaturan Undangan</a></li>
+            <li><a href="{% url 'undangan:dashboard_tamu' %}">👥 Manajemen Tamu</a></li>
+            <li><a href="{% url 'undangan:logout' %}">🚪 Keluar</a></li>
+          {% else %}
+            <li><a href="{% url 'undangan:login' %}">🔑 Masuk Akun</a></li>
+            <li><a href="{% url 'undangan:register' %}">✨ Daftar Gratis</a></li>
+            <li><a href="{% url 'admin:index' %}">🛠️ Portal Administrator</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Jelajah Undangan (jelajah.biz.id). Hak Cipta Dilindungi Undang-Undang.</p>
+      <p class="footer-credit">Dibuat dengan ❤️ untuk setiap kisah cinta sakral di Nusantara.</p>
+    </div>
   </div>
 </footer>
 
