@@ -44,9 +44,9 @@
   }
 
   .active-provider-hero {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(168, 85, 247, 0.09) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 18px;
     padding: 24px;
     margin-bottom: 24px;
     position: relative;
@@ -56,7 +56,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(99, 102, 241, 0.2);
+    background: rgba(99, 102, 241, 0.22);
     color: var(--accent);
     padding: 4px 12px;
     border-radius: 20px;
@@ -76,28 +76,425 @@
   .status-dot.gagal { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
   .status-dot.belum { background: var(--warning); }
 
-  /* Modal Form */
+  /* ============================================================
+     PREMIUM MODAL FORM STYLING
+     ============================================================ */
   .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(4px);
+    background: rgba(4, 8, 16, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     z-index: 1000;
     display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
   }
+
+  @keyframes modalPop {
+    from {
+      opacity: 0;
+      transform: scale(0.94) translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
   .modal-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 18px;
+    background: linear-gradient(180deg, #131b2e 0%, #0d1322 100%);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 22px;
     width: 100%;
-    max-width: 650px;
-    max-height: 90vh;
+    max-width: 680px;
+    max-height: 92vh;
     overflow-y: auto;
-    padding: 24px 28px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    padding: 26px 30px;
+    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.85), 0 0 50px rgba(99, 102, 241, 0.18);
+    animation: modalPop 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+  }
+  .modal-card::-webkit-scrollbar { width: 6px; }
+  .modal-card::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.35); border-radius: 10px; }
+
+  .ai-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .ai-modal-badge-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.4);
+    flex-shrink: 0;
+  }
+  .ai-modal-heading {
+    font-size: 19px;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.3px;
+  }
+  .ai-modal-subheading {
+    font-size: 12.5px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+  .ai-modal-close-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ai-modal-close-btn:hover {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    transform: rotate(90deg);
+  }
+
+  /* QUICK PRESET SELECTOR CARDS */
+  .preset-section-label {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .preset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 640px) {
+    .preset-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .preset-chip {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 12px;
+    padding: 10px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    user-select: none;
+  }
+  .preset-chip:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+  }
+  .preset-chip.active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.18) 100%);
+    border: 1.5px solid #6366f1;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  }
+  .preset-chip-icon {
+    font-size: 18px;
+  }
+  .preset-chip-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .preset-chip.active .preset-chip-name {
+    color: #c7d2fe;
+  }
+  .preset-chip-sub {
+    font-size: 10px;
+    color: #64748b;
+  }
+  .preset-chip.active .preset-chip-sub {
+    color: #a5b4fc;
+  }
+
+  /* FORM GROUP & LABELS */
+  .ai-form-group {
+    margin-bottom: 16px;
+  }
+  .ai-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .ai-label-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ai-badge-required {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .ai-badge-optional {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  /* INPUT & SELECT CONTROLS */
+  .ai-field {
+    width: 100%;
+    background: rgba(11, 16, 30, 0.9) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    font-size: 13.5px !important;
+    color: #f8fafc !important;
+    font-weight: 500 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    font-family: inherit !important;
+  }
+  .ai-field:hover {
+    border-color: rgba(99, 102, 241, 0.45) !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+  }
+  .ai-field:focus {
+    border-color: #6366f1 !important;
+    background: rgba(99, 102, 241, 0.08) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.28) !important;
+  }
+  .ai-field::placeholder {
+    color: #64748b !important;
+  }
+
+  .ai-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23818cf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px !important;
+    cursor: pointer;
+  }
+  .ai-select option {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 8px;
+  }
+
+  .ai-hint-box {
+    font-size: 11.5px;
+    color: #94a3b8;
+    margin-top: 5px;
+    line-height: 1.45;
+  }
+  .ai-hint-box code {
+    background: rgba(99, 102, 241, 0.12);
+    color: #c7d2fe;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-family: monospace;
+  }
+
+  /* EYE TOGGLE BUTTON */
+  .input-with-eye {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .btn-toggle-eye {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .btn-toggle-eye:hover {
+    color: #c7d2fe;
+    transform: scale(1.1);
+  }
+
+  /* PARAMS BOX */
+  .ai-params-box {
+    background: rgba(11, 16, 30, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .ai-params-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 580px) {
+    .ai-params-grid { grid-template-columns: 1fr; }
+  }
+
+  /* TOGGLE SWITCH CARDS */
+  .ai-switches-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .ai-switch-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .ai-switch-card:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.35);
+  }
+  .ai-switch-card.active {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.45);
+  }
+
+  /* Modern Switch Slider */
+  .switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(148, 163, 184, 0.25);
+    transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #ffffff;
+    transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  .switch-toggle input:checked + .switch-slider {
+    background-color: #6366f1;
+    border-color: #4f46e5;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  }
+  .switch-toggle input:checked + .switch-slider:before {
+    transform: translateX(20px);
+  }
+
+  /* MODAL FOOTER */
+  .ai-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .btn-ghost-cancel {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-ghost-cancel:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+  .btn-save-glow {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    border: none;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 11px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 22px rgba(99, 102, 241, 0.45);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-save-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.6);
+  }
+  .btn-save-glow:active {
+    transform: translateY(0);
   }
 </style>
 {% endblock %}
@@ -113,7 +510,7 @@
     </p>
   </div>
   <div style="display: flex; gap: 10px;">
-    <button type="button" class="btn btn-primary" onclick="bukaModalAI()">
+    <button type="button" class="btn btn-primary" onclick="bukaModalAI()" style="box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);">
       <span>➕</span> Tambah Konfigurasi AI
     </button>
   </div>
@@ -254,7 +651,7 @@
   <form method="POST" action="{% url 'undangan:superadmin_ai_pengaturan_global' %}">
     {% csrf_token %}
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 18px;">
-      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
         <input type="checkbox" id="ai_aktif" name="ai_aktif" value="1" {% if pengaturan.ai_aktif %}checked{% endif %} style="width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent);">
         <label for="ai_aktif" style="font-size: 13.5px; cursor: pointer;">
           <b style="color: var(--text);">Aktifkan Fitur AI di Dashboard Pengguna</b>
@@ -264,7 +661,7 @@
         </label>
       </div>
 
-      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
         <input type="checkbox" id="ai_khusus_berbayar" name="ai_khusus_berbayar" value="1" {% if pengaturan.ai_khusus_berbayar %}checked{% endif %} style="width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent);">
         <label for="ai_khusus_berbayar" style="font-size: 13.5px; cursor: pointer;">
           <b style="color: var(--text);">Hanya untuk Undangan Aktif Berbayar</b>
@@ -274,11 +671,11 @@
         </label>
       </div>
 
-      <div style="background: var(--card-inner); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="background: var(--card-inner); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
         <label for="ai_batas_harian" style="font-size: 13px; font-weight: 700; color: var(--text); display: block; margin-bottom: 6px;">
           Batas Analisis Sukses / User / Hari
         </label>
-        <input type="number" id="ai_batas_harian" name="ai_batas_harian" value="{{ pengaturan.ai_batas_harian }}" min="0" max="100" class="form-control" style="font-size: 14px; font-weight: 600;">
+        <input type="number" id="ai_batas_harian" name="ai_batas_harian" value="{{ pengaturan.ai_batas_harian }}" min="0" max="100" class="ai-field" style="font-size: 14px; font-weight: 600;">
         <span style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px; display: block;">
           Isi 0 untuk tanpa batas kuota harian.
         </span>
@@ -480,35 +877,93 @@
 </div>
 
 <!-- ============================================================
-     MODAL TAMBAH / EDIT KONFIGURASI AI
+     PREMIUM MODAL: TAMBAH / EDIT KONFIGURASI AI
      ============================================================ -->
 <div class="modal-overlay" id="modal-ai">
   <div class="modal-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
-      <h3 style="font-size: 18px; font-weight: 800; color: var(--text);" id="modal-ai-title">
-        ➕ Tambah Konfigurasi AI Baru
-      </h3>
-      <button type="button" class="btn btn-secondary btn-sm" onclick="tutupModalAI()" style="padding: 4px 10px;">
-        &times;
-      </button>
+    
+    <!-- Modal Header -->
+    <div class="ai-modal-header">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="ai-modal-badge-icon">
+          ✨
+        </div>
+        <div>
+          <h3 id="modal-ai-title" class="ai-modal-heading">Tambah Konfigurasi AI Baru</h3>
+          <p class="ai-modal-subheading">Atur endpoint, model AI, dan parameter koneksi otomatisasi.</p>
+        </div>
+      </div>
+      <button type="button" class="ai-modal-close-btn" onclick="tutupModalAI()" title="Tutup Modal">&times;</button>
     </div>
 
+    <!-- Pilihan Cepat Provider (Preset Chips) -->
+    <div class="preset-section-label">
+      <span>⚡</span> Pilih Cepat Penyedia AI (Preset)
+    </div>
+    <div class="preset-grid">
+      <div class="preset-chip active" id="chip-9router" onclick="pilihPresetLangsung('9router')">
+        <span class="preset-chip-icon">🚀</span>
+        <span class="preset-chip-name">9Router</span>
+        <span class="preset-chip-sub">Lokal / Proxy</span>
+      </div>
+      <div class="preset-chip" id="chip-anthropic" onclick="pilihPresetLangsung('anthropic')">
+        <span class="preset-chip-icon">🤖</span>
+        <span class="preset-chip-name">Anthropic</span>
+        <span class="preset-chip-sub">Claude Official</span>
+      </div>
+      <div class="preset-chip" id="chip-openai" onclick="pilihPresetLangsung('openai')">
+        <span class="preset-chip-icon">🧠</span>
+        <span class="preset-chip-name">OpenAI</span>
+        <span class="preset-chip-sub">GPT-4o Series</span>
+      </div>
+      <div class="preset-chip" id="chip-gemini" onclick="pilihPresetLangsung('gemini')">
+        <span class="preset-chip-icon">💎</span>
+        <span class="preset-chip-name">Gemini</span>
+        <span class="preset-chip-sub">Google Studio</span>
+      </div>
+      <div class="preset-chip" id="chip-openrouter" onclick="pilihPresetLangsung('openrouter')">
+        <span class="preset-chip-icon">🌐</span>
+        <span class="preset-chip-name">OpenRouter</span>
+        <span class="preset-chip-sub">Multi-Model</span>
+      </div>
+      <div class="preset-chip" id="chip-groq" onclick="pilihPresetLangsung('groq')">
+        <span class="preset-chip-icon">⚡</span>
+        <span class="preset-chip-name">Groq</span>
+        <span class="preset-chip-sub">Llama 3.3 Super</span>
+      </div>
+      <div class="preset-chip" id="chip-deepseek" onclick="pilihPresetLangsung('deepseek')">
+        <span class="preset-chip-icon">🐬</span>
+        <span class="preset-chip-name">DeepSeek</span>
+        <span class="preset-chip-sub">DeepSeek Chat</span>
+      </div>
+      <div class="preset-chip" id="chip-custom" onclick="pilihPresetLangsung('custom')">
+        <span class="preset-chip-icon">🛠️</span>
+        <span class="preset-chip-name">Kustom</span>
+        <span class="preset-chip-sub">Ollama / LM Studio</span>
+      </div>
+    </div>
+
+    <!-- Form Konten -->
     <form method="POST" id="form-ai" action="{% url 'undangan:superadmin_ai_tambah' %}">
       {% csrf_token %}
       
-      <div style="margin-bottom: 14px;">
-        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
-          Nama Konfigurasi <span style="color: var(--danger);">*</span>
-        </label>
-        <input type="text" name="nama" id="ai-nama" class="form-control" placeholder="Contoh: Claude 3.5 via 9Router" required>
+      <!-- Nama Konfigurasi -->
+      <div class="ai-form-group">
+        <div class="ai-label-row">
+          <span class="ai-label-text"><span>🏷️</span> Nama Pengenal Konfigurasi</span>
+          <span class="ai-badge-required">Wajib</span>
+        </div>
+        <input type="text" name="nama" id="ai-nama" class="ai-field" placeholder="Contoh: 9Router (Claude Sonnet 4.5)" required>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+      <!-- Provider & Model Dual Column -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
         <div>
-          <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
-            Penyedia (Provider) <span style="color: var(--danger);">*</span>
-          </label>
-          <select name="provider" id="ai-provider" class="form-control" onchange="sesuaikanPresetProvider()" required>
+          <div class="ai-label-row">
+            <span class="ai-label-text"><span>🏢</span> Provider AI</span>
+            <span class="ai-badge-required">Wajib</span>
+          </div>
+          <select name="provider" id="ai-provider" class="ai-field ai-select" onchange="sesuaikanPresetProvider()" required>
             {% for code, label in provider_choices %}
               <option value="{{ code }}">{{ label }}</option>
             {% endfor %}
@@ -516,67 +971,124 @@
         </div>
 
         <div>
-          <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
-            Nama Model AI <span style="color: var(--danger);">*</span>
+          <div class="ai-label-row">
+            <span class="ai-label-text"><span>🧠</span> Nama Model AI</span>
+            <span class="ai-badge-required">Wajib</span>
+          </div>
+          <input type="text" name="model" id="ai-model" class="ai-field" placeholder="claude-sonnet-4-5 / gpt-4o" required>
+        </div>
+      </div>
+
+      <!-- Base URL Endpoint -->
+      <div class="ai-form-group">
+        <div class="ai-label-row">
+          <span class="ai-label-text"><span>🌐</span> Base URL / Endpoint API</span>
+          <span class="ai-badge-optional">Opsional (Bawaan)</span>
+        </div>
+        <input type="text" name="base_url" id="ai-base-url" class="ai-field" placeholder="http://localhost:20000/v1">
+        <div class="ai-hint-box" id="ai-url-hint">
+          Kosongkan jika menggunakan endpoint resmi provider. Untuk <b>9Router lokal</b> gunakan default: <code>http://localhost:20000/v1</code>.
+        </div>
+      </div>
+
+      <!-- API Key / Token -->
+      <div class="ai-form-group">
+        <div class="ai-label-row">
+          <span class="ai-label-text"><span>🔑</span> API Key / Token Rahasia</span>
+          <span class="ai-badge-optional" id="badge-api-key-req">Opsional di 9Router</span>
+        </div>
+        <div class="input-with-eye">
+          <input type="password" name="api_key" id="ai-api-key" class="ai-field" placeholder="sk-ant-... / sk-..." autocomplete="new-password" style="padding-right: 42px !important;">
+          <button type="button" class="btn-toggle-eye" onclick="toggleApiKeyVisibility()" id="btn-eye" title="Lihat/Sembunyikan API Key">
+            👁️
+          </button>
+        </div>
+        <div class="ai-hint-box" id="ai-key-hint">
+          9Router bertindak sebagai proxy OpenAI-compatible lokal. API key opsional jika 9Router berjalan tanpa token.
+        </div>
+      </div>
+
+      <!-- Parameter AI Box (Temperature, Max Tokens, Timeout) -->
+      <div class="ai-params-box">
+        <div style="font-size: 12px; font-weight: 700; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <span>⚙️</span> Parameter Generasi AI
+        </div>
+        <div class="ai-params-grid">
+          <div>
+            <div class="ai-label-row" style="margin-bottom: 4px;">
+              <span style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Temperature</span>
+              <span style="font-size: 10.5px; color: #818cf8; font-family: monospace;">0.0 - 1.0</span>
+            </div>
+            <input type="number" step="0.05" min="0" max="1" name="temperature" id="ai-temperature" class="ai-field" value="0.2">
+          </div>
+          <div>
+            <div class="ai-label-row" style="margin-bottom: 4px;">
+              <span style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Max Tokens</span>
+              <span style="font-size: 10.5px; color: #818cf8; font-family: monospace;">Tokens</span>
+            </div>
+            <input type="number" name="max_tokens" id="ai-max-tokens" class="ai-field" value="4096">
+          </div>
+          <div>
+            <div class="ai-label-row" style="margin-bottom: 4px;">
+              <span style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Timeout</span>
+              <span style="font-size: 10.5px; color: #818cf8; font-family: monospace;">Detik</span>
+            </div>
+            <input type="number" name="timeout_detik" id="ai-timeout" class="ai-field" value="120">
+          </div>
+        </div>
+      </div>
+
+      <!-- Switches: Aktifkan & Ekstraksi Teks PDF -->
+      <div class="ai-switches-container">
+        <!-- Switch 1: Jadikan Aktif -->
+        <div class="ai-switch-card" id="card-switch-aktif" onclick="klikCardSwitch('ai-is-aktif')">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(99, 102, 241, 0.15); color: #818cf8; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+              ⚡
+            </div>
+            <div>
+              <b style="color: #f8fafc; font-size: 13.5px;">Jadikan Provider Aktif Utama</b>
+              <div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+                Aplikasi akan langsung menggunakan konfigurasi ini untuk seluruh proses pembacaan PDF pengguna.
+              </div>
+            </div>
+          </div>
+          <label class="switch-toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" name="is_aktif" id="ai-is-aktif" value="1" onchange="syncSwitchCard('ai-is-aktif', 'card-switch-aktif')">
+            <span class="switch-slider"></span>
           </label>
-          <input type="text" name="model" id="ai-model" class="form-control" placeholder="Contoh: claude-sonnet-4-5" required>
+        </div>
+
+        <!-- Switch 2: Ekstraksi Teks Lengkap PDF -->
+        <div class="ai-switch-card active" id="card-switch-pdf" onclick="klikCardSwitch('ai-kirim-pdf')">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #34d399; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+              📑
+            </div>
+            <div>
+              <b style="color: #f8fafc; font-size: 13.5px;">Ekstraksi Teks Lengkap Dokumen PDF</b>
+              <div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+                Memindai teks pada setiap halaman PDF undangan agar tidak ada detail informasi yang terlewat.
+              </div>
+            </div>
+          </div>
+          <label class="switch-toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" name="kirim_pdf_langsung" id="ai-kirim-pdf" value="1" checked onchange="syncSwitchCard('ai-kirim-pdf', 'card-switch-pdf')">
+            <span class="switch-slider"></span>
+          </label>
         </div>
       </div>
 
-      <div style="margin-bottom: 14px;">
-        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
-          Base URL / Endpoint API
-        </label>
-        <input type="text" name="base_url" id="ai-base-url" class="form-control" placeholder="http://localhost:20000/v1">
-        <span style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px; display: block;">
-          Kosongkan untuk memakai alamat bawaan resmi provider. Untuk <b>9Router lokal</b>, gunakan default: <code>http://localhost:20000/v1</code>.
-        </span>
-      </div>
-
-      <div style="margin-bottom: 14px;">
-        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
-          API Key / Token Rahasia
-        </label>
-        <input type="password" name="api_key" id="ai-api-key" class="form-control" placeholder="sk-ant-... / sk-..." autocomplete="new-password">
-        <span style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px; display: block;" id="ai-key-hint">
-          Jika menggunakan 9Router lokal tanpa autentikasi, bagian ini boleh dikosongkan.
-        </span>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px;">
-        <div>
-          <label style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 4px;">Temperature</label>
-          <input type="number" step="0.1" min="0" max="1" name="temperature" id="ai-temperature" class="form-control" value="0.2">
-        </div>
-        <div>
-          <label style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 4px;">Max Tokens</label>
-          <input type="number" name="max_tokens" id="ai-max-tokens" class="form-control" value="4096">
-        </div>
-        <div>
-          <label style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 4px;">Timeout (Detik)</label>
-          <input type="number" name="timeout_detik" id="ai-timeout" class="form-control" value="120">
-        </div>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; background: var(--card-inner); padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);">
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
-          <input type="checkbox" name="is_aktif" id="ai-is-aktif" value="1" style="width: 17px; height: 17px; accent-color: var(--accent);">
-          <b>Jadikan Provider Aktif Sekarang</b>
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
-          <input type="checkbox" name="kirim_pdf_langsung" id="ai-kirim-pdf" value="1" checked style="width: 17px; height: 17px; accent-color: var(--accent);">
-          <span>Ekstraksi Teks Lengkap Dokumen PDF</span>
-        </label>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button type="button" class="btn btn-secondary" onclick="tutupModalAI()">
+      <!-- Action Footer -->
+      <div class="ai-modal-footer">
+        <button type="button" class="btn-ghost-cancel" onclick="tutupModalAI()">
           Batal
         </button>
-        <button type="submit" class="btn btn-primary">
-          💾 Simpan Konfigurasi
+        <button type="submit" class="btn-save-glow">
+          <span>💾</span> Simpan Konfigurasi AI
         </button>
       </div>
+
     </form>
   </div>
 </div>
@@ -589,73 +1101,145 @@
       model: 'claude-sonnet-4-5',
       baseUrl: 'http://localhost:20000/v1',
       nama: '9Router (Claude Sonnet 4.5)',
-      hint: '9Router bertindak sebagai proxy OpenAI-compatible lokal. API key opsional jika 9Router berjalan tanpa token.'
+      hint: '9Router bertindak sebagai proxy OpenAI-compatible lokal. API key opsional jika 9Router berjalan tanpa token.',
+      keyOptional: true
     },
     'anthropic': {
       model: 'claude-sonnet-4-5',
       baseUrl: 'https://api.anthropic.com/v1',
       nama: 'Anthropic Claude Sonnet 4.5',
-      hint: 'Wajib mengisi API Key Anthropic resmi (sk-ant-...).'
+      hint: 'Wajib mengisi API Key Anthropic resmi (sk-ant-...). Menggunakan Messages API standar.',
+      keyOptional: false
     },
     'openai': {
       model: 'gpt-4o-mini',
       baseUrl: 'https://api.openai.com/v1',
       nama: 'OpenAI GPT-4o Mini',
-      hint: 'Wajib mengisi API Key OpenAI (sk-...).'
+      hint: 'Wajib mengisi API Key OpenAI (sk-...). Model cepat dan hemat biaya.',
+      keyOptional: false
     },
     'gemini': {
       model: 'gemini-1.5-flash',
       baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
       nama: 'Google Gemini 1.5 Flash',
-      hint: 'Gunakan Google AI Studio API key dengan endpoint OpenAI compat Gemini.'
+      hint: 'Gunakan Google AI Studio API key dengan endpoint OpenAI-compatible Gemini.',
+      keyOptional: false
     },
     'openrouter': {
       model: 'anthropic/claude-3.5-sonnet',
       baseUrl: 'https://openrouter.ai/api/v1',
       nama: 'OpenRouter (Claude 3.5 Sonnet)',
-      hint: 'Isi dengan API Key OpenRouter Anda.'
+      hint: 'Isi dengan API Key OpenRouter Anda. Akses beragam model dalam satu API.',
+      keyOptional: false
     },
     'groq': {
       model: 'llama-3.3-70b-versatile',
       baseUrl: 'https://api.groq.com/openai/v1',
       nama: 'Groq (Llama 3.3 70B - Super Cepat)',
-      hint: 'Isi dengan Groq API key.'
+      hint: 'Isi dengan Groq API key (gsk_...). Kecepatan inferensi ultra tinggi.',
+      keyOptional: false
     },
     'deepseek': {
       model: 'deepseek-chat',
       baseUrl: 'https://api.deepseek.com/v1',
       nama: 'DeepSeek Chat (V3)',
-      hint: 'Isi dengan DeepSeek API key.'
+      hint: 'Isi dengan DeepSeek API key. Model cerdas dengan biaya sangat terjangkau.',
+      keyOptional: false
     },
     'custom': {
       model: 'llama3.2',
       baseUrl: 'http://localhost:11434/v1',
       nama: 'Ollama Lokal (Llama 3.2)',
-      hint: 'Mendukung server lokal seperti Ollama, LM Studio, vLLM, Text-Gen WebUI.'
+      hint: 'Mendukung server lokal mandiri: Ollama, LM Studio, vLLM, Text-Gen WebUI.',
+      keyOptional: true
     }
   };
 
+  function updateChipActive(prov) {
+    document.querySelectorAll('.preset-chip').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('chip-' + prov);
+    if (target) {
+      target.classList.add('active');
+    }
+  }
+
+  function pilihPresetLangsung(prov) {
+    document.getElementById('ai-provider').value = prov;
+    sesuaikanPresetProvider();
+  }
+
   function sesuaikanPresetProvider() {
     const prov = document.getElementById('ai-provider').value;
+    updateChipActive(prov);
+
     const preset = PRESETS[prov];
     if (preset) {
       const namaEl = document.getElementById('ai-nama');
-      if (!namaEl.value || namaEl.value.includes('Router') || namaEl.value.includes('Claude') || namaEl.value.includes('OpenAI')) {
+      if (!namaEl.value || namaEl.value.includes('Router') || namaEl.value.includes('Claude') || namaEl.value.includes('OpenAI') || namaEl.value.includes('Gemini') || namaEl.value.includes('Groq') || namaEl.value.includes('DeepSeek') || namaEl.value.includes('Ollama')) {
         namaEl.value = preset.nama;
       }
       document.getElementById('ai-model').value = preset.model;
       document.getElementById('ai-base-url').value = preset.baseUrl;
       document.getElementById('ai-key-hint').innerText = preset.hint;
+      
+      const badgeReq = document.getElementById('badge-api-key-req');
+      if (badgeReq) {
+        badgeReq.innerText = preset.keyOptional ? 'Opsional' : 'Wajib Diisi';
+        badgeReq.className = preset.keyOptional ? 'ai-badge-optional' : 'ai-badge-required';
+      }
+    }
+  }
+
+  function toggleApiKeyVisibility() {
+    const input = document.getElementById('ai-api-key');
+    const btn = document.getElementById('btn-eye');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.innerText = '🔒';
+      btn.title = 'Sembunyikan API Key';
+    } else {
+      input.type = 'password';
+      btn.innerText = '👁️';
+      btn.title = 'Lihat API Key';
+    }
+  }
+
+  function syncSwitchCard(checkboxId, cardId) {
+    const cb = document.getElementById(checkboxId);
+    const card = document.getElementById(cardId);
+    if (cb && card) {
+      if (cb.checked) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+  }
+
+  function klikCardSwitch(checkboxId) {
+    const cb = document.getElementById(checkboxId);
+    if (cb) {
+      cb.checked = !cb.checked;
+      const cardId = (checkboxId === 'ai-is-aktif') ? 'card-switch-aktif' : 'card-switch-pdf';
+      syncSwitchCard(checkboxId, cardId);
     }
   }
 
   function bukaModalAI() {
-    document.getElementById('modal-ai-title').innerText = '➕ Tambah Konfigurasi AI Baru';
+    document.getElementById('modal-ai-title').innerText = 'Tambah Konfigurasi AI Baru';
     document.getElementById('form-ai').action = URL_TAMBAH_AI;
     document.getElementById('ai-nama').value = '';
     document.getElementById('ai-provider').value = '9router';
     document.getElementById('ai-api-key').value = '';
-    document.getElementById('ai-is-aktif').checked = true;
+    
+    const isAktifCb = document.getElementById('ai-is-aktif');
+    isAktifCb.checked = true;
+    syncSwitchCard('ai-is-aktif', 'card-switch-aktif');
+
+    const pdfCb = document.getElementById('ai-kirim-pdf');
+    pdfCb.checked = true;
+    syncSwitchCard('ai-kirim-pdf', 'card-switch-pdf');
+
     sesuaikanPresetProvider();
     document.getElementById('modal-ai').style.display = 'flex';
   }
@@ -664,19 +1248,35 @@
     document.getElementById('modal-ai').style.display = 'none';
   }
 
+  // Tutup modal jika klik di backdrop gelap luar
+  document.getElementById('modal-ai').addEventListener('click', function(e) {
+    if (e.target === this) {
+      tutupModalAI();
+    }
+  });
+
   function editModalAI(pk, nama, provider, baseUrl, model, temp, maxTokens, timeout, kirimPdf, isAktif) {
-    document.getElementById('modal-ai-title').innerText = '✏️ Edit Konfigurasi AI: ' + nama;
+    document.getElementById('modal-ai-title').innerText = 'Edit Konfigurasi AI: ' + nama;
     document.getElementById('form-ai').action = '/superadmin/ai/' + pk + '/edit/';
     document.getElementById('ai-nama').value = nama;
     document.getElementById('ai-provider').value = provider;
+    updateChipActive(provider);
+
     document.getElementById('ai-base-url').value = baseUrl || '';
     document.getElementById('ai-model').value = model;
     document.getElementById('ai-api-key').value = '';
     document.getElementById('ai-temperature').value = temp;
     document.getElementById('ai-max-tokens').value = maxTokens;
     document.getElementById('ai-timeout').value = timeout;
-    document.getElementById('ai-kirim-pdf').checked = !!kirimPdf;
-    document.getElementById('ai-is-aktif').checked = !!isAktif;
+    
+    const pdfCb = document.getElementById('ai-kirim-pdf');
+    pdfCb.checked = !!kirimPdf;
+    syncSwitchCard('ai-kirim-pdf', 'card-switch-pdf');
+
+    const isAktifCb = document.getElementById('ai-is-aktif');
+    isAktifCb.checked = !!isAktif;
+    syncSwitchCard('ai-is-aktif', 'card-switch-aktif');
+
     document.getElementById('modal-ai').style.display = 'flex';
   }
 
