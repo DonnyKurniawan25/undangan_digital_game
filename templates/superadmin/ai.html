@@ -1,0 +1,737 @@
+{% extends "superadmin/base_superadmin.html" %}
+{% load static %}
+
+{% block title %}Pengaturan AI & Multi-Provider{% endblock %}
+
+{% block extra_css %}
+<style>
+  .ai-grid-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card-ai {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow);
+  }
+  .stat-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .stat-label {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    margin-top: 2px;
+  }
+
+  .active-provider-hero {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .provider-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .status-dot.sukses { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .status-dot.gagal { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+  .status-dot.belum { background: var(--warning); }
+
+  /* Modal Form */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px;">
+  <div>
+    <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 10px;">
+      <span>🤖</span> Pusat Pengaturan AI &amp; Multi-Provider
+    </h1>
+    <p style="color: var(--text-muted); font-size: 13.5px;">
+      Kelola provider AI (9Router, Anthropic, OpenAI, dll), uji latensi koneksi, dan pantau otomatisasi pembuatan undangan dari PDF.
+    </p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <button type="button" class="btn btn-primary" onclick="bukaModalAI()">
+      <span>➕</span> Tambah Konfigurasi AI
+    </button>
+  </div>
+</div>
+
+<!-- STATISTIK KILAT -->
+<div class="ai-grid-stats">
+  <div class="stat-card-ai">
+    <div class="stat-icon-wrap" style="background: rgba(99, 102, 241, 0.15); color: var(--accent);">
+      ⚡
+    </div>
+    <div>
+      <div class="stat-label">AI Aktif Saat Ini</div>
+      <div class="stat-value" style="font-size: 17px;">
+        {% if ai_aktif %}
+          {{ ai_aktif.nama }}
+        {% else %}
+          <span style="color: var(--danger);">Belum Ada</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-card-ai">
+    <div class="stat-icon-wrap" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+      📡
+    </div>
+    <div>
+      <div class="stat-label">Latensi Terakhir</div>
+      <div class="stat-value">
+        {% if ai_aktif and ai_aktif.latensi_tes_ms %}
+          {{ ai_aktif.latensi_tes_ms }} <span style="font-size: 13px; font-weight: 600; color: var(--text-muted);">ms</span>
+        {% else %}
+          —
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-card-ai">
+    <div class="stat-icon-wrap" style="background: rgba(245, 158, 11, 0.15); color: var(--gold);">
+      📄
+    </div>
+    <div>
+      <div class="stat-label">Ekstraksi PDF Berhasil</div>
+      <div class="stat-value">
+        {{ total_sukses }} <span style="font-size: 13px; font-weight: 600; color: var(--text-muted);">/ {{ total_riwayat }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-card-ai">
+    <div class="stat-icon-wrap" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+      🛡️
+    </div>
+    <div>
+      <div class="stat-label">Status Fitur Publik</div>
+      <div class="stat-value" style="font-size: 16px;">
+        {% if pengaturan.ai_aktif %}
+          <span style="color: var(--success);">🟢 Aktif</span>
+        {% else %}
+          <span style="color: var(--danger);">🔴 Nonaktif</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO CARD: PROVIDER AI YANG SEDANG DIGUNAKAN SISTEM -->
+<div class="active-provider-hero">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <span class="provider-badge-pill">
+          👑 PROVIDER UTAMA APLIKASI
+        </span>
+        {% if ai_aktif %}
+          {% if ai_aktif.status_tes == 'berhasil' %}
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--success); font-weight: 700;">
+              <span class="status-dot sukses"></span> Terhubung &amp; Siap
+            </span>
+          {% elif ai_aktif.status_tes == 'gagal' %}
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--danger); font-weight: 700;">
+              <span class="status-dot gagal"></span> Gagal Terkoneksi
+            </span>
+          {% else %}
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--warning); font-weight: 700;">
+              <span class="status-dot belum"></span> Belum Dites
+            </span>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      {% if ai_aktif %}
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 4px; color: var(--text);">
+          {{ ai_aktif.nama }} <span style="font-size: 15px; color: var(--text-muted); font-weight: 600;">({{ ai_aktif.get_provider_display }})</span>
+        </h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
+          <div><b>Model:</b> <code style="background: var(--card-inner); padding: 2px 8px; border-radius: 6px; color: var(--accent);">{{ ai_aktif.model }}</code></div>
+          <div><b>Endpoint:</b> <code>{{ ai_aktif.base_url|default:"(Alamat Bawaan Provider)" }}</code></div>
+          <div><b>API Key:</b> {{ ai_aktif.api_key_tersamar }}</div>
+          <div><b>Max Tokens:</b> {{ ai_aktif.max_tokens }}</div>
+          <div><b>Temperature:</b> {{ ai_aktif.temperature }}</div>
+        </div>
+        {% if ai_aktif.pesan_tes %}
+          <div style="margin-top: 12px; font-size: 12.5px; background: var(--card-inner); padding: 8px 12px; border-radius: 8px; border-left: 3px solid {% if ai_aktif.status_tes == 'berhasil' %}var(--success){% else %}var(--danger){% endif %};">
+            <b>Hasil Tes Terakhir:</b> {{ ai_aktif.pesan_tes }}
+            <span style="color: var(--text-muted); font-size: 11.5px; margin-left: 8px;">({{ ai_aktif.terakhir_dites|date:"d M Y H:i" }})</span>
+          </div>
+        {% endif %}
+      {% else %}
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--danger); margin-bottom: 6px;">
+          ⚠️ Belum Ada Provider AI yang Aktif
+        </h2>
+        <p style="font-size: 13.5px; color: var(--text-muted);">
+          Pengguna belum bisa menggunakan fitur pembuat undangan otomatis dari PDF. Silakan pilih salah satu konfigurasi di bawah untuk dijadikan AI aktif, atau tambahkan konfigurasi baru (9Router / Anthropic / OpenAI).
+        </p>
+      {% endif %}
+    </div>
+
+    {% if ai_aktif %}
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-primary" onclick="jalankanTesAI({{ ai_aktif.pk }}, '{{ ai_aktif.nama|escapejs }}')">
+          <span>⚡</span> Tes AI Sekarang
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- CARD PENGATURAN GLOBAL FITUR AI -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <span>⚙️</span> Kebijakan Global Fitur AI untuk Pengguna
+    </div>
+  </div>
+  <form method="POST" action="{% url 'undangan:superadmin_ai_pengaturan_global' %}">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 18px;">
+      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+        <input type="checkbox" id="ai_aktif" name="ai_aktif" value="1" {% if pengaturan.ai_aktif %}checked{% endif %} style="width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent);">
+        <label for="ai_aktif" style="font-size: 13.5px; cursor: pointer;">
+          <b style="color: var(--text);">Aktifkan Fitur AI di Dashboard Pengguna</b>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Jika dimatikan, menu upload PDF undangan berbasis AI tidak dapat diakses oleh user.
+          </p>
+        </label>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+        <input type="checkbox" id="ai_khusus_berbayar" name="ai_khusus_berbayar" value="1" {% if pengaturan.ai_khusus_berbayar %}checked{% endif %} style="width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent);">
+        <label for="ai_khusus_berbayar" style="font-size: 13.5px; cursor: pointer;">
+          <b style="color: var(--text);">Hanya untuk Undangan Aktif Berbayar</b>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Jika dicentang, pengguna dalam status trial gratis tidak bisa menggunakan AI.
+          </p>
+        </label>
+      </div>
+
+      <div style="background: var(--card-inner); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+        <label for="ai_batas_harian" style="font-size: 13px; font-weight: 700; color: var(--text); display: block; margin-bottom: 6px;">
+          Batas Analisis Sukses / User / Hari
+        </label>
+        <input type="number" id="ai_batas_harian" name="ai_batas_harian" value="{{ pengaturan.ai_batas_harian }}" min="0" max="100" class="form-control" style="font-size: 14px; font-weight: 600;">
+        <span style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px; display: block;">
+          Isi 0 untuk tanpa batas kuota harian.
+        </span>
+      </div>
+    </div>
+    <div style="text-align: right;">
+      <button type="submit" class="btn btn-secondary btn-sm">
+        💾 Simpan Kebijakan Global
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- CARD DAFTAR KONFIGURASI AI -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <span>🎛️</span> Daftar Konfigurasi Provider AI
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" onclick="bukaModalAI()">
+      <span>➕</span> Tambah Provider
+    </button>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Nama Konfigurasi</th>
+          <th>Provider</th>
+          <th>Model</th>
+          <th>Base URL / Endpoint</th>
+          <th>API Key</th>
+          <th>Latensi &amp; Hasil Tes</th>
+          <th style="text-align: right;">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k in daftar_ai %}
+          <tr style="{% if k.is_aktif %}background: rgba(99, 102, 241, 0.05);{% endif %}">
+            <td>
+              {% if k.is_aktif %}
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">
+                  AKTIF UTAMA
+                </span>
+              {% else %}
+                <span class="badge" style="background: var(--card-inner); color: var(--text-muted);">
+                  TIDAK AKTIF
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <b style="color: var(--text); font-size: 14px;">{{ k.nama }}</b>
+            </td>
+            <td>
+              <span class="badge" style="background: rgba(99, 102, 241, 0.12); color: var(--accent);">
+                {{ k.get_provider_display }}
+              </span>
+            </td>
+            <td>
+              <code style="color: var(--accent); font-weight: 600;">{{ k.model }}</code>
+            </td>
+            <td>
+              <span style="font-size: 12px; color: var(--text-muted); font-family: monospace;">
+                {{ k.base_url|default:"(Bawaan provider)" }}
+              </span>
+            </td>
+            <td>
+              <span style="font-size: 12px; font-family: monospace; color: var(--text-muted);">
+                {{ k.api_key_tersamar }}
+              </span>
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                {% if k.status_tes == 'berhasil' %}
+                  <span class="status-dot sukses" title="Berhasil"></span>
+                  <span style="color: var(--success); font-weight: 700; font-size: 12px;">{{ k.latensi_tes_ms }} ms</span>
+                {% elif k.status_tes == 'gagal' %}
+                  <span class="status-dot gagal" title="Gagal"></span>
+                  <span style="color: var(--danger); font-weight: 700; font-size: 12px;">Error</span>
+                {% else %}
+                  <span class="status-dot belum" title="Belum Dites"></span>
+                  <span style="color: var(--warning); font-size: 12px;">Belum tes</span>
+                {% endif %}
+              </div>
+            </td>
+            <td style="text-align: right; white-space: nowrap;">
+              <div style="display: inline-flex; gap: 6px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="jalankanTesAI({{ k.pk }}, '{{ k.nama|escapejs }}')" title="Uji Koneksi AI">
+                  ⚡ Tes
+                </button>
+
+                {% if not k.is_aktif %}
+                  <a href="{% url 'undangan:superadmin_ai_aktifkan' k.pk %}" class="btn btn-primary btn-sm" title="Jadikan Provider Utama">
+                    Aktifkan
+                  </a>
+                {% endif %}
+
+                <button type="button" class="btn btn-secondary btn-sm" onclick='editModalAI({{ k.pk }}, {{ k.nama|json_script:"tmp"|safe }}, "{{ k.provider }}", "{{ k.base_url|escapejs }}", "{{ k.model|escapejs }}", {{ k.temperature }}, {{ k.max_tokens }}, {{ k.timeout_detik }}, {{ k.kirim_pdf_langsung|lower }}, {{ k.is_aktif|lower }})' title="Edit">
+                  ✏️
+                </button>
+
+                <a href="{% url 'undangan:superadmin_ai_hapus' k.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Hapus konfigurasi AI {{ k.nama }}?')" title="Hapus">
+                  🗑️
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 36px; color: var(--text-muted);">
+              Belum ada konfigurasi AI yang ditambahkan.<br>
+              <button type="button" class="btn btn-primary btn-sm" style="margin-top: 12px;" onclick="bukaModalAI()">
+                <span>➕</span> Tambah Konfigurasi Pertama Sekarang
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CARD RIWAYAT EKSTRAKSI PDF OLEH PENGGUNA -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <span>📜</span> Riwayat Ekstraksi AI dari Berkas PDF (25 Terakhir)
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Waktu</th>
+          <th>Pengguna</th>
+          <th>Nama Berkas PDF</th>
+          <th>Ukuran</th>
+          <th>Model Digunakan</th>
+          <th>Durasi</th>
+          <th>Status</th>
+          <th>Undangan Terkait</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in riwayat_list %}
+          <tr>
+            <td style="white-space: nowrap; font-size: 12px; color: var(--text-muted);">
+              {{ r.dibuat|date:"d M Y H:i" }}
+            </td>
+            <td>
+              <b>@{{ r.user.username }}</b>
+            </td>
+            <td>
+              <span style="font-weight: 600; color: var(--text);">📄 {{ r.nama_file }}</span>
+            </td>
+            <td>{{ r.ukuran_kb }} KB</td>
+            <td>
+              <code style="font-size: 11.5px;">{{ r.provider }}:{{ r.model }}</code>
+            </td>
+            <td>{{ r.durasi_detik }} detik</td>
+            <td>
+              {% if r.status == 'diterapkan' %}
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                  DITERAPKAN
+                </span>
+              {% elif r.status == 'sukses' %}
+                <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                  SUKSES EKSTRAK
+                </span>
+              {% else %}
+                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);" title="{{ r.pesan_error }}">
+                  GAGAL
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              {% if r.undangan %}
+                <a href="{{ r.undangan.path_publik }}" target="_blank" style="color: var(--accent); font-weight: 600;">
+                  {{ r.undangan.judul }} &nearr;
+                </a>
+              {% else %}
+                <span style="color: var(--text-muted);">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 28px; color: var(--text-muted);">
+              Belum ada riwayat ekstraksi PDF dari pengguna.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL TAMBAH / EDIT KONFIGURASI AI
+     ============================================================ -->
+<div class="modal-overlay" id="modal-ai">
+  <div class="modal-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <h3 style="font-size: 18px; font-weight: 800; color: var(--text);" id="modal-ai-title">
+        ➕ Tambah Konfigurasi AI Baru
+      </h3>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="tutupModalAI()" style="padding: 4px 10px;">
+        &times;
+      </button>
+    </div>
+
+    <form method="POST" id="form-ai" action="{% url 'undangan:superadmin_ai_tambah' %}">
+      {% csrf_token %}
+      
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
+          Nama Konfigurasi <span style="color: var(--danger);">*</span>
+        </label>
+        <input type="text" name="nama" id="ai-nama" class="form-control" placeholder="Contoh: Claude 3.5 via 9Router" required>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+        <div>
+          <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
+            Penyedia (Provider) <span style="color: var(--danger);">*</span>
+          </label>
+          <select name="provider" id="ai-provider" class="form-control" onchange="sesuaikanPresetProvider()" required>
+            {% for code, label in provider_choices %}
+              <option value="{{ code }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
+            Nama Model AI <span style="color: var(--danger);">*</span>
+          </label>
+          <input type="text" name="model" id="ai-model" class="form-control" placeholder="Contoh: claude-sonnet-4-5" required>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
+          Base URL / Endpoint API
+        </label>
+        <input type="text" name="base_url" id="ai-base-url" class="form-control" placeholder="http://localhost:20000/v1">
+        <span style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px; display: block;">
+          Kosongkan untuk memakai alamat bawaan resmi provider. Untuk <b>9Router lokal</b>, gunakan default: <code>http://localhost:20000/v1</code>.
+        </span>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
+          API Key / Token Rahasia
+        </label>
+        <input type="password" name="api_key" id="ai-api-key" class="form-control" placeholder="sk-ant-... / sk-..." autocomplete="new-password">
+        <span style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px; display: block;" id="ai-key-hint">
+          Jika menggunakan 9Router lokal tanpa autentikasi, bagian ini boleh dikosongkan.
+        </span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px;">
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 4px;">Temperature</label>
+          <input type="number" step="0.1" min="0" max="1" name="temperature" id="ai-temperature" class="form-control" value="0.2">
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 4px;">Max Tokens</label>
+          <input type="number" name="max_tokens" id="ai-max-tokens" class="form-control" value="4096">
+        </div>
+        <div>
+          <label style="font-size: 12.5px; font-weight: 700; display: block; margin-bottom: 4px;">Timeout (Detik)</label>
+          <input type="number" name="timeout_detik" id="ai-timeout" class="form-control" value="120">
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; background: var(--card-inner); padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);">
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+          <input type="checkbox" name="is_aktif" id="ai-is-aktif" value="1" style="width: 17px; height: 17px; accent-color: var(--accent);">
+          <b>Jadikan Provider Aktif Sekarang</b>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+          <input type="checkbox" name="kirim_pdf_langsung" id="ai-kirim-pdf" value="1" checked style="width: 17px; height: 17px; accent-color: var(--accent);">
+          <span>Ekstraksi Teks Lengkap Dokumen PDF</span>
+        </label>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="tutupModalAI()">
+          Batal
+        </button>
+        <button type="submit" class="btn btn-primary">
+          💾 Simpan Konfigurasi
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const URL_TAMBAH_AI = "{% url 'undangan:superadmin_ai_tambah' %}";
+
+  const PRESETS = {
+    '9router': {
+      model: 'claude-sonnet-4-5',
+      baseUrl: 'http://localhost:20000/v1',
+      nama: '9Router (Claude Sonnet 4.5)',
+      hint: '9Router bertindak sebagai proxy OpenAI-compatible lokal. API key opsional jika 9Router berjalan tanpa token.'
+    },
+    'anthropic': {
+      model: 'claude-sonnet-4-5',
+      baseUrl: 'https://api.anthropic.com/v1',
+      nama: 'Anthropic Claude Sonnet 4.5',
+      hint: 'Wajib mengisi API Key Anthropic resmi (sk-ant-...).'
+    },
+    'openai': {
+      model: 'gpt-4o-mini',
+      baseUrl: 'https://api.openai.com/v1',
+      nama: 'OpenAI GPT-4o Mini',
+      hint: 'Wajib mengisi API Key OpenAI (sk-...).'
+    },
+    'gemini': {
+      model: 'gemini-1.5-flash',
+      baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+      nama: 'Google Gemini 1.5 Flash',
+      hint: 'Gunakan Google AI Studio API key dengan endpoint OpenAI compat Gemini.'
+    },
+    'openrouter': {
+      model: 'anthropic/claude-3.5-sonnet',
+      baseUrl: 'https://openrouter.ai/api/v1',
+      nama: 'OpenRouter (Claude 3.5 Sonnet)',
+      hint: 'Isi dengan API Key OpenRouter Anda.'
+    },
+    'groq': {
+      model: 'llama-3.3-70b-versatile',
+      baseUrl: 'https://api.groq.com/openai/v1',
+      nama: 'Groq (Llama 3.3 70B - Super Cepat)',
+      hint: 'Isi dengan Groq API key.'
+    },
+    'deepseek': {
+      model: 'deepseek-chat',
+      baseUrl: 'https://api.deepseek.com/v1',
+      nama: 'DeepSeek Chat (V3)',
+      hint: 'Isi dengan DeepSeek API key.'
+    },
+    'custom': {
+      model: 'llama3.2',
+      baseUrl: 'http://localhost:11434/v1',
+      nama: 'Ollama Lokal (Llama 3.2)',
+      hint: 'Mendukung server lokal seperti Ollama, LM Studio, vLLM, Text-Gen WebUI.'
+    }
+  };
+
+  function sesuaikanPresetProvider() {
+    const prov = document.getElementById('ai-provider').value;
+    const preset = PRESETS[prov];
+    if (preset) {
+      const namaEl = document.getElementById('ai-nama');
+      if (!namaEl.value || namaEl.value.includes('Router') || namaEl.value.includes('Claude') || namaEl.value.includes('OpenAI')) {
+        namaEl.value = preset.nama;
+      }
+      document.getElementById('ai-model').value = preset.model;
+      document.getElementById('ai-base-url').value = preset.baseUrl;
+      document.getElementById('ai-key-hint').innerText = preset.hint;
+    }
+  }
+
+  function bukaModalAI() {
+    document.getElementById('modal-ai-title').innerText = '➕ Tambah Konfigurasi AI Baru';
+    document.getElementById('form-ai').action = URL_TAMBAH_AI;
+    document.getElementById('ai-nama').value = '';
+    document.getElementById('ai-provider').value = '9router';
+    document.getElementById('ai-api-key').value = '';
+    document.getElementById('ai-is-aktif').checked = true;
+    sesuaikanPresetProvider();
+    document.getElementById('modal-ai').style.display = 'flex';
+  }
+
+  function tutupModalAI() {
+    document.getElementById('modal-ai').style.display = 'none';
+  }
+
+  function editModalAI(pk, nama, provider, baseUrl, model, temp, maxTokens, timeout, kirimPdf, isAktif) {
+    document.getElementById('modal-ai-title').innerText = '✏️ Edit Konfigurasi AI: ' + nama;
+    document.getElementById('form-ai').action = '/superadmin/ai/' + pk + '/edit/';
+    document.getElementById('ai-nama').value = nama;
+    document.getElementById('ai-provider').value = provider;
+    document.getElementById('ai-base-url').value = baseUrl || '';
+    document.getElementById('ai-model').value = model;
+    document.getElementById('ai-api-key').value = '';
+    document.getElementById('ai-temperature').value = temp;
+    document.getElementById('ai-max-tokens').value = maxTokens;
+    document.getElementById('ai-timeout').value = timeout;
+    document.getElementById('ai-kirim-pdf').checked = !!kirimPdf;
+    document.getElementById('ai-is-aktif').checked = !!isAktif;
+    document.getElementById('modal-ai').style.display = 'flex';
+  }
+
+  // Pengujian Koneksi AI via AJAX
+  function jalankanTesAI(pk, namaProvider) {
+    Swal.fire({
+      title: 'Menguji Koneksi AI...',
+      html: `Menghubungi <b>${namaProvider}</b> dan mengukur latensi respon...`,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    fetch('/superadmin/ai/' + pk + '/test/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Accept': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.sukses) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Koneksi Berhasil! ⚡',
+          html: `<div style="text-align: left; background: var(--card-inner); padding: 12px; border-radius: 8px; font-size: 13px;">
+                  <p><b>Status:</b> Terhubung dengan sempurna</p>
+                  <p><b>Latensi:</b> <span style="color: var(--success); font-weight: 800;">${data.latensi_ms} ms</span></p>
+                  <p style="margin-top: 6px; font-size: 12px; color: var(--text-muted);">${data.pesan}</p>
+                 </div>`,
+          confirmButtonText: 'Bagus!'
+        }).then(() => {
+          location.reload();
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Koneksi Gagal ⚠️',
+          html: `<div style="text-align: left; background: var(--card-inner); padding: 12px; border-radius: 8px; font-size: 13px;">
+                  <p><b>Pesan Kesalahan:</b></p>
+                  <pre style="color: var(--danger); font-size: 11.5px; white-space: pre-wrap; word-break: break-all; margin-top: 6px;">${data.pesan}</pre>
+                 </div>`,
+          confirmButtonText: 'Tutup'
+        });
+      }
+    })
+    .catch(err => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Kesalahan Sistem',
+        text: 'Gagal melakukan permintaan tes ke server: ' + err
+      });
+    });
+  }
+</script>
+{% endblock %}

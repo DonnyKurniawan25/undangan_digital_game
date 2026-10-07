@@ -4,16 +4,19 @@ from functools import wraps
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Count, Q, Sum
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from .ai_service import uji_koneksi_ai
 from .models import (
     Acara,
     FotoGaleri,
+    KonfigurasiAI,
     Pembayaran,
     Pengaturan,
     Rekening,
+    RiwayatAI,
     Tamu,
     Ucapan,
     Undangan,
@@ -538,4 +541,129 @@ def superadmin_transaksi_aksi(request, pk):
             )
 
     return redirect("undangan:superadmin_transaksi")
+
+
+# ==========================================
+# 6. PUSAT KONTROL & PENGATURAN AI
+# ==========================================
+
+@superadmin_diperlukan
+def superadmin_ai(request):
+    """Halaman utama pengaturan multi-provider AI dan riwayat pemrosesan PDF."""
+    pengaturan = Pengaturan.ambil()
+    daftar_ai = KonfigurasiAI.objects.all()
+    ai_aktif = KonfigurasiAI.ambil_aktif()
+    riwayat_list = RiwayatAI.objects.select_related("user", "undangan", "konfigurasi")[:25]
+    total_riwayat = RiwayatAI.objects.count()
+    total_sukses = RiwayatAI.objects.filter(status__in=[RiwayatAI.STATUS_SUKSES, RiwayatAI.STATUS_DITERAPKAN]).count()
+
+    konteks = {
+        "menu_aktif": "ai",
+        "pengaturan": pengaturan,
+        "daftar_ai": daftar_ai,
+        "ai_aktif": ai_aktif,
+        "provider_choices": KonfigurasiAI.PROVIDER,
+        "riwayat_list": riwayat_list,
+        "total_riwayat": total_riwayat,
+        "total_sukses": total_sukses,
+    }
+    return render(request, "superadmin/ai.html", konteks)
+
+
+@superadmin_diperlukan
+def superadmin_ai_simpan(request, pk=None):
+    """Menambah atau memperbarui konfigurasi penyedia AI."""
+    if request.method == "POST":
+        if pk:
+            konfig = get_object_or_404(KonfigurasiAI, pk=pk)
+        else:
+            konfig = KonfigurasiAI()
+
+        konfig.nama = request.POST.get("nama", "").strip() or "Provider AI"
+        konfig.provider = request.POST.get("provider", KonfigurasiAI.PROVIDER_9ROUTER)
+        konfig.base_url = request.POST.get("base_url", "").strip()
+        
+        # Hanya ganti API key jika pengguna menginputkan nilai baru
+        api_key_baru = request.POST.get("api_key", "").strip()
+        if api_key_baru:
+            konfig.api_key = api_key_baru
+
+        konfig.model = request.POST.get("model", "").strip() or "claude-sonnet-4-5"
+        try:
+            konfig.temperature = float(request.POST.get("temperature", 0.2))
+        except ValueError:
+            konfig.temperature = 0.2
+
+        try:
+            konfig.max_tokens = int(request.POST.get("max_tokens", 4096))
+        except ValueError:
+            konfig.max_tokens = 4096
+
+        try:
+            konfig.timeout_detik = int(request.POST.get("timeout_detik", 120))
+        except ValueError:
+            konfig.timeout_detik = 120
+
+        konfig.kirim_pdf_langsung = "kirim_pdf_langsung" in request.POST
+        is_aktif_req = "is_aktif" in request.POST
+        if is_aktif_req or KonfigurasiAI.objects.count() == 0:
+            konfig.is_aktif = True
+
+        konfig.save()
+        messages.success(request, f"Konfigurasi AI '{konfig.nama}' berhasil disimpan!")
+
+    return redirect("undangan:superadmin_ai")
+
+
+@superadmin_diperlukan
+def superadmin_ai_aktifkan(request, pk):
+    """Mengaktifkan konfigurasi AI yang dipilih sebagai penyedia utama aplikasi."""
+    konfig = get_object_or_404(KonfigurasiAI, pk=pk)
+    konfig.is_aktif = True
+    konfig.save()
+    messages.success(
+        request,
+        f"AI Aktif dialihkan ke: '{konfig.nama}' ({konfig.get_provider_display()} - {konfig.model})."
+    )
+    return redirect("undangan:superadmin_ai")
+
+
+@superadmin_diperlukan
+def superadmin_ai_test(request, pk):
+    """Endpoint AJAX / POST untuk menguji koneksi AI dan mengukur latensinya."""
+    konfig = get_object_or_404(KonfigurasiAI, pk=pk)
+    sukses, pesan, latensi = uji_koneksi_ai(konfig)
+    return JsonResponse({
+        "sukses": sukses,
+        "pesan": pesan,
+        "latensi_ms": latensi,
+        "status_tes": konfig.status_tes,
+    })
+
+
+@superadmin_diperlukan
+def superadmin_ai_hapus(request, pk):
+    """Menghapus konfigurasi AI."""
+    konfig = get_object_or_404(KonfigurasiAI, pk=pk)
+    nama = konfig.nama
+    konfig.delete()
+    messages.info(request, f"Konfigurasi AI '{nama}' telah dihapus.")
+    return redirect("undangan:superadmin_ai")
+
+
+@superadmin_diperlukan
+def superadmin_ai_pengaturan_global(request):
+    """Memperbarui aturan global penggunaan AI di platform."""
+    if request.method == "POST":
+        pengaturan = Pengaturan.ambil()
+        pengaturan.ai_aktif = "ai_aktif" in request.POST
+        try:
+            pengaturan.ai_batas_harian = max(0, int(request.POST.get("ai_batas_harian", 5)))
+        except ValueError:
+            pengaturan.ai_batas_harian = 5
+        pengaturan.ai_khusus_berbayar = "ai_khusus_berbayar" in request.POST
+        pengaturan.save(update_fields=["ai_aktif", "ai_batas_harian", "ai_khusus_berbayar"])
+        messages.success(request, "Pengaturan global fitur AI berhasil diperbarui!")
+
+    return redirect("undangan:superadmin_ai")
 

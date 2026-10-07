@@ -73,6 +73,19 @@ class Pengaturan(models.Model):
         "apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.",
     )
 
+    # ---- Pengaturan Global Fitur AI Desain Undangan Otomatis ----
+    ai_aktif = models.BooleanField(
+        default=True,
+        help_text="Izinkan pengguna membuat undangan otomatis dari PDF menggunakan AI.",
+    )
+    ai_batas_harian = models.PositiveIntegerField(
+        default=5,
+        help_text="Batas jumlah analisis PDF yang berhasil per pengguna per hari (0 = tanpa batas).",
+    )
+    ai_khusus_berbayar = models.BooleanField(
+        default=False,
+        help_text="Jika dicentang, fitur AI hanya tersedia untuk undangan yang sudah aktif berbayar.",
+    )
     class Meta:
         verbose_name = "Pengaturan"
         verbose_name_plural = "Pengaturan"
@@ -692,4 +705,140 @@ class Pembayaran(models.Model):
         elif self.durasi_bulan == 6:
             return "6 Bulan (180 Hari)"
         return f"{self.durasi_bulan} Bulan (30 Hari)"
+
+
+class KonfigurasiAI(models.Model):
+    """
+    Konfigurasi penyedia AI yang dikelola Superadmin.
+    Boleh menyimpan banyak konfigurasi (9Router, Anthropic, OpenAI, Gemini, dll),
+    namun hanya SATU yang berstatus aktif dan dipakai oleh aplikasi.
+    """
+
+    PROVIDER_9ROUTER = "9router"
+    PROVIDER_ANTHROPIC = "anthropic"
+    PROVIDER_OPENAI = "openai"
+    PROVIDER_GEMINI = "gemini"
+    PROVIDER_OPENROUTER = "openrouter"
+    PROVIDER_GROQ = "groq"
+    PROVIDER_DEEPSEEK = "deepseek"
+    PROVIDER_CUSTOM = "custom"
+    PROVIDER = [
+        (PROVIDER_9ROUTER, "9Router (Router AI Lokal / OpenAI-Compatible)"),
+        (PROVIDER_ANTHROPIC, "Anthropic (Claude)"),
+        (PROVIDER_OPENAI, "OpenAI (GPT)"),
+        (PROVIDER_GEMINI, "Google Gemini"),
+        (PROVIDER_OPENROUTER, "OpenRouter"),
+        (PROVIDER_GROQ, "Groq"),
+        (PROVIDER_DEEPSEEK, "DeepSeek"),
+        (PROVIDER_CUSTOM, "Kustom (OpenAI-Compatible: Ollama, LM Studio, dll)"),
+    ]
+
+    STATUS_BELUM = "belum"
+    STATUS_BERHASIL = "berhasil"
+    STATUS_GAGAL = "gagal"
+    STATUS_TES = [
+        (STATUS_BELUM, "Belum Dites"),
+        (STATUS_BERHASIL, "Berhasil"),
+        (STATUS_GAGAL, "Gagal"),
+    ]
+
+    nama = models.CharField(max_length=80, help_text="Nama pengenal, contoh: Claude via 9Router")
+    provider = models.CharField(max_length=20, choices=PROVIDER, default=PROVIDER_9ROUTER)
+    base_url = models.CharField(
+        max_length=300,
+        blank=True,
+        help_text="Kosongkan untuk memakai alamat bawaan provider.",
+    )
+    api_key = models.CharField(max_length=500, blank=True)
+    model = models.CharField(max_length=150, help_text="Nama model AI, contoh: claude-sonnet-4-5")
+    temperature = models.FloatField(default=0.2)
+    max_tokens = models.PositiveIntegerField(default=4096)
+    timeout_detik = models.PositiveIntegerField(default=120)
+    kirim_pdf_langsung = models.BooleanField(
+        default=True,
+        help_text="Kirim berkas PDF utuh ke AI (agar desain/gambar ikut terbaca) bila provider mendukung.",
+    )
+    is_aktif = models.BooleanField(default=False, help_text="Konfigurasi yang dipakai aplikasi.")
+
+    status_tes = models.CharField(max_length=10, choices=STATUS_TES, default=STATUS_BELUM)
+    pesan_tes = models.TextField(blank=True)
+    latensi_tes_ms = models.PositiveIntegerField(default=0)
+    terakhir_dites = models.DateTimeField(null=True, blank=True)
+
+    dibuat = models.DateTimeField(auto_now_add=True)
+    diperbarui = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Konfigurasi AI"
+        verbose_name_plural = "Konfigurasi AI"
+        ordering = ["-is_aktif", "nama"]
+
+    def __str__(self):
+        tanda = " [AKTIF]" if self.is_aktif else ""
+        return f"{self.nama} — {self.get_provider_display()} / {self.model}{tanda}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Pastikan hanya satu konfigurasi yang aktif
+        if self.is_aktif:
+            KonfigurasiAI.objects.exclude(pk=self.pk).filter(is_aktif=True).update(is_aktif=False)
+
+    @classmethod
+    def ambil_aktif(cls):
+        return cls.objects.filter(is_aktif=True).first()
+
+    @property
+    def api_key_tersamar(self):
+        if not self.api_key:
+            return "— (tanpa API key)"
+        if len(self.api_key) <= 8:
+            return "•" * len(self.api_key)
+        return f"{self.api_key[:4]}••••••{self.api_key[-4:]}"
+
+
+class RiwayatAI(models.Model):
+    """Catatan setiap proses pembuatan undangan otomatis dari PDF oleh AI."""
+
+    STATUS_SUKSES = "sukses"
+    STATUS_GAGAL = "gagal"
+    STATUS_DITERAPKAN = "diterapkan"
+    STATUS = [
+        (STATUS_SUKSES, "Berhasil Dianalisis"),
+        (STATUS_GAGAL, "Gagal"),
+        (STATUS_DITERAPKAN, "Sudah Diterapkan ke Undangan"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="riwayat_ai")
+    undangan = models.ForeignKey(
+        Undangan, null=True, blank=True, on_delete=models.SET_NULL, related_name="riwayat_ai"
+    )
+    konfigurasi = models.ForeignKey(
+        KonfigurasiAI, null=True, blank=True, on_delete=models.SET_NULL, related_name="riwayat"
+    )
+    nama_file = models.CharField(max_length=255)
+    ukuran_kb = models.PositiveIntegerField(default=0)
+    provider = models.CharField(max_length=30, blank=True)
+    model = models.CharField(max_length=150, blank=True)
+    mode_baca = models.CharField(
+        max_length=10, blank=True, help_text="'pdf' = PDF dikirim utuh, 'teks' = hanya teks hasil ekstraksi."
+    )
+    jumlah_karakter_teks = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=12, choices=STATUS, default=STATUS_SUKSES)
+    hasil = models.JSONField(default=dict, blank=True)
+    pesan_error = models.TextField(blank=True)
+    durasi_ms = models.PositiveIntegerField(default=0)
+    dibuat = models.DateTimeField(auto_now_add=True)
+    diterapkan_pada = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Riwayat AI"
+        verbose_name_plural = "Riwayat AI"
+        ordering = ["-dibuat"]
+
+    def __str__(self):
+        return f"{self.nama_file} ({self.get_status_display()}) — {self.user.username}"
+
+    @property
+    def durasi_detik(self):
+        return round(self.durasi_ms / 1000, 1)
 

@@ -7,9 +7,24 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.utils.text import slugify
 
-from .models import Acara, FotoGaleri, Pembayaran, Pengantin, Pengaturan, Rekening, Tamu, Ucapan, Undangan, konversi_url_gambar
+from .ai_service import ekstrak_undangan_dari_pdf, terapkan_hasil_ai_ke_undangan
+from .models import (
+    Acara,
+    FotoGaleri,
+    KonfigurasiAI,
+    Pembayaran,
+    Pengantin,
+    Pengaturan,
+    Rekening,
+    RiwayatAI,
+    Tamu,
+    Ucapan,
+    Undangan,
+    konversi_url_gambar,
+)
 
 
 def _ambil_undangan_user(user):
@@ -678,3 +693,168 @@ def dashboard_pembayaran(request):
         "paket_pilihan": Undangan.PAKET_PILIHAN,
     }
     return render(request, "dashboard/pembayaran.html", konteks)
+
+
+# ==========================================
+# 11. PEMBUAT UNDANGAN OTOMATIS DARI PDF (AI)
+# ==========================================
+
+@login_required
+def dashboard_ai(request):
+    """
+    Halaman asisten AI untuk membaca undangan fisik / brosur PDF
+    dan membuat/mengisi undangan digital game secara otomatis.
+    """
+    undangan = _ambil_undangan_user(request.user)
+    pengaturan = Pengaturan.ambil()
+    ai_aktif = KonfigurasiAI.ambil_aktif()
+
+    # Periksa izin dan kuota
+    hari_ini = timezone.now().date()
+    ekstraksi_hari_ini = RiwayatAI.objects.filter(
+        user=request.user,
+        dibuat__date=hari_ini,
+        status__in=[RiwayatAI.STATUS_SUKSES, RiwayatAI.STATUS_DITERAPKAN],
+    ).count()
+
+    kuota_habis = False
+    if pengaturan.ai_batas_harian > 0 and ekstraksi_hari_ini >= pengaturan.ai_batas_harian:
+        kuota_habis = True
+
+    hanya_berbayar_dan_belum = bool(pengaturan.ai_khusus_berbayar and not undangan.is_online_aktif)
+
+    hasil_ekstraksi = None
+    riwayat_id = None
+    error_pesan = None
+
+    if request.method == "POST":
+        if not pengaturan.ai_aktif:
+            return JsonResponse({"sukses": False, "pesan": "Fitur AI saat ini sedang dinonaktifkan oleh administrator."}, status=403)
+        if hanya_berbayar_dan_belum:
+            return JsonResponse({"sukses": False, "pesan": "Fitur AI khusus untuk undangan yang sudah aktif berbayar."}, status=403)
+        if kuota_habis:
+            return JsonResponse({"sukses": False, "pesan": f"Batas kuota harian Anda ({pengaturan.ai_batas_harian}x analisis) telah tercapai hari ini. Silakan coba kembali besok."}, status=429)
+        if not ai_aktif:
+            return JsonResponse({"sukses": False, "pesan": "Belum ada konfigurasi AI aktif dari administrator. Silakan hubungi admin."}, status=503)
+
+        pdf_file = request.FILES.get("pdf_file")
+        if not pdf_file:
+            return JsonResponse({"sukses": False, "pesan": "Silakan pilih berkas PDF undangan pernikahan terlebih dahulu."}, status=400)
+
+        if not pdf_file.name.lower().endswith(".pdf"):
+            return JsonResponse({"sukses": False, "pesan": "Hanya berkas berformat PDF (.pdf) yang didukung."}, status=400)
+
+        # Maksimal 15 MB
+        if pdf_file.size > 15 * 1024 * 1024:
+            return JsonResponse({"sukses": False, "pesan": "Ukuran berkas PDF maksimal 15 MB."}, status=400)
+
+        ukuran_kb = max(1, int(pdf_file.size / 1024))
+        try:
+            hasil_json, teks_pdf, durasi_ms = ekstrak_undangan_dari_pdf(pdf_file, konfig=ai_aktif)
+
+            # Simpan riwayat sukses
+            riwayat = RiwayatAI.objects.create(
+                user=request.user,
+                undangan=undangan,
+                konfigurasi=ai_aktif,
+                nama_file=pdf_file.name,
+                ukuran_kb=ukuran_kb,
+                provider=ai_aktif.provider,
+                model=ai_aktif.model,
+                jumlah_karakter_teks=len(teks_pdf),
+                durasi_ms=durasi_ms,
+                status=RiwayatAI.STATUS_SUKSES,
+                hasil=hasil_json,
+            )
+
+            # Jika request AJAX / fetch
+            if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+                return JsonResponse({
+                    "sukses": True,
+                    "riwayat_id": riwayat.pk,
+                    "hasil": hasil_json,
+                    "durasi_detik": riwayat.durasi_detik,
+                    "pesan": f"AI ({ai_aktif.nama}) berhasil menganalisis undangan PDF dalam {riwayat.durasi_detik} detik!",
+                })
+
+            hasil_ekstraksi = hasil_json
+            riwayat_id = riwayat.pk
+
+        except Exception as e:
+            error_text = str(e)
+            RiwayatAI.objects.create(
+                user=request.user,
+                undangan=undangan,
+                konfigurasi=ai_aktif,
+                nama_file=pdf_file.name,
+                ukuran_kb=ukuran_kb,
+                provider=ai_aktif.provider if ai_aktif else "",
+                model=ai_aktif.model if ai_aktif else "",
+                status=RiwayatAI.STATUS_GAGAL,
+                pesan_error=error_text,
+            )
+            if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+                return JsonResponse({"sukses": False, "pesan": error_text}, status=400)
+            
+            error_pesan = error_text
+
+    riwayat_user = RiwayatAI.objects.filter(user=request.user).order_by("-dibuat")[:8]
+    sisa_kuota = max(0, pengaturan.ai_batas_harian - ekstraksi_hari_ini) if pengaturan.ai_batas_harian > 0 else "Tanpa Batas"
+
+    konteks = {
+        "tab_aktif": "ai",
+        "undangan": undangan,
+        "pengaturan": pengaturan,
+        "ai_aktif": ai_aktif,
+        "riwayat_user": riwayat_user,
+        "ekstraksi_hari_ini": ekstraksi_hari_ini,
+        "sisa_kuota": sisa_kuota,
+        "kuota_habis": kuota_habis,
+        "hanya_berbayar_dan_belum": hanya_berbayar_dan_belum,
+        "hasil_ekstraksi": hasil_ekstraksi,
+        "riwayat_id": riwayat_id,
+        "error_pesan": error_pesan,
+    }
+    return render(request, "dashboard/ai.html", konteks)
+
+
+@login_required
+def dashboard_ai_terapkan(request):
+    """
+    Menerapkan hasil analisis AI dari RiwayatAI ke objek Undangan user.
+    """
+    if request.method != "POST":
+        return redirect("undangan:dashboard_ai")
+
+    undangan = _ambil_undangan_user(request.user)
+    riwayat_id = request.POST.get("riwayat_id")
+    
+    if not riwayat_id:
+        messages.error(request, "ID hasil analisis AI tidak ditemukan.")
+        return redirect("undangan:dashboard_ai")
+
+    riwayat = get_object_or_404(RiwayatAI, pk=riwayat_id, user=request.user)
+    if not riwayat.hasil or not isinstance(riwayat.hasil, dict):
+        messages.error(request, "Data hasil analisis tidak valid.")
+        return redirect("undangan:dashboard_ai")
+
+    ringkasan = terapkan_hasil_ai_ke_undangan(
+        undangan=undangan,
+        data_ai=riwayat.hasil,
+        update_mempelai=True,
+        update_acara=True,
+        update_rekening=True,
+    )
+
+    riwayat.status = RiwayatAI.STATUS_DITERAPKAN
+    riwayat.diterapkan_pada = timezone.now()
+    riwayat.save(update_fields=["status", "diterapkan_pada"])
+
+    items_str = ", ".join(ringkasan.get("diperbarui", [])) or "Informasi Undangan"
+    messages.success(
+        request,
+        f"✨ Berhasil menerapkan hasil AI ke undangan Anda! Data yang diperbarui: {items_str}. "
+        f"Anda dapat meninjau dan menyesuaikan kembali isinya kapan saja."
+    )
+    return redirect("undangan:dashboard")
+

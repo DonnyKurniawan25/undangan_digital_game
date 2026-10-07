@@ -1,0 +1,560 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}✨ Buat Undangan Otomatis via AI (Upload PDF){% endblock %}
+
+{% block extra_css %}
+<style>
+  .ai-hero-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(236, 72, 153, 0.08) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 18px;
+    padding: 26px 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ai-sparkle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 5px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    margin-bottom: 12px;
+  }
+
+  .pdf-drop-box {
+    border: 2px dashed rgba(99, 102, 241, 0.4);
+    border-radius: 16px;
+    background: var(--input-bg);
+    padding: 36px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .pdf-drop-box:hover, .pdf-drop-box.drag-over {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+  }
+  .pdf-drop-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: rgba(99, 102, 241, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 16px;
+    color: var(--accent);
+    transition: transform 0.2s;
+  }
+  .pdf-drop-box:hover .pdf-drop-icon {
+    transform: scale(1.1) translateY(-3px);
+  }
+
+  .step-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .preview-section-box {
+    background: var(--card-inner);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .preview-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+
+  .chip-tag {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- BANNER UTAMA FITUR AI -->
+<div class="ai-hero-banner">
+  <div class="ai-sparkle-pill">
+    <span>✨</span> SMART INVITATION ASSISTANT
+  </div>
+  <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--text);">
+    Buat Undangan Otomatis Hanya dengan Unggah Berkas PDF 🚀
+  </h1>
+  <p style="font-size: 14px; color: var(--text-secondary); max-width: 820px; line-height: 1.6;">
+    Punya brosur undangan fisik atau desain dari Canva dalam format PDF? Cukup unggah berkasnya ke sini!
+    Kecerdasan Buatan (AI) kami akan membaca teks PDF secara otomatis, lalu mengisi nama kedua mempelai, orang tua, jadwal Akad &amp; Resepsi, alamat, kata mutiara, hingga nomor rekening hadiah.
+  </p>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; font-size: 12.5px; color: var(--text-muted);">
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span class="step-badge">1</span> Unggah Berkas PDF Undangan
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span class="step-badge">2</span> AI Mengekstrak Informasi Otomatis
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span class="step-badge">3</span> Tinjau &amp; Terapkan ke Web Undangan Anda
+    </div>
+  </div>
+</div>
+
+{% if not pengaturan.ai_aktif %}
+  <div class="alert alert-error">
+    <span>⚠️</span>
+    <div>
+      <b>Fitur AI Sedang Dinonaktifkan:</b> Administrator platform saat ini sedang menonaktifkan fitur pembuatan otomatis berbasis AI. Anda tetap dapat mengisi data undangan secara manual melalui menu <b>Mempelai</b>, <b>Acara</b>, dan <b>Tema</b>.
+    </div>
+  </div>
+{% elif hanya_berbayar_dan_belum %}
+  <div class="alert alert-error">
+    <span>🔒</span>
+    <div>
+      <b>Khusus Akun Berbayar:</b> Fitur asisten AI hanya dapat digunakan oleh undangan yang telah melakukan aktivasi berbayar penuh. Silakan selesaikan aktivasi di menu <a href="{% url 'undangan:dashboard_pembayaran' %}" style="text-decoration: underline; font-weight: 700;">Aktivasi Undangan</a>.
+    </div>
+  </div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+
+  <!-- KOTAK FORM UPLOAD PDF -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <span>📄</span> Unggah Berkas PDF Undangan Pernikahan
+      </div>
+      <div style="font-size: 12px; color: var(--text-muted);">
+        Sisa Kuota Hari Ini: <b style="color: var(--accent);">{{ sisa_kuota }}</b>
+      </div>
+    </div>
+
+    <form id="form-upload-pdf" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" id="pdf-input" name="pdf_file" accept=".pdf,application/pdf" style="display: none;" onchange="handleFileSelected(this)">
+
+      <div class="pdf-drop-box" id="pdf-drop-zone" onclick="document.getElementById('pdf-input').click()">
+        <div class="pdf-drop-icon">
+          📑
+        </div>
+        <div style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px;">
+          Tarik &amp; Lepaskan berkas PDF ke sini, atau <span style="color: var(--accent); text-decoration: underline;">klik untuk memilih file</span>
+        </div>
+        <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">
+          Mendukung berkas <b>.PDF</b> (Brosur digital, ekspor dari Canva, Google Docs, Word, dll). Maksimal ukuran 15 MB.
+        </div>
+
+        <div id="file-info-badge" style="display: none; margin-top: 16px;">
+          <span style="display: inline-flex; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent); color: var(--accent); font-weight: 700; padding: 6px 16px; border-radius: 20px; font-size: 13px;">
+            📄 <span id="file-name-text">undangan.pdf</span> (<span id="file-size-text">0 KB</span>)
+          </span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px;">
+        <div style="font-size: 12.5px; color: var(--text-muted);">
+          💡 <i>Catatan: Tidak wajib menggunakan AI. Anda selalu bisa mengedit data secara manual kapan saja tanpa mengubah keaslian desain.</i>
+        </div>
+
+        <button type="button" id="btn-proses-ai" class="btn btn-primary" onclick="jalankanEkstraksiAI()" style="font-weight: 700; padding: 10px 22px;" {% if not pengaturan.ai_aktif or hanya_berbayar_dan_belum or kuota_habis %}disabled{% endif %}>
+          <span>✨</span> Analisis PDF dengan AI Sekarang
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- HASIL ANALISIS AI (PREVIEW SEBELUM DITERAPKAN) -->
+  <div class="card" id="card-hasil-ai" style="display: {% if hasil_ekstraksi %}block{% else %}none{% endif %};">
+    <div class="card-header" style="background: rgba(16, 185, 129, 0.08); border-radius: 12px 12px 0 0; padding: 14px 18px; margin: -22px -22px 20px; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+      <div class="card-title" style="color: var(--success);">
+        <span>🎉</span> Hasil Analisis AI Berhasil Ditemukan!
+      </div>
+      <span style="font-size: 12px; color: var(--text-muted);" id="durasi-analisis-badge">
+        Dianalisis dalam hitungan detik
+      </span>
+    </div>
+
+    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">
+      Berikut adalah ringkasan data yang berhasil diekstrak AI dari berkas PDF Anda. Silakan periksa kelengkapannya, lalu klik tombol <b>Terapkan ke Undangan Saya</b> di bawah.
+    </p>
+
+    <!-- 1. IDENTITAS DASAR -->
+    <div class="preview-section-box">
+      <div class="preview-section-title">
+        <span>💍</span> Informasi Umum &amp; Tema Undangan
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 13px;">
+        <div><b>Judul:</b> <span id="res-judul" style="color: var(--accent); font-weight: 700;">-</span></div>
+        <div><b>Hashtag:</b> <span id="res-hashtag">-</span></div>
+        <div><b>Rekomendasi Tema:</b> <span id="res-tema" class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent);">-</span></div>
+      </div>
+      <div style="margin-top: 10px; font-size: 12.5px; color: var(--text-muted); background: var(--card-bg); padding: 10px; border-radius: 8px;">
+        <b>Kutipan / Doa:</b> <i id="res-quote">"-"</i> <br>
+        <span style="font-size: 11.5px; color: var(--accent);" id="res-sumber-quote"></span>
+      </div>
+    </div>
+
+    <!-- 2. MEMPELAI PRIA & WANITA -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 16px;">
+      <div class="preview-section-box" style="margin-bottom: 0;">
+        <div class="preview-section-title">
+          <span>🤵</span> Mempelai Pria
+        </div>
+        <div style="font-size: 13px; display: flex; flex-direction: column; gap: 6px;">
+          <div><b>Nama Lengkap:</b> <span id="res-pria-nama" style="font-weight: 700; color: var(--text);">-</span></div>
+          <div><b>Nama Panggilan:</b> <span id="res-pria-panggilan">-</span></div>
+          <div><b>Anak Ke:</b> <span id="res-pria-anak">-</span></div>
+          <div><b>Nama Ayah:</b> <span id="res-pria-ayah">-</span></div>
+          <div><b>Nama Ibu:</b> <span id="res-pria-ibu">-</span></div>
+          <div><b>Instagram:</b> <span id="res-pria-ig">-</span></div>
+        </div>
+      </div>
+
+      <div class="preview-section-box" style="margin-bottom: 0;">
+        <div class="preview-section-title">
+          <span>👰</span> Mempelai Wanita
+        </div>
+        <div style="font-size: 13px; display: flex; flex-direction: column; gap: 6px;">
+          <div><b>Nama Lengkap:</b> <span id="res-wanita-nama" style="font-weight: 700; color: var(--text);">-</span></div>
+          <div><b>Nama Panggilan:</b> <span id="res-wanita-panggilan">-</span></div>
+          <div><b>Anak Ke:</b> <span id="res-wanita-anak">-</span></div>
+          <div><b>Nama Ayah:</b> <span id="res-wanita-ayah">-</span></div>
+          <div><b>Nama Ibu:</b> <span id="res-wanita-ibu">-</span></div>
+          <div><b>Instagram:</b> <span id="res-wanita-ig">-</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. AGENDA ACARA -->
+    <div class="preview-section-box">
+      <div class="preview-section-title">
+        <span>📅</span> Jadwal &amp; Lokasi Acara
+      </div>
+      <div id="res-acara-list" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Dihasilkan dinamis lewat JS -->
+      </div>
+    </div>
+
+    <!-- 4. HADIAH & REKENING -->
+    <div class="preview-section-box">
+      <div class="preview-section-title">
+        <span>💳</span> Amplop Digital &amp; Rekening Bank
+      </div>
+      <div id="res-rekening-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <!-- Dihasilkan dinamis lewat JS -->
+      </div>
+    </div>
+
+    <!-- FORM TERAPKAN KE UNDANGAN -->
+    <form method="POST" action="{% url 'undangan:dashboard_ai_terapkan' %}" id="form-terapkan-ai">
+      {% csrf_token %}
+      <input type="hidden" name="riwayat_id" id="input-riwayat-id" value="{{ riwayat_id|default:'' }}">
+      
+      <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <b style="color: var(--text); font-size: 14px;">Siap menerapkan data di atas ke website undangan Anda?</b>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Seluruh data di atas akan otomatis mengisi profil mempelai, agenda acara, tema, dan amplop digital Anda.
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="font-weight: 800; font-size: 14px; padding: 12px 24px;">
+          ✨ Terapkan ke Undangan Saya Sekarang
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- RIWAYAT PENGGUNAAN OLEH USER -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <span>📜</span> Riwayat Ekstraksi PDF Anda
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>Nama Berkas PDF</th>
+            <th>Ukuran</th>
+            <th>Durasi AI</th>
+            <th>Status</th>
+            <th style="text-align: right;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in riwayat_user %}
+            <tr>
+              <td style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">
+                {{ r.dibuat|date:"d M Y H:i" }}
+              </td>
+              <td>
+                <b>📄 {{ r.nama_file }}</b>
+              </td>
+              <td>{{ r.ukuran_kb }} KB</td>
+              <td>{{ r.durasi_detik }} detik</td>
+              <td>
+                {% if r.status == 'diterapkan' %}
+                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                    Sudah Diterapkan
+                  </span>
+                {% elif r.status == 'sukses' %}
+                  <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                    Sukses Ekstrak
+                  </span>
+                {% else %}
+                  <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);" title="{{ r.pesan_error }}">
+                    Gagal
+                  </span>
+                {% endif %}
+              </td>
+              <td style="text-align: right;">
+                {% if r.hasil and r.status != 'gagal' %}
+                  <button type="button" class="btn btn-secondary btn-sm" onclick='tampilkanHasilTersimpan({{ r.pk }}, {{ r.hasil|json_script:"rw_json"|safe }})'>
+                    Tinjau Hasil &rarr;
+                  </button>
+                {% else %}
+                  <span style="font-size: 12px; color: var(--text-muted);">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                Anda belum pernah mengunggah berkas PDF untuk diekstrak AI.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Drag & drop highlight
+  const dropZone = document.getElementById('pdf-drop-zone');
+  const fileInput = document.getElementById('pdf-input');
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+    }, false);
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files && files.length > 0) {
+      fileInput.files = files;
+      handleFileSelected(fileInput);
+    }
+  });
+
+  function handleFileSelected(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      document.getElementById('file-name-text').innerText = file.name;
+      const kb = Math.round(file.size / 1024);
+      document.getElementById('file-size-text').innerText = kb + ' KB';
+      document.getElementById('file-info-badge').style.display = 'block';
+    }
+  }
+
+  function renderDataKePreview(hasil, riwayatId, durasiDetik) {
+    document.getElementById('input-riwayat-id').value = riwayatId || '';
+    if (durasiDetik) {
+      document.getElementById('durasi-analisis-badge').innerText = `Dianalisis dalam ${durasiDetik} detik`;
+    }
+
+    // Informasi Umum
+    document.getElementById('res-judul').innerText = hasil.judul || '-';
+    document.getElementById('res-hashtag').innerText = hasil.hashtag || '-';
+    document.getElementById('res-tema').innerText = (hasil.tema_rekomendasi || 'Klasik').toUpperCase();
+    document.getElementById('res-quote').innerText = hasil.quote ? `"${hasil.quote}"` : '—';
+    document.getElementById('res-sumber-quote').innerText = hasil.sumber_quote ? `— ${hasil.sumber_quote}` : '';
+
+    // Mempelai Pria
+    const pria = hasil.mempelai_pria || {};
+    document.getElementById('res-pria-nama').innerText = pria.nama_lengkap || '-';
+    document.getElementById('res-pria-panggilan').innerText = pria.nama_panggilan || '-';
+    document.getElementById('res-pria-anak').innerText = pria.anak_ke || '-';
+    document.getElementById('res-pria-ayah').innerText = pria.nama_ayah || '-';
+    document.getElementById('res-pria-ibu').innerText = pria.nama_ibu || '-';
+    document.getElementById('res-pria-ig').innerText = pria.instagram ? `@${pria.instagram}` : '-';
+
+    // Mempelai Wanita
+    const wanita = hasil.mempelai_wanita || {};
+    document.getElementById('res-wanita-nama').innerText = wanita.nama_lengkap || '-';
+    document.getElementById('res-wanita-panggilan').innerText = wanita.nama_panggilan || '-';
+    document.getElementById('res-wanita-anak').innerText = wanita.anak_ke || '-';
+    document.getElementById('res-wanita-ayah').innerText = wanita.nama_ayah || '-';
+    document.getElementById('res-wanita-ibu').innerText = wanita.nama_ibu || '-';
+    document.getElementById('res-wanita-ig').innerText = wanita.instagram ? `@${wanita.instagram}` : '-';
+
+    // Acara
+    const acaraListContainer = document.getElementById('res-acara-list');
+    acaraListContainer.innerHTML = '';
+    const acaras = hasil.acara || [];
+    if (acaras.length === 0) {
+      acaraListContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">Tidak ada agenda acara terdeteksi.</div>';
+    } else {
+      acaras.forEach((ac, idx) => {
+        const item = document.createElement('div');
+        item.style.background = 'var(--card-bg)';
+        item.style.padding = '12px 14px';
+        item.style.borderRadius = '10px';
+        item.style.border = '1px solid var(--border)';
+        item.style.fontSize = '13px';
+        item.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <b style="color: var(--accent); font-size: 14px;">${ac.nama || ('Acara #' + (idx + 1))}</b>
+            <span style="font-weight: 700; color: var(--text);">${ac.tanggal || ''} (${ac.waktu_mulai || ''} ${ac.waktu_selesai ? '- ' + ac.waktu_selesai : 'WIB'})</span>
+          </div>
+          <div><b>Tempat:</b> ${ac.nama_tempat || '-'}</div>
+          <div style="color: var(--text-muted); font-size: 12px; margin-top: 2px;"><b>Alamat:</b> ${ac.alamat || '-'}</div>
+        `;
+        acaraListContainer.appendChild(item);
+      });
+    }
+
+    // Rekening
+    const rekListContainer = document.getElementById('res-rekening-list');
+    rekListContainer.innerHTML = '';
+    const rekenings = hasil.rekening || [];
+    if (rekenings.length === 0) {
+      rekListContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">Tidak ada nomor rekening terdeteksi.</div>';
+    } else {
+      rekenings.forEach(r => {
+        const chip = document.createElement('div');
+        chip.className = 'chip-tag';
+        chip.innerHTML = `<b>${r.nama_bank || 'Bank'}</b>: ${r.nomor || '-'} <span style="color: var(--text-muted); font-size: 11.5px;">(${r.atas_nama || '-'})</span>`;
+        rekListContainer.appendChild(chip);
+      });
+    }
+
+    const cardHasil = document.getElementById('card-hasil-ai');
+    cardHasil.style.display = 'block';
+    cardHasil.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function jalankanEkstraksiAI() {
+    const input = document.getElementById('pdf-input');
+    if (!input.files || input.files.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Pilih Berkas PDF',
+        text: 'Silakan pilih berkas PDF undangan pernikahan terlebih dahulu.'
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('pdf_file', input.files[0]);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    Swal.fire({
+      title: 'Menganalisis Undangan...',
+      html: `
+        <div style="text-align: center; padding: 10px;">
+          <div style="font-size: 42px; margin-bottom: 12px;">🤖✨</div>
+          <p style="font-weight: 700; color: var(--text); margin-bottom: 6px;">AI sedang membaca dokumen PDF Anda...</p>
+          <p style="font-size: 12.5px; color: var(--text-muted);">
+            Mengekstrak nama pengantin, orang tua, susunan acara, lokasi maps, dan rekening hadiah.
+          </p>
+        </div>
+      `,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    fetch("{% url 'undangan:dashboard_ai' %}", {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: formData
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.pesan || 'Gagal memproses PDF');
+      }
+      return data;
+    })
+    .then(data => {
+      if (data.sukses && data.hasil) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil Diekstrak! 🎉',
+          text: data.pesan,
+          confirmButtonText: 'Lihat Hasil'
+        }).then(() => {
+          renderDataKePreview(data.hasil, data.riwayat_id, data.durasi_detik);
+        });
+      } else {
+        throw new Error(data.pesan || 'Tidak ada data yang dapat dibaca.');
+      }
+    })
+    .catch(err => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Membaca PDF',
+        text: err.message
+      });
+    });
+  }
+
+  function tampilkanHasilTersimpan(riwayatId, hasil) {
+    renderDataKePreview(hasil, riwayatId);
+  }
+</script>
+{% endblock %}

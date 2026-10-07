@@ -13,6 +13,8 @@ urlpatterns = [
 
     # Dashboard Pengguna
     path("dashboard/", views_dashboard.dashboard_index, name="dashboard"),
+    path("dashboard/ai/", views_dashboard.dashboard_ai, name="dashboard_ai"),
+    path("dashboard/ai/terapkan/", views_dashboard.dashboard_ai_terapkan, name="dashboard_ai_terapkan"),
     path("dashboard/pengaturan/", views_dashboard.dashboard_pengaturan, name="dashboard_pengaturan"),
     path("dashboard/mempelai/", views_dashboard.dashboard_mempelai, name="dashboard_mempelai"),
     path("dashboard/acara/", views_dashboard.dashboard_acara, name="dashboard_acara"),
@@ -30,6 +32,13 @@ urlpatterns = [
 
     # Pusat Kendali & Dashboard Superadmin
     path("superadmin/", views_superadmin.superadmin_index, name="superadmin_index"),
+    path("superadmin/ai/", views_superadmin.superadmin_ai, name="superadmin_ai"),
+    path("superadmin/ai/tambah/", views_superadmin.superadmin_ai_simpan, name="superadmin_ai_tambah"),
+    path("superadmin/ai/<int:pk>/edit/", views_superadmin.superadmin_ai_simpan, name="superadmin_ai_edit"),
+    path("superadmin/ai/<int:pk>/aktifkan/", views_superadmin.superadmin_ai_aktifkan, name="superadmin_ai_aktifkan"),
+    path("superadmin/ai/<int:pk>/test/", views_superadmin.superadmin_ai_test, name="superadmin_ai_test"),
+    path("superadmin/ai/<int:pk>/hapus/", views_superadmin.superadmin_ai_hapus, name="superadmin_ai_hapus"),
+    path("superadmin/ai/pengaturan/", views_superadmin.superadmin_ai_pengaturan_global, name="superadmin_ai_pengaturan_global"),
     path("superadmin/users/", views_superadmin.superadmin_users, name="superadmin_users"),
     path("superadmin/users/<int:pk>/toggle/", views_superadmin.superadmin_user_toggle, name="superadmin_user_toggle"),
     path("superadmin/users/<int:pk>/hapus/", views_superadmin.superadmin_user_hapus, name="superadmin_user_hapus"),

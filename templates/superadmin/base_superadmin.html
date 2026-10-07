@@ -728,6 +728,10 @@
           <span class="super-sidebar-icon">💬</span>
           <span>Moderasi RSVP Global</span>
         </a>
+        <a href="{% url 'undangan:superadmin_ai' %}" class="super-sidebar-item {% if menu_aktif == 'ai' %}active{% endif %}">
+          <span class="super-sidebar-icon">🤖</span>
+          <span>Pengaturan AI &amp; Provider</span>
+        </a>
         <a href="{% url 'undangan:superadmin_pengaturan' %}" class="super-sidebar-item {% if menu_aktif == 'pengaturan' %}active{% endif %}">
           <span class="super-sidebar-icon">⚙️</span>
           <span>Pengaturan Platform</span>
@@ -864,6 +868,10 @@
       <a href="{% url 'undangan:superadmin_ucapan' %}" class="super-sheet-item {% if menu_aktif == 'ucapan' %}active{% endif %}">
         <span style="font-size: 24px; margin-bottom: 6px;">💬</span>
         <span style="font-size: 11.5px; font-weight: 600;">RSVP Global</span>
+      </a>
+      <a href="{% url 'undangan:superadmin_ai' %}" class="super-sheet-item {% if menu_aktif == 'ai' %}active{% endif %}">
+        <span style="font-size: 24px; margin-bottom: 6px;">🤖</span>
+        <span style="font-size: 11.5px; font-weight: 600;">Pengaturan AI</span>
       </a>
       <a href="{% url 'undangan:superadmin_pengaturan' %}" class="super-sheet-item {% if menu_aktif == 'pengaturan' %}active{% endif %}">
         <span style="font-size: 24px; margin-bottom: 6px;">⚙️</span>
