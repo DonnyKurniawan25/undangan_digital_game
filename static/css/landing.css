@@ -286,19 +286,30 @@ ul {
 }
 
 .nav-logo-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
-  display: grid;
-  place-items: center;
-  color: #121811;
-  box-shadow: 0 4px 12px var(--gold-glow);
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-glass-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 26, 18, 0.9);
+  box-shadow: 0 4px 16px var(--gold-glow);
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.nav-logo-icon svg {
-  width: 20px;
-  height: 20px;
+.nav-brand:hover .nav-logo-icon {
+  transform: scale(1.08) rotate(3deg);
+  box-shadow: 0 6px 22px var(--gold-glow);
+}
+
+.nav-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .nav-links {
@@ -491,6 +502,15 @@ ul {
   margin-bottom: 24px;
 }
 
+.hero-badge-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: inline-block;
+  box-shadow: 0 2px 8px var(--gold-glow);
+}
+
 .badge-dot {
   width: 8px;
   height: 8px;
@@ -574,6 +594,16 @@ ul {
   color: var(--text-white);
 }
 
+.trust-icon-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 2px 8px var(--gold-glow-subtle);
+}
+
 .trust-divider {
   width: 1px;
   height: 24px;
@@ -611,14 +641,24 @@ ul {
 }
 
 .badge-avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   background: rgba(212, 175, 55, 0.15);
-  display: grid;
-  place-items: center;
-  font-size: 1.15rem;
+  border: 1px solid var(--border-glass-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.badge-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .badge-info {
@@ -1325,16 +1365,33 @@ ul {
 }
 
 .step-icon-circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-glass-gold);
-  display: grid;
-  place-items: center;
-  color: var(--gold-400);
+  width: 86px;
+  height: 86px;
+  border-radius: 22px;
+  background: rgba(20, 32, 22, 0.85);
+  border: 2px solid var(--border-glass-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto 24px;
-  box-shadow: 0 4px 20px var(--gold-glow-subtle);
+  box-shadow: 0 8px 24px var(--gold-glow-subtle);
+  overflow: hidden;
+  padding: 6px;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.step-card:hover .step-icon-circle {
+  transform: scale(1.08) translateY(-4px);
+  border-color: var(--gold-400);
+  box-shadow: 0 12px 32px var(--gold-glow);
+}
+
+.step-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
 }
 
 .step-card h3 {
@@ -1404,15 +1461,21 @@ ul {
 }
 
 .author-avatar {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
-  color: #121811;
-  font-weight: 800;
-  font-size: 0.9rem;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
+  border: 2px solid var(--gold-400);
+  box-shadow: 0 4px 14px var(--gold-glow);
+  flex-shrink: 0;
+  background: #111a12;
+}
+
+.author-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .author-name {
@@ -1528,6 +1591,24 @@ ul {
   z-index: 2;
 }
 
+.final-cta-emblem {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 22px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid var(--border-glass-gold);
+  box-shadow: 0 8px 30px var(--gold-glow);
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.cta-emblem-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .final-cta-title {
   font-family: var(--font-serif);
   font-size: clamp(2.2rem, 4.4vw, 3.4rem);
@@ -1572,19 +1653,22 @@ ul {
   max-width: 340px;
 }
 
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-serif);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-white);
-  margin-bottom: 16px;
+.footer-logo-link {
+  display: inline-block;
+  margin-bottom: 20px;
 }
 
-.footer-brand span span {
-  color: var(--gold-400);
+.footer-logo-img {
+  max-width: 220px;
+  height: auto;
+  border-radius: 12px;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.6));
+  transition: transform var(--transition-fast);
+  display: block;
+}
+
+.footer-logo-img:hover {
+  transform: scale(1.04);
 }
 
 .footer-tagline {

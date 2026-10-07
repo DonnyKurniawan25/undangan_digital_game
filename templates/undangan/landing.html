@@ -41,6 +41,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="{% aset 'img/favicon.ico' %}">
+<link rel="icon" type="image/png" sizes="64x64" href="{% aset 'img/favicon.png' %}">
+<link rel="apple-touch-icon" href="{% aset 'img/logo_icon.png' %}">
 <link rel="stylesheet" href="{% aset 'css/landing.css' %}">
 </head>
 <body>
@@ -50,9 +53,7 @@
   <div class="container nav-container">
     <a href="#" class="nav-brand">
       <div class="nav-logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
+        <img src="{% aset 'img/logo_icon.png' %}" alt="Logo Jelajah Undangan" class="nav-logo-img">
       </div>
       <span>Jelajah<span>Undangan</span></span>
     </a>
@@ -101,7 +102,7 @@
     <!-- Left Column: Copywriting & High Impact CTAs -->
     <div class="hero-text-col reveal">
       <div class="hero-badge">
-        <span class="badge-dot"></span>
+        <img src="{% aset 'img/logo_icon.png' %}" alt="Icon" class="hero-badge-icon">
         <span class="badge-text">Platform Undangan Pernikahan Game 2D #1 di Indonesia</span>
       </div>
 
@@ -145,12 +146,12 @@
         </div>
         <div class="trust-divider"></div>
         <div class="trust-item">
-          <div class="trust-icon">🎮</div>
+          <div class="trust-icon"><img src="{% aset 'img/icon_joystick.png' %}" alt="100% Interaktif" class="trust-icon-img"></div>
           <span class="trust-caption"><strong>100% Interaktif</strong> di Semua HP</span>
         </div>
         <div class="trust-divider"></div>
         <div class="trust-item">
-          <div class="trust-icon">⚡</div>
+          <div class="trust-icon"><img src="{% aset 'img/icon_step_share.png' %}" alt="Tanpa Instal" class="trust-icon-img"></div>
           <span class="trust-caption"><strong>Tanpa Instal Aplikasi</strong> — Langsung Main</span>
         </div>
       </div>
@@ -161,7 +162,9 @@
       <div class="mockup-stage">
         <!-- Floating Badge 1: Real-time Wishes -->
         <div class="floating-badge floating-badge--top-right float-anim-1">
-          <div class="badge-avatar">💌</div>
+          <div class="badge-avatar">
+            <img src="{% aset 'img/icon_wishes.png' %}" alt="Ucapan" class="badge-avatar-img">
+          </div>
           <div class="badge-info">
             <span class="badge-title">Ucapan Tamu Baru</span>
             <span class="badge-desc">"Selamat ya Mas Dimas & Mbak Sarah! 🎉"</span>
@@ -170,7 +173,9 @@
 
         <!-- Floating Badge 2: Interactive Character -->
         <div class="floating-badge floating-badge--bottom-left float-anim-2">
-          <div class="badge-avatar">🕹️</div>
+          <div class="badge-avatar">
+            <img src="{% aset 'img/icon_joystick.png' %}" alt="Joystick" class="badge-avatar-img">
+          </div>
           <div class="badge-info">
             <span class="badge-title">Avatar & Joystick HP</span>
             <span class="badge-desc">Tamu bebas keliling taman virtual</span>
@@ -179,7 +184,9 @@
 
         <!-- Floating Badge 3: Romantic Background Music -->
         <div class="floating-badge floating-badge--bottom-right float-anim-3">
-          <div class="badge-avatar">🎵</div>
+          <div class="badge-avatar">
+            <img src="{% aset 'img/icon_music.png' %}" alt="Musik Latar" class="badge-avatar-img">
+          </div>
           <div class="badge-info">
             <span class="badge-title">Musik Latar Romantis</span>
             <span class="badge-desc">Alunan musik otomatis mengiringi</span>
@@ -643,7 +650,7 @@
       <div class="step-card reveal reveal-delay-1">
         <div class="step-badge">Langkah 01</div>
         <div class="step-icon-circle">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <img src="{% aset 'img/icon_step_theme.png' %}" alt="Pilih Tema" class="step-icon-img">
         </div>
         <h3>Daftar & Pilih Tema</h3>
         <p>Buat akun dalam 1 menit, lalu pilih salah satu dari 6 tema eksklusif yang paling cocok dengan konsep pernikahan impian Anda.</p>
@@ -652,7 +659,7 @@
       <div class="step-card reveal reveal-delay-2">
         <div class="step-badge">Langkah 02</div>
         <div class="step-icon-circle">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <img src="{% aset 'img/icon_step_edit.png' %}" alt="Isi Data & Foto" class="step-icon-img">
         </div>
         <h3>Isi Data & Unggah Foto</h3>
         <p>Masukkan tanggal akad, resepsi, foto prewedding, nomor rekening/QRIS, serta lagu romantis favorit lewat dashboard yang simpel dan praktis.</p>
@@ -661,7 +668,7 @@
       <div class="step-card reveal reveal-delay-3">
         <div class="step-badge">Langkah 03</div>
         <div class="step-icon-circle">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <img src="{% aset 'img/icon_step_share.png' %}" alt="Bagikan Undangan" class="step-icon-img">
         </div>
         <h3>Bagikan Link ke Tamu</h3>
         <p>Kirimkan link personal yang otomatis mencantumkan nama setiap tamu lewat WhatsApp. Pantau siapa saja yang sudah membuka undangan secara langsung!</p>
@@ -689,7 +696,9 @@
           "Teman-teman kantor dan keluarga besar pada heboh di grup WhatsApp! Katanya baru kali ini dapet undangan pernikahan yang bisa dimainin karakternya. Banyak yang puji konsepnya yang super kreatif!"
         </p>
         <div class="testi-author">
-          <div class="author-avatar">DS</div>
+          <div class="author-avatar">
+            <img src="{% aset 'img/avatar_dimas_sarah.png' %}" alt="Dimas & Sarah" class="author-avatar-img">
+          </div>
           <div class="author-info">
             <h4 class="author-name">Dimas & Sarah</h4>
             <span class="author-meta">Jakarta • Tema Grand Ballroom</span>
@@ -704,7 +713,9 @@
           "Karena kami nikah adat Jawa, tema gebyok ukirnya pas banget! Musik gamelannya syahdu dan visual pixel art-nya sangat berkelas. Sangat rekomendasi buat pasangan yang pengen beda tapi tetap berbudaya."
         </p>
         <div class="testi-author">
-          <div class="author-avatar">AR</div>
+          <div class="author-avatar">
+            <img src="{% aset 'img/avatar_arya_ratna.png' %}" alt="Arya & Ratna" class="author-avatar-img">
+          </div>
           <div class="author-info">
             <h4 class="author-name">Arya & Ratna</h4>
             <span class="author-meta">Yogyakarta • Tema Tradisional Jawa</span>
@@ -719,7 +730,9 @@
           "Kami berdua suka banget game ala Stardew Valley, pas liat tema Desa Sunda langsung jatuh cinta! Bikinnya gampang banget lewat dashboard di HP, link nama tamunya juga rapi pas disebar ke WA."
         </p>
         <div class="testi-author">
-          <div class="author-avatar">BM</div>
+          <div class="author-avatar">
+            <img src="{% aset 'img/avatar_bagus_melinda.png' %}" alt="Bagus & Melinda" class="author-avatar-img">
+          </div>
           <div class="author-info">
             <h4 class="author-name">Bagus & Melinda</h4>
             <span class="author-meta">Bandung • Tema Desa Parahyangan</span>
@@ -814,6 +827,9 @@
 <section class="final-cta" id="cta">
   <div class="cta-backdrop-glow"></div>
   <div class="container final-cta-container reveal text-center">
+    <div class="final-cta-emblem">
+      <img src="{% aset 'img/logo_icon.png' %}" alt="Emblem Jelajah Undangan" class="cta-emblem-img">
+    </div>
     <span class="section-badge section-badge--gold">🎉 Mulai Sekarang</span>
     <h2 class="final-cta-title">
       Siap Mewujudkan Undangan Pernikahan<br>
@@ -845,13 +861,8 @@
   <div class="container footer-container">
     <div class="footer-top">
       <div class="footer-brand-col">
-        <a href="#" class="footer-brand">
-          <div class="nav-logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span>Jelajah<span>Undangan</span></span>
+        <a href="#" class="footer-brand footer-logo-link">
+          <img src="{% aset 'img/logo.png' %}" alt="Jelajah Undangan Logo" class="footer-logo-img">
         </a>
         <p class="footer-tagline">
           Platform pembuatan undangan pernikahan digital interaktif modern berbentuk petualangan 2D pixel art bernuansa adat Nusantara.

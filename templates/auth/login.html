@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Masuk — Jelajah Undangan</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+  <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/favicon.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/logo_icon.png' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -182,7 +185,7 @@
 
   <div class="auth-card">
     <a href="{% url 'undangan:landing' %}" class="auth-brand">
-      <span class="logo-icon">🎮</span>
+      <img src="{% static 'img/logo_icon.png' %}" alt="Logo" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35); border: 1.5px solid rgba(245, 158, 11, 0.4);">
       <h1>Jelajah<span>Undangan</span></h1>
     </a>
 
