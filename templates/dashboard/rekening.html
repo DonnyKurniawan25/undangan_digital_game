@@ -10,7 +10,7 @@
   </p>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 24px;">
   <!-- FORM TAMBAH REKENING -->
   <div class="card">
     <div class="card-header">
@@ -21,7 +21,7 @@
       {% csrf_token %}
       <div class="form-group">
         <label class="form-label" for="nama_bank">Nama Bank / Dompet Digital</label>
-        <input type="text" id="nama_bank" name="nama_bank" class="form-input" required placeholder="Contoh: BCA, Mandiri, GoPay, OVO, QRIS">
+        <input type="text" id="nama_bank" name="nama_bank" class="form-input" required placeholder="Contoh: BCA atau GoPay">
       </div>
 
       <div class="form-group">
@@ -35,7 +35,7 @@
       </div>
 
       <!-- KODE QRIS OPSIONAL -->
-      <div style="padding: 16px; background: var(--card-inner); border-radius: 14px; border: 1px solid var(--border); margin-top: 14px;">
+      <div style="padding: 16px; background: var(--card-inner); border-radius: 0; border: 3px solid var(--border); margin-top: 14px;">
         <label class="form-label" style="color: var(--accent); font-weight: 700;">📱 Gambar QRIS / Barcode (Opsional)</label>
 
         {% if undangan.status_langganan == 'aktif' %}
@@ -55,13 +55,13 @@
           </div>
 
           <div id="box-rek-link" style="display: none;">
-            <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
+            <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://.../qris.png" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
             <div class="form-help">Mendukung link gambar langsung atau Google Drive publik.</div>
           </div>
         {% else %}
           <!-- TRIAL: HANYA LINK URL -->
           <div style="margin-top: 8px;">
-            <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://drive.google.com/... atau link gambar QRIS" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
+            <input type="text" id="qr_url" name="qr_url" class="form-input" placeholder="https://.../qris.png" oninput="previewUrlMedia(this.value, 'preview-qr', 'preview-qr-empty')">
             <div class="form-help">
               💡 Tempel link gambar QRIS dari Google Drive, Imgur, atau URL langsung. Upload file QR tersedia setelah <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 600;">aktivasi pembayaran</a>.
             </div>
@@ -97,10 +97,10 @@
     {% if rekening_list %}
       <div style="display: flex; flex-direction: column; gap: 16px;">
         {% for r in rekening_list %}
-          <div class="card" style="margin-bottom: 0; padding: 18px; border-left: 4px solid #34d399;">
+          <div class="card" style="margin-bottom: 0; padding: 18px; border-left: 4px solid var(--neo-success);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
               <div>
-                <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; margin-bottom: 6px;">
+                <span class="badge" style="background: var(--neo-success-bg); color: var(--neo-success); margin-bottom: 6px;">
                   {{ r.nama_bank }}
                 </span>
                 <div style="font-size: 18px; font-weight: 800; font-family: monospace; color: var(--accent); margin: 6px 0;">
@@ -113,7 +113,7 @@
                 {% if r.url_tampil %}
                   <div style="margin-top: 10px;">
                     <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Kode QRIS:</span>
-                    <img src="{{ r.url_tampil }}" alt="QRIS {{ r.nama_bank }}" style="width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border);">
+                    <img src="{{ r.url_tampil }}" alt="QRIS {{ r.nama_bank }}" style="width: 90px; height: 90px; object-fit: cover; border-radius: 0; border: 3px solid var(--border);">
                   </div>
                 {% endif %}
               </div>

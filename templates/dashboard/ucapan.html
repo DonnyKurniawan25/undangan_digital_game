@@ -15,20 +15,20 @@
   <a href="?status=semua" class="btn {% if filter_status == 'semua' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
     Semua ({{ total_ucapan }})
   </a>
-  <a href="?status=hadir" class="btn {% if filter_status == 'hadir' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'hadir' %}border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7;{% endif %}">
+  <a href="?status=hadir" class="btn {% if filter_status == 'hadir' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'hadir' %}border-color: var(--neo-success); color: var(--neo-success);{% endif %}">
     🎉 Berkenan Hadir ({{ total_hadir }})
   </a>
-  <a href="?status=ragu" class="btn {% if filter_status == 'ragu' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'ragu' %}border-color: rgba(245, 158, 11, 0.4); color: #fde68a;{% endif %}">
+  <a href="?status=ragu" class="btn {% if filter_status == 'ragu' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'ragu' %}border-color: var(--neo-warning); color: var(--neo-warning);{% endif %}">
     ⏳ Masih Ragu ({{ total_ragu }})
   </a>
-  <a href="?status=tidak" class="btn {% if filter_status == 'tidak' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'tidak' %}border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;{% endif %}">
+  <a href="?status=tidak" class="btn {% if filter_status == 'tidak' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if filter_status != 'tidak' %}border-color: var(--neo-danger); color: var(--neo-danger);{% endif %}">
     ❌ Berhalangan ({{ total_tidak }})
   </a>
 </div>
 
 <!-- DAFTAR UCAPAN -->
 <div class="card" style="padding: 0; overflow: hidden;">
-  <div style="padding: 18px 20px; border-bottom: 1px solid var(--border);">
+  <div style="padding: 18px 20px; border-bottom: 3px solid var(--border);">
     <h2 class="card-title" style="margin-bottom: 0;">
       💬 Daftar Pesan Ucapan ({{ ucapan_list.count }})
     </h2>
@@ -37,27 +37,27 @@
   {% if ucapan_list %}
     <div style="display: flex; flex-direction: column;">
       {% for u in ucapan_list %}
-        <div style="padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 260px;">
+        <div style="padding: 18px 20px; border-bottom: 3px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: min(100%, 260px);">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
               <b style="font-size: 15px; color: var(--text);">{{ u.nama }}</b>
               
               {% if u.kehadiran == 'hadir' %}
-                <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">
+                <span class="badge" style="background: var(--neo-success-bg); color: var(--neo-success);">
                   ✅ Hadir ({{ u.jumlah_orang }} Orang)
                 </span>
               {% elif u.kehadiran == 'tidak' %}
-                <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;">
+                <span class="badge" style="background: var(--neo-danger-bg); color: var(--neo-danger);">
                   ❌ Tidak Hadir
                 </span>
               {% else %}
-                <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fde68a;">
+                <span class="badge" style="background: var(--neo-warning-bg); color: var(--neo-warning);">
                   ⏳ Ragu-ragu
                 </span>
               {% endif %}
 
               {% if not u.disetujui %}
-                <span class="badge" style="background: rgba(148, 163, 184, 0.2); color: var(--text-muted);">
+                <span class="badge" style="background: var(--neo-soft); color: var(--text-muted);">
                   👁️‍🗨️ Disembunyikan
                 </span>
               {% endif %}

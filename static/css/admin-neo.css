@@ -1,0 +1,484 @@
+/* Presentation only: retain Django's DOM, widgets, permissions and theme.js. */
+.neo-admin {
+  --primary: var(--neo-primary);
+  --secondary: var(--neo-brand);
+  --accent: var(--neo-accent-ink);
+  --primary-fg: var(--neo-primary-text);
+  --body-fg: var(--neo-ink);
+  --body-bg: var(--neo-page);
+  --body-quiet-color: var(--neo-muted);
+  --body-medium-color: var(--neo-ink);
+  --body-loud-color: var(--neo-ink);
+  --header-color: #fff;
+  --header-branding-color: #fff;
+  --header-bg: var(--neo-brand);
+  --header-link-color: #fff;
+  --breadcrumbs-fg: var(--neo-ink);
+  --breadcrumbs-link-fg: var(--neo-accent-ink);
+  --breadcrumbs-bg: var(--neo-soft);
+  --link-fg: var(--neo-accent-ink);
+  --link-hover-color: var(--neo-ink);
+  --link-selected-fg: var(--neo-accent-ink);
+  --hairline-color: var(--neo-border);
+  --border-color: var(--neo-border);
+  --darkened-bg: var(--neo-soft);
+  --selected-bg: var(--neo-soft);
+  --selected-row: var(--neo-soft);
+  --button-fg: var(--neo-primary-text);
+  --button-bg: var(--neo-primary);
+  --button-hover-bg: var(--neo-primary-hover);
+  --default-button-bg: var(--neo-primary);
+  --default-button-hover-bg: var(--neo-primary-hover);
+  --close-button-bg: var(--neo-primary);
+  --close-button-hover-bg: var(--neo-primary-hover);
+  --delete-button-bg: #991b1b;
+  --delete-button-hover-bg: #7f1d1d;
+  --object-tools-fg: var(--neo-primary-text);
+  --object-tools-bg: var(--neo-primary);
+  --object-tools-hover-bg: var(--neo-primary-hover);
+  --neo-admin-success-ink: #14532d;
+  --neo-admin-success-bg: #dcfce7;
+  --neo-admin-warning-ink: #713f12;
+  --neo-admin-warning-bg: #fef3c7;
+  --neo-admin-error-ink: #991b1b;
+  --neo-admin-error-bg: #fee2e2;
+  --error-fg: var(--neo-admin-error-ink);
+  --message-success-bg: var(--neo-admin-success-bg);
+  --message-warning-bg: var(--neo-admin-warning-bg);
+  --message-error-bg: var(--neo-admin-error-bg);
+  color: var(--neo-ink);
+  background: var(--neo-page);
+}
+
+/* Mirror Django's native auto preference; explicit light never inherits dark statuses. */
+html[data-theme="dark"] .neo-admin {
+  --neo-admin-success-ink: #bbf7d0;
+  --neo-admin-success-bg: #163b2b;
+  --neo-admin-warning-ink: #fde68a;
+  --neo-admin-warning-bg: #4a351a;
+  --neo-admin-error-ink: #fecaca;
+  --neo-admin-error-bg: #4a2027;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] .neo-admin,
+  html:not([data-theme]) .neo-admin {
+    --neo-admin-success-ink: #bbf7d0;
+    --neo-admin-success-bg: #163b2b;
+    --neo-admin-warning-ink: #fde68a;
+    --neo-admin-warning-bg: #4a351a;
+    --neo-admin-error-ink: #fecaca;
+    --neo-admin-error-bg: #4a2027;
+  }
+}
+
+/* Inline thumbnail rounding is cosmetic too; never alter visibility rules. */
+.neo-admin,
+.neo-admin *,
+.neo-admin *::before,
+.neo-admin *::after {
+  border-radius: 0 !important;
+  text-shadow: none;
+}
+
+.neo-admin :is(h1, h2, h3, h4, h5, h6),
+.neo-admin #site-name,
+.neo-admin .module caption,
+.neo-admin .fieldset-heading,
+.neo-admin .inline-heading {
+  font-weight: 800;
+}
+
+.neo-admin #header {
+  background: var(--neo-brand);
+  color: #fff;
+  border-bottom: 3px solid var(--neo-border);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.neo-admin #header :is(a:link, a:visited, a:hover, a:focus, button, #site-name),
+.neo-admin #logout-form button {
+  color: #fff;
+}
+
+.neo-admin #branding,
+.neo-admin #user-tools {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.neo-admin #header a:hover,
+.neo-admin #logout-form button:hover {
+  text-decoration: underline;
+}
+
+.neo-admin .theme-toggle {
+  border: 3px solid #fff;
+  background: var(--neo-brand);
+  padding: 7px;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 3px 3px 0 #fff;
+  flex-shrink: 0;
+}
+
+.neo-admin .theme-toggle svg {
+  fill: #fff;
+  color: var(--neo-brand);
+}
+
+.neo-admin .breadcrumbs {
+  color: var(--neo-ink);
+  background: var(--neo-soft);
+  border-bottom: 3px solid var(--neo-border);
+  padding-block: 14px;
+}
+
+.neo-admin .breadcrumbs :is(a:link, a:visited) {
+  color: var(--neo-accent-ink);
+  font-weight: 700;
+}
+
+.neo-admin .main,
+.neo-admin .content,
+.neo-admin #content,
+.neo-admin #content-main,
+.neo-admin .changelist-form-container {
+  min-width: 0;
+}
+
+.neo-admin .module,
+.neo-admin .inline-group,
+.neo-admin #content-related,
+.neo-admin #toolbar,
+.neo-admin #changelist-filter,
+.neo-admin .submit-row,
+.neo-admin .calendarbox,
+.neo-admin .clockbox,
+.neo-admin .selector-available,
+.neo-admin .selector-chosen,
+.neo-admin .select2-dropdown {
+  background-color: var(--neo-surface);
+  border: 3px solid var(--neo-border);
+  box-shadow: var(--neo-shadow);
+}
+
+.neo-admin .module {
+  margin-bottom: 24px;
+}
+
+.neo-admin .module h2,
+.neo-admin .module caption,
+.neo-admin fieldset .fieldset-heading,
+.neo-admin fieldset .inline-heading,
+.neo-admin :not(.inline-related) .collapse summary {
+  background: var(--neo-brand);
+  color: #fff;
+  border-bottom: 3px solid var(--neo-border);
+}
+
+.neo-admin .module h2 label { color: inherit; }
+.neo-admin .selector-chosen-title label { color: var(--neo-primary-text); }
+.neo-admin [style*="#555"] { color: var(--neo-muted) !important; }
+/* Backend-provided warning badges keep their semantics without low-contrast ink. */
+.neo-admin [style*="#b87418"] { color: var(--neo-warning) !important; }
+.neo-admin [style*="#2b8a3e"] { color: var(--neo-success) !important; }
+
+.neo-admin .collapse summary .fieldset-heading,
+.neo-admin .collapse summary .inline-heading {
+  background: transparent;
+  border: 0;
+  color: inherit;
+}
+
+.neo-admin .inline-related h4,
+.neo-admin .inline-related:not(.tabular) .collapse summary,
+.neo-admin #content-related h2 {
+  background: var(--neo-soft);
+  color: var(--neo-ink);
+  border-bottom: 3px solid var(--neo-border);
+}
+
+.neo-admin #nav-sidebar {
+  background: var(--neo-surface);
+  border-inline-end: 3px solid var(--neo-border);
+}
+
+.neo-admin #nav-sidebar .module {
+  box-shadow: none;
+  border-inline: 0;
+  margin-bottom: 16px;
+}
+
+.neo-admin #toggle-nav-sidebar {
+  background: var(--neo-soft);
+  color: var(--neo-ink);
+  border-inline-end: 3px solid var(--neo-border);
+}
+
+.neo-admin input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="hidden"]),
+.neo-admin textarea,
+.neo-admin select,
+.neo-admin #toolbar #searchbar,
+.neo-admin #changelist .actions select,
+.neo-admin #nav-filter,
+.neo-admin .select2-container--admin-autocomplete .select2-selection {
+  background-color: var(--neo-surface);
+  color: var(--neo-ink);
+  border: 3px solid var(--neo-border);
+  box-shadow: none;
+  padding: 8px;
+  min-height: 44px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.neo-admin :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--neo-accent-ink);
+}
+
+.neo-admin label {
+  color: var(--neo-ink);
+  font-weight: 700;
+}
+
+.neo-admin .button,
+.neo-admin input[type="submit"],
+.neo-admin input[type="button"],
+.neo-admin .submit-row :is(a.deletelink, a.closelink),
+.neo-admin .object-tools a,
+.neo-admin #toolbar form input[type="submit"],
+.neo-admin #changelist .actions .button,
+.neo-admin .paginator a {
+  background-color: var(--neo-primary);
+  color: var(--neo-primary-text);
+  border: 3px solid var(--neo-border);
+  box-shadow: var(--neo-small-shadow);
+  font-weight: 800;
+  padding: 10px 14px;
+  height: auto;
+  min-height: 44px;
+  box-sizing: border-box;
+  line-height: 1.4;
+  transition: background-color 100ms linear, box-shadow 100ms linear;
+}
+
+.neo-admin .button:hover,
+.neo-admin input[type="submit"]:hover,
+.neo-admin input[type="button"]:hover,
+.neo-admin .object-tools a:hover,
+.neo-admin #toolbar form input[type="submit"]:hover,
+.neo-admin #changelist .actions .button:hover,
+.neo-admin .paginator a:hover {
+  background-color: var(--neo-primary-hover);
+  color: var(--neo-primary-text);
+}
+
+.neo-admin .button:active,
+.neo-admin input[type="submit"]:active,
+.neo-admin .object-tools a:active {
+  box-shadow: none;
+}
+
+.neo-admin .submit-row a.deletelink,
+.neo-admin .delete-confirmation input[type="submit"],
+.neo-admin.delete-confirmation input[type="submit"] {
+  background-color: var(--delete-button-bg);
+  color: #fff;
+}
+
+.neo-admin .submit-row a.deletelink:hover,
+.neo-admin.delete-confirmation input[type="submit"]:hover {
+  background-color: var(--delete-button-hover-bg);
+  color: #fff;
+}
+
+.neo-admin .submit-row,
+.neo-admin #changelist .actions,
+.neo-admin #changelist .paginator {
+  padding: 14px 16px 18px;
+  overflow: visible;
+}
+
+.neo-admin #changelist .actions {
+  width: auto;
+  background: var(--neo-soft);
+  border-bottom: 3px solid var(--neo-border);
+}
+
+.neo-admin #changelist .actions label,
+.neo-admin #toolbar form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.neo-admin #changelist .actions select {
+  height: auto;
+  margin-inline-start: 0;
+}
+
+.neo-admin #changelist .results,
+.neo-admin .inline-group .tabular,
+.neo-admin #change-history,
+.neo-admin .selector {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.neo-admin #result_list th,
+.neo-admin #result_list td,
+.neo-admin .inline-group .tabular th,
+.neo-admin .inline-group .tabular td {
+  border-bottom: 3px solid var(--neo-border);
+  padding-block: 12px;
+}
+
+.neo-admin #result_list thead th,
+.neo-admin .inline-group .tabular thead th {
+  background: var(--neo-soft);
+  color: var(--neo-ink);
+  font-weight: 800;
+}
+
+.neo-admin .selector-chooseall,
+.neo-admin .selector-clearall {
+  height: auto;
+  min-height: 44px;
+  line-height: 1.4;
+  white-space: normal;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.neo-admin .calendar td a { transition: none; }
+.neo-admin .calendar td a:hover,
+.neo-admin .calendar td a:focus { background-color: var(--neo-primary); color: var(--neo-primary-text); opacity: 1; }
+.neo-admin :is(.calendar-shortcuts,.timelist) { white-space: normal; }
+
+.neo-admin #changelist .paginator {
+  background: var(--neo-surface);
+  color: var(--neo-muted);
+  border-top: 3px solid var(--neo-border);
+  line-height: 3.5;
+}
+
+.neo-admin .form-row {
+  border-bottom: 3px solid var(--neo-border);
+  padding: 14px;
+}
+
+.neo-admin .messagelist li,
+.neo-admin .errornote,
+.neo-admin .errorlist {
+  border: 3px solid var(--neo-border);
+  box-shadow: var(--neo-small-shadow);
+  font-weight: 700;
+}
+
+.neo-admin .messagelist li,
+.neo-admin .messagelist li.success {
+  color: var(--neo-admin-success-ink);
+  background-color: var(--neo-admin-success-bg);
+}
+
+.neo-admin .messagelist li.info {
+  color: var(--neo-ink);
+  background-color: var(--neo-soft);
+}
+
+.neo-admin .messagelist li.warning {
+  color: var(--neo-admin-warning-ink);
+  background-color: var(--neo-admin-warning-bg);
+}
+
+.neo-admin .messagelist li.error,
+.neo-admin .errornote,
+.neo-admin .errorlist {
+  color: var(--neo-admin-error-ink);
+  background-color: var(--neo-admin-error-bg);
+}
+
+.neo-admin :is(a, button, input, select, textarea, summary):focus-visible,
+.neo-admin .select2-container--admin-autocomplete.select2-container--focus .select2-selection {
+  outline: 3px solid var(--neo-accent-ink);
+  outline-offset: 3px;
+}
+
+.neo-admin #header :is(a, button):focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.neo-admin .skip-to-content-link {
+  background: var(--neo-brand);
+  color: #fff;
+  border: 3px solid #fff;
+}
+
+.neo-admin.login #container {
+  width: min(32rem, calc(100% - 36px));
+  min-width: 0;
+  margin: 64px auto;
+  background: var(--neo-surface);
+  border: 3px solid var(--neo-border);
+  box-shadow: var(--neo-shadow);
+  overflow: visible;
+}
+
+.neo-admin.login #header {
+  padding: 18px;
+}
+
+.neo-admin.login .submit-row {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 16px 0 4px;
+}
+
+@media (max-width: 767px) {
+  .neo-admin #content {
+    padding: 20px 18px 32px 12px;
+  }
+
+  .neo-admin #header {
+    padding: 16px;
+  }
+
+  .neo-admin #changelist-filter {
+    margin: 16px 0 0;
+    max-width: calc(100% - 6px);
+    box-sizing: border-box;
+  }
+
+  .neo-admin .object-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .neo-admin .object-tools li {
+    margin: 0;
+    padding: 0;
+  }
+
+  .neo-admin .submit-row {
+    gap: 12px;
+  }
+
+  .neo-admin.login #container {
+    margin-block: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neo-admin *,
+  .neo-admin *::before,
+  .neo-admin *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -10,7 +10,7 @@
   </p>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 24px;">
   <!-- FORM TAMBAH ACARA -->
   <div class="card">
     <div class="card-header">
@@ -37,7 +37,7 @@
 
       <div class="form-group">
         <label class="form-label" for="nama_tempat">Nama Tempat / Gedung</label>
-        <input type="text" id="nama_tempat" name="nama_tempat" class="form-input" required placeholder="Contoh: Masjid Agung / Grand Ballroom Hotel">
+        <input type="text" id="nama_tempat" name="nama_tempat" class="form-input" required placeholder="Contoh: Masjid Agung">
       </div>
 
       <div class="form-group">
@@ -78,7 +78,7 @@
                   Urutan ke-{{ acr.urutan }}
                 </span>
                 <h3 style="font-size: 17px; font-weight: 700; margin: 4px 0 6px;">{{ acr.nama }}</h3>
-                <p style="font-size: 13.5px; color: #34d399; font-weight: 600;">
+                <p style="font-size: 13.5px; color: var(--neo-success); font-weight: 600;">
                   📅 {{ acr.waktu_mulai|date:"l, d F Y — H:i" }} WIB
                   {% if acr.waktu_selesai %} s/d {{ acr.waktu_selesai|date:"H:i" }} WIB{% endif %}
                 </p>
@@ -97,7 +97,7 @@
             </div>
 
             {% if acr.url_maps %}
-              <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);">
+              <div style="margin-top: 12px; padding-top: 10px; border-top: 3px solid var(--border);">
                 <a href="{{ acr.url_maps }}" target="_blank" rel="noopener" style="font-size: 12.5px; color: var(--accent); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
                   🗺️ Buka Tautan Google Maps &rarr;
                 </a>

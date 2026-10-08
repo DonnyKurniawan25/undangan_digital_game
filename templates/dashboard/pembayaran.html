@@ -14,8 +14,8 @@
 <!-- KARTU STATUS MASA AKTIF SAAT INI -->
 <div class="card" style="border-left: 4px solid {% if undangan.is_online_aktif %}#10b981{% elif undangan.is_masa_tenggang %}#f59e0b{% elif undangan.is_siap_dibersihkan %}#ef4444{% elif undangan.status_langganan == 'menunggu' %}#f59e0b{% else %}#ef4444{% endif %};">
   <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-    <div style="flex: 1; min-width: 260px;">
-      <span class="badge" style="background: {% if undangan.status_langganan == 'aktif' and undangan.is_online_aktif %}rgba(16, 185, 129, 0.15); color: var(--success);{% elif undangan.is_masa_tenggang %}rgba(245, 158, 11, 0.15); color: var(--gold);{% elif undangan.is_siap_dibersihkan %}rgba(239, 68, 68, 0.15); color: var(--danger);{% elif undangan.status_langganan == 'menunggu' %}rgba(245, 158, 11, 0.15); color: var(--gold);{% else %}rgba(59, 130, 246, 0.15); color: #3b82f6;{% endif %} margin-bottom: 8px;">
+    <div style="flex: 1; min-width: min(100%, 260px);">
+      <span class="badge" style="background: {% if undangan.status_langganan == 'aktif' and undangan.is_online_aktif %}rgba(16, 185, 129, 0.15); color: var(--success);{% elif undangan.is_masa_tenggang %}rgba(245, 158, 11, 0.15); color: var(--gold);{% elif undangan.is_siap_dibersihkan %}rgba(239, 68, 68, 0.15); color: var(--danger);{% elif undangan.status_langganan == 'menunggu' %}rgba(245, 158, 11, 0.15); color: var(--gold);{% else %}rgba(59, 130, 246, 0.15); color: var(--neo-info);{% endif %} margin-bottom: 8px;">
         {{ undangan.status_label }}
       </span>
 
@@ -58,7 +58,7 @@
 </div>
 
 <!-- INFORMASI MASA TENGGANG 1 BULAN & KEBIJAKAN PEMBERSIHAN SERVER -->
-<div style="background: var(--card-inner); border-left: 4px solid var(--accent); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; border: 1px solid var(--border);">
+<div style="background: var(--card-inner); border-left: 4px solid var(--accent); border-radius: 0; padding: 16px 20px; margin-bottom: 24px; border: 3px solid var(--border);">
   <div style="display: flex; gap: 14px; align-items: flex-start;">
     <div style="font-size: 24px; line-height: 1;">ℹ️</div>
     <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
@@ -70,12 +70,12 @@
   </div>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 24px;">
   <!-- FORM KONFIRMASI PEMBAYARAN -->
   <div class="card" id="form-bayar">
     <div class="card-header">
       <h2 class="card-title">💳 Formulir Aktivasi / Perpanjangan</h2>
-      <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--gold);">Pilihan 1 Bln, 6 Bln, 1 Thn</span>
+      <span class="badge" style="background: var(--neo-warning-bg); color: var(--gold);">Pilihan 1 Bln, 6 Bln, 1 Thn</span>
     </div>
 
     <form method="POST" enctype="multipart/form-data" id="payment-form">
@@ -89,7 +89,7 @@
         
         <div style="display: flex; flex-direction: column; gap: 10px;" id="paket-container">
           <!-- Paket 1 Bulan -->
-          <label class="paket-card" data-durasi="1" data-harga="30000" data-label="1 Bulan (30 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
+          <label class="paket-card" data-durasi="1" data-harga="30000" data-label="1 Bulan (30 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 3px solid var(--border); border-radius: 0; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
             <div style="display: flex; align-items: center; gap: 12px;">
               <input type="radio" name="durasi_bulan" value="1" checked style="accent-color: var(--accent); width: 18px; height: 18px;">
               <div>
@@ -103,13 +103,13 @@
           </label>
 
           <!-- Paket 6 Bulan -->
-          <label class="paket-card" data-durasi="6" data-harga="150000" data-label="6 Bulan (180 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
+          <label class="paket-card" data-durasi="6" data-harga="150000" data-label="6 Bulan (180 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 3px solid var(--border); border-radius: 0; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
             <div style="display: flex; align-items: center; gap: 12px;">
               <input type="radio" name="durasi_bulan" value="6" style="accent-color: var(--accent); width: 18px; height: 18px;">
               <div>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <b style="font-size: 14px; color: var(--text);">Paket 6 Bulan (180 Hari)</b>
-                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); font-size: 10px; padding: 2px 6px;">Hemat Rp 30rb</span>
+                  <span class="badge" style="background: var(--neo-success-bg); color: var(--success); font-size: 10px; padding: 2px 6px;">Hemat Rp 30rb</span>
                 </div>
                 <span style="font-size: 12px; color: var(--text-muted);">Cocok untuk persiapan jauh-jauh hari</span>
               </div>
@@ -120,13 +120,13 @@
           </label>
 
           <!-- Paket 1 Tahun -->
-          <label class="paket-card" data-durasi="12" data-harga="250000" data-label="1 Tahun (365 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
+          <label class="paket-card" data-durasi="12" data-harga="250000" data-label="1 Tahun (365 Hari)" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 3px solid var(--border); border-radius: 0; cursor: pointer; transition: all 0.2s; background: var(--card-bg);">
             <div style="display: flex; align-items: center; gap: 12px;">
               <input type="radio" name="durasi_bulan" value="12" style="accent-color: var(--accent); width: 18px; height: 18px;">
               <div>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <b style="font-size: 14px; color: var(--text);">Paket 1 Tahun (365 Hari)</b>
-                  <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--gold); font-size: 10px; padding: 2px 6px;">Paling Hemat 🔥</span>
+                  <span class="badge" style="background: var(--neo-warning-bg); color: var(--gold); font-size: 10px; padding: 2px 6px;">Paling Hemat 🔥</span>
                 </div>
                 <span style="font-size: 12px; color: var(--text-muted);">Kenang-kenangan online satu tahun penuh (Diskon Rp 110rb)</span>
               </div>
@@ -139,7 +139,7 @@
       </div>
 
       <!-- PETUNJUK TRANSFER DINAMIS -->
-      <div style="padding: 16px; background: var(--card-inner); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;">
+      <div style="padding: 16px; background: var(--card-inner); border-radius: 0; border: 3px solid var(--border); margin-bottom: 20px;">
         <b style="font-size: 13.5px; color: var(--text); display: block; margin-bottom: 8px;">
           📌 Rekening Resmi Pembayaran:
         </b>
@@ -148,7 +148,7 @@
           &bull; <b>Bank Mandiri:</b> <code>137-00-1234567-8</code> a.n. <b>Admin Undangan Digital</b><br>
           &bull; <b>QRIS / GoPay / OVO:</b> Scan QRIS di halaman depan atau transfer antar bank.
         </div>
-        <div style="margin-top: 12px; padding: 10px 12px; background: rgba(245, 158, 11, 0.1); border: 1px dashed var(--accent); border-radius: 8px; font-size: 13px; color: var(--text);">
+        <div style="margin-top: 12px; padding: 10px 12px; background: var(--neo-warning-bg); border: 3px dashed var(--accent); border-radius: 0; font-size: 13px; color: var(--text);">
           Nominal Transfer Tepat: <b style="font-size: 16px; color: var(--accent);" id="display-nominal">Rp 30.000</b>
           <span style="display: block; font-size: 11.5px; color: var(--text-muted); margin-top: 2px;" id="display-keterangan">Untuk aktivasi masa aktif 1 Bulan (30 Hari)</span>
         </div>
@@ -185,7 +185,7 @@
 
       <div class="form-group">
         <label class="form-label" for="catatan">Nama Pengirim / Catatan (Opsional)</label>
-        <input type="text" id="catatan" name="catatan" class="form-input" placeholder="Contoh: Transfer dari rekening a.n. Budi">
+        <input type="text" id="catatan" name="catatan" class="form-input" placeholder="Nama pengirim transfer">
       </div>
 
       <button type="submit" id="btn-submit-bayar" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px; font-size: 15px; padding: 12px;">
@@ -213,15 +213,15 @@
               </div>
 
               {% if p.status == 'disetujui' %}
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                <span class="badge" style="background: var(--neo-success-bg); color: var(--success);">
                   ✅ Lunas / Aktif
                 </span>
               {% elif p.status == 'ditolak' %}
-                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">
+                <span class="badge" style="background: var(--neo-danger-bg); color: var(--danger);">
                   ❌ Ditolak
                 </span>
               {% else %}
-                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--gold);">
+                <span class="badge" style="background: var(--neo-warning-bg); color: var(--gold);">
                   ⏳ Menunggu Verifikasi
                 </span>
               {% endif %}
@@ -235,7 +235,7 @@
             </div>
 
             {% if p.bukti_bayar %}
-              <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);">
+              <div style="margin-top: 10px; padding-top: 8px; border-top: 3px solid var(--border);">
                 <a href="{{ p.bukti_bayar.url }}" target="_blank" rel="noopener" style="font-size: 12px; color: var(--accent); font-weight: 600;">
                   Lihat Foto Bukti Transfer &rarr;
                 </a>

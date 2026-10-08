@@ -13,8 +13,8 @@
 <!-- FORM PENCARIAN & FILTER -->
 <div class="card" style="padding: 16px 20px;">
   <form method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-    <div style="display: flex; gap: 10px; flex: 1; min-width: 260px;">
-      <input type="text" name="q" value="{{ q }}" class="form-input" placeholder="Cari nama pengirim atau isi pesan ucapan...">
+    <div style="display: flex; gap: 10px; flex: 1; min-width: min(100%, 260px);">
+      <input type="text" name="q" value="{{ q }}" class="form-input" placeholder="Cari nama/pesan">
       <button type="submit" class="btn btn-primary btn-sm">Cari</button>
       {% if q or status_filter != 'semua' or undangan_filter %}
         <a href="{% url 'undangan:superadmin_ucapan' %}" class="btn btn-secondary btn-sm">Reset</a>
@@ -22,7 +22,7 @@
     </div>
 
     <!-- FILTER ACARA & STATUS -->
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+    <div class="neo-filter-select" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
       <select name="undangan_id" class="form-select" style="width: auto;" onchange="this.form.submit()">
         <option value="">Semua Proyek Undangan</option>
         {% for und in semua_undangan %}
@@ -43,7 +43,7 @@
 
 <!-- DAFTAR UCAPAN GLOBAL -->
 <div class="card" style="padding: 0; overflow: hidden;">
-  <div style="padding: 16px 20px; border-bottom: 1px solid var(--border);">
+  <div style="padding: 16px 20px; border-bottom: 3px solid var(--border);">
     <h2 class="card-title" style="margin-bottom: 0;">
       💬 Pesan Masuk ({{ total_ucapan }} Ditemukan)
     </h2>
@@ -52,32 +52,32 @@
   {% if daftar_ucapan %}
     <div style="display: flex; flex-direction: column;">
       {% for u in daftar_ucapan %}
-        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 260px;">
+        <div style="padding: 16px 20px; border-bottom: 3px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: min(100%, 260px);">
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
               <b style="font-size: 14.5px; color: var(--text);">{{ u.nama }}</b>
 
               <!-- Target Undangan -->
-              <span class="badge" style="background: var(--card-inner); color: var(--accent); border: 1px solid var(--border);">
+              <span class="badge" style="background: var(--card-inner); color: var(--accent); border: 3px solid var(--border);">
                 💌 {{ u.undangan.judul|default:"Global" }}
               </span>
 
               {% if u.kehadiran == 'hadir' %}
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                <span class="badge" style="background: var(--neo-success-bg); color: var(--success);">
                   ✅ Hadir ({{ u.jumlah_orang }} Orang)
                 </span>
               {% elif u.kehadiran == 'tidak' %}
-                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">
+                <span class="badge" style="background: var(--neo-danger-bg); color: var(--danger);">
                   ❌ Tidak Hadir
                 </span>
               {% else %}
-                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">
+                <span class="badge" style="background: var(--neo-warning-bg); color: var(--warning);">
                   ⏳ Ragu-ragu
                 </span>
               {% endif %}
 
               {% if not u.disetujui %}
-                <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: var(--danger);">
+                <span class="badge" style="background: var(--neo-danger-bg); color: var(--danger);">
                   🚫 Disembunyikan
                 </span>
               {% endif %}

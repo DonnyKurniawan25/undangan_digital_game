@@ -13,8 +13,8 @@
 <!-- FORM PENCARIAN & FILTER -->
 <div class="card" style="padding: 16px 20px;">
   <form method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-    <div style="display: flex; gap: 10px; flex: 1; min-width: 260px;">
-      <input type="text" name="q" value="{{ q }}" class="form-input" placeholder="Cari nama, username, atau email...">
+    <div style="display: flex; gap: 10px; flex: 1; min-width: min(100%, 260px);">
+      <input type="text" name="q" value="{{ q }}" class="form-input" placeholder="Cari nama/email">
       <button type="submit" class="btn btn-primary btn-sm">Cari</button>
       {% if q or status_filter != 'semua' %}
         <a href="{% url 'undangan:superadmin_users' %}" class="btn btn-secondary btn-sm">Reset</a>
@@ -41,7 +41,7 @@
 
 <!-- TABEL PENGGUNA -->
 <div class="card" style="padding: 0; overflow: hidden;">
-  <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+  <div style="padding: 16px 20px; border-bottom: 3px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
     <h2 class="card-title" style="margin-bottom: 0;">
       👥 Daftar Pengguna ({{ total_hasil }} User Ditemukan)
     </h2>
@@ -75,9 +75,9 @@
 
               <td>
                 {% if u.is_superuser %}
-                  <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--gold);">👑 Superadmin</span>
+                  <span class="badge" style="background: var(--neo-warning-bg); color: var(--gold);">👑 Superadmin</span>
                 {% else %}
-                  <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">Calon Pengantin</span>
+                  <span class="badge" style="background: var(--neo-soft); color: var(--neo-info);">Calon Pengantin</span>
                 {% endif %}
               </td>
 
@@ -91,9 +91,9 @@
 
               <td>
                 {% if u.is_active %}
-                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">🟢 Aktif</span>
+                  <span class="badge" style="background: var(--neo-success-bg); color: var(--success);">🟢 Aktif</span>
                 {% else %}
-                  <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">🔴 Diblokir</span>
+                  <span class="badge" style="background: var(--neo-danger-bg); color: var(--danger);">🔴 Diblokir</span>
                 {% endif %}
               </td>
 

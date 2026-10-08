@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% load i18n aset %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_("Django site admin") }}{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_("Django administration") }}</a></div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} neo-internal neo-admin{% endblock %}
+
+{# Keep native responsive, form, widget, RTL and theme assets; overrides load last. #}
+{% block responsive %}
+{{ block.super }}
+<link rel="stylesheet" href="{% aset 'css/internal-neo.css' %}">
+<link rel="stylesheet" href="{% aset 'css/admin-neo.css' %}">
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

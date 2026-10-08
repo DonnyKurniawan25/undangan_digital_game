@@ -1,8 +1,9 @@
-{% load static %}<!DOCTYPE html>
+{% load static aset %}<!DOCTYPE html>
 <html lang="id" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f3f7fb">
   <title>{% block title %}Dashboard{% endblock %} — Jelajah Undangan</title>
   
   <!-- Cegah Flash of Unstyled Theme (FOUC) - Default: Light -->
@@ -211,7 +212,7 @@
         previewImg.style.display = 'none';
         if (previewEmpty) {
           previewEmpty.style.display = 'flex';
-          previewEmpty.innerHTML = '<span style="font-size: 28px; margin-bottom: 6px;">⚠️</span><span style="color: #ef4444; font-weight: 600;">Gambar gagal dimuat dari tautan ini.</span><span style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Pastikan URL publik atau hak akses Google Drive sudah disetel \"Siapa saja yang memiliki link\".</span>';
+          previewEmpty.innerHTML = '<span style="font-size: 28px; margin-bottom: 6px;">⚠️</span><span style="color: var(--neo-danger); font-weight: 600;">Gambar gagal dimuat dari tautan ini.</span><span style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Pastikan URL publik atau hak akses Google Drive sudah disetel \"Siapa saja yang memiliki link\".</span>';
         }
       };
       previewImg.src = finalUrl;
@@ -312,9 +313,9 @@
     /* SIDEBAR KIRI (DESKTOP) */
     .dashboard-sidebar {
       width: 270px;
-      min-width: 270px;
+      min-width: min(100%, 270px);
       background: var(--sidebar-bg);
-      border-right: 1px solid var(--sidebar-border);
+      border-right: 3px solid var(--sidebar-border);
       display: flex;
       flex-direction: column;
       position: sticky;
@@ -326,11 +327,11 @@
       transition: background 0.25s, border-color 0.25s;
     }
     .dashboard-sidebar::-webkit-scrollbar { width: 5px; }
-    .dashboard-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .dashboard-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
 
     .sidebar-header {
       padding: 20px 20px 16px;
-      border-bottom: 1px solid var(--sidebar-border);
+      border-bottom: 3px solid var(--sidebar-border);
     }
     .brand {
       display: flex;
@@ -342,9 +343,9 @@
     .brand-icon {
       font-size: 20px;
       background: var(--accent-soft);
-      border: 1px solid rgba(79, 70, 229, 0.25);
+      border: 3px solid var(--neo-border);
       padding: 4px 8px;
-      border-radius: 8px;
+      border-radius: 0;
     }
     .brand span { color: var(--accent); }
 
@@ -356,14 +357,14 @@
       padding: 12px 14px;
       margin: 14px 16px 6px;
       background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border: 3px solid var(--border);
+      border-radius: 0;
     }
     .user-avatar-circle {
       width: 38px;
       height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      border-radius: 0;
+      background: var(--neo-soft);
       color: #ffffff;
       display: flex;
       align-items: center;
@@ -371,7 +372,7 @@
       font-weight: 800;
       font-size: 16px;
       flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+      box-shadow: var(--neo-small-shadow);
     }
     .user-meta {
       flex: 1;
@@ -396,12 +397,12 @@
     .status-indicator-dot {
       width: 7px;
       height: 7px;
-      border-radius: 50%;
+      border-radius: 0;
       display: inline-block;
     }
-    .dot-green { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
-    .dot-yellow { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6); }
-    .dot-red { background: #ef4444; }
+    .dot-green { background: var(--neo-success-bg); box-shadow: var(--neo-small-shadow); }
+    .dot-yellow { background: var(--neo-warning-bg); box-shadow: var(--neo-small-shadow); }
+    .dot-red { background: var(--neo-danger-bg); }
 
     /* SIDEBAR NAVIGATION LIST */
     .sidebar-nav {
@@ -424,7 +425,7 @@
       align-items: center;
       gap: 12px;
       padding: 10px 12px;
-      border-radius: 10px;
+      border-radius: 0;
       font-size: 13.5px;
       font-weight: 600;
       color: var(--text-secondary);
@@ -448,7 +449,7 @@
       top: 8px;
       bottom: 8px;
       width: 4px;
-      border-radius: 0 4px 4px 0;
+      border-radius: 0;
       background: var(--accent);
     }
     .sidebar-icon {
@@ -465,7 +466,7 @@
       font-weight: 800;
       width: 18px;
       height: 18px;
-      border-radius: 50%;
+      border-radius: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -474,32 +475,32 @@
     /* SIDEBAR FOOTER ACTIONS */
     .sidebar-footer {
       padding: 16px 14px;
-      border-top: 1px solid var(--sidebar-border);
+      border-top: 3px solid var(--sidebar-border);
       background: var(--sidebar-bg);
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
     .sidebar-btn-preview {
-      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      background: var(--neo-primary);
       color: #ffffff !important;
       font-weight: 700;
       font-size: 13.5px;
       padding: 11px 16px;
-      border-radius: 12px;
+      border-radius: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+      box-shadow: var(--neo-small-shadow);
       text-align: center;
       text-decoration: none;
     }
     .sidebar-btn-preview:hover {
-      background: linear-gradient(135deg, #047857 0%, #059669 100%);
+      background: var(--neo-primary);
       transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.4);
+      box-shadow: var(--neo-small-shadow);
       color: #ffffff !important;
     }
 
@@ -510,12 +511,12 @@
     .btn-theme-toggle {
       flex: 1;
       background: var(--card-inner);
-      border: 1px solid var(--border);
+      border: 3px solid var(--border);
       color: var(--text);
       font-size: 12.5px;
       font-weight: 600;
       padding: 8px 10px;
-      border-radius: 8px;
+      border-radius: 0;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -529,19 +530,19 @@
       color: var(--accent);
     }
     .btn-logout-sidebar {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.25);
+      background: var(--neo-danger-bg);
+      border: 3px solid var(--neo-danger);
       color: var(--danger);
       font-size: 12.5px;
       font-weight: 600;
       padding: 8px 12px;
-      border-radius: 8px;
+      border-radius: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       transition: background 0.2s;
     }
-    .btn-logout-sidebar:hover { background: rgba(239, 68, 68, 0.2); }
+    .btn-logout-sidebar:hover { background: var(--neo-danger-bg); }
 
     /* ============================================================
        MAIN CONTENT AREA (KANAN)
@@ -557,8 +558,8 @@
     /* DESKTOP TOP HEADER */
     .desktop-topbar {
       background: var(--topbar-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      backdrop-filter: none;
+      border-bottom: 3px solid var(--border);
       padding: 14px 28px;
       display: flex;
       align-items: center;
@@ -578,8 +579,8 @@
     .topbar-slug-box code {
       background: var(--card-inner);
       padding: 3px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
+      border-radius: 0;
+      border: 3px solid var(--border);
       color: var(--accent);
       font-weight: 700;
     }
@@ -599,8 +600,8 @@
     .mobile-topbar {
       display: none;
       background: var(--topbar-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      backdrop-filter: none;
+      border-bottom: 3px solid var(--border);
       padding: 12px 16px;
       align-items: center;
       justify-content: space-between;
@@ -617,9 +618,9 @@
       right: 0;
       height: 64px;
       background: var(--bottom-nav-bg);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--border);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      backdrop-filter: none;
+      border-top: 3px solid var(--border);
+      box-shadow: var(--neo-small-shadow);
       z-index: 999;
       justify-content: space-around;
       align-items: center;
@@ -652,7 +653,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
+      backdrop-filter: none;
       z-index: 1000;
       opacity: 0;
       transition: opacity 0.25s ease;
@@ -667,10 +668,10 @@
       max-height: 85vh;
       overflow-y: auto;
       background: var(--sheet-bg);
-      border-top-left-radius: 24px;
-      border-top-right-radius: 24px;
-      border-top: 1px solid var(--border);
-      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-top: 3px solid var(--border);
+      box-shadow: var(--neo-small-shadow);
       z-index: 1001;
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -682,7 +683,7 @@
     .sheet-handle-bar {
       width: 44px;
       height: 5px;
-      border-radius: 10px;
+      border-radius: 0;
       background: var(--border);
       margin: 4px auto 14px;
     }
@@ -692,13 +693,13 @@
       justify-content: space-between;
       margin-bottom: 16px;
       padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 3px solid var(--border);
     }
     .sheet-title { font-size: 16px; font-weight: 800; color: var(--text); }
     .sheet-close-btn {
       background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 50%;
+      border: 3px solid var(--border);
+      border-radius: 0;
       width: 32px;
       height: 32px;
       font-size: 18px;
@@ -723,8 +724,8 @@
       text-align: center;
       padding: 14px 8px;
       background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+      border: 3px solid var(--border);
+      border-radius: 0;
       color: var(--text);
       transition: transform 0.15s, background 0.15s;
     }
@@ -747,7 +748,7 @@
       flex-direction: column;
       gap: 10px;
       padding-top: 12px;
-      border-top: 1px solid var(--border);
+      border-top: 3px solid var(--border);
     }
 
     /* ============================================================
@@ -755,11 +756,11 @@
        ============================================================ */
     .card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      border: 3px solid var(--border);
+      border-radius: 0;
       padding: 24px;
       margin-bottom: 24px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--neo-small-shadow);
       transition: background 0.25s, border-color 0.25s;
     }
     .card-header {
@@ -768,7 +769,7 @@
       justify-content: space-between;
       margin-bottom: 20px;
       padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 3px solid var(--border);
     }
     .card-title {
       font-size: 17px;
@@ -781,7 +782,7 @@
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 18px;
     }
     .form-group {
@@ -814,8 +815,8 @@
     .form-input, .form-select, .form-textarea {
       width: 100%;
       background: var(--input-bg);
-      border: 1.5px solid var(--input-border);
-      border-radius: 10px;
+      border: 3px solid var(--input-border);
+      border-radius: 0;
       padding: 11px 14px;
       color: var(--text);
       font-size: 14px;
@@ -825,14 +826,14 @@
     .form-input:focus, .form-select:focus, .form-textarea:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3.5px rgba(79, 70, 229, 0.2);
+      box-shadow: var(--neo-small-shadow);
     }
 
     /* STATUS INVALID / ERROR PADA INPUT */
     .form-input.is-invalid, .form-select.is-invalid, .form-textarea.is-invalid {
-      border-color: #ef4444 !important;
-      background-color: rgba(239, 68, 68, 0.04) !important;
-      box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.25) !important;
+      border-color: var(--neo-danger) !important;
+      background-color: var(--neo-danger-bg);
+      box-shadow: var(--neo-small-shadow);
       animation: shakeInput 0.3s ease;
     }
     @keyframes shakeInput {
@@ -847,7 +848,7 @@
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: #ef4444;
+      color: var(--neo-danger);
       font-weight: 700;
       margin-top: 6px;
       animation: fadeInError 0.2s ease;
@@ -860,7 +861,7 @@
     /* BUTTONS */
     .btn {
       padding: 10px 18px;
-      border-radius: 10px;
+      border-radius: 0;
       font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
@@ -873,32 +874,32 @@
       text-decoration: none;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      background: var(--neo-soft);
       color: #ffffff !important;
-      box-shadow: 0 4px 14px -2px rgba(79, 70, 229, 0.35);
+      box-shadow: var(--neo-small-shadow);
     }
     .btn-primary:hover {
       transform: translateY(-1.5px);
-      box-shadow: 0 8px 22px -3px rgba(79, 70, 229, 0.45);
+      box-shadow: var(--neo-small-shadow);
       color: #ffffff !important;
     }
     .btn-primary:active {
       transform: translateY(0);
-      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+      box-shadow: var(--neo-small-shadow);
     }
     .btn-secondary {
       background: var(--card-inner);
-      border: 1px solid var(--border);
+      border: 3px solid var(--border);
       color: var(--text);
     }
     .btn-secondary:hover { background: var(--border); }
     .btn-danger {
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.25);
+      background: var(--neo-danger-bg);
+      border: 3px solid var(--neo-danger);
       color: var(--danger);
     }
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
-    .btn-sm { padding: 6px 12px; font-size: 12.5px; border-radius: 8px; }
+    .btn-danger:hover { background: var(--neo-danger-bg); }
+    .btn-sm { padding: 6px 12px; font-size: 12.5px; border-radius: 0; }
 
     /* ============================================================
        MODERN UPLOAD & MEDIA PICKER SYSTEM
@@ -908,8 +909,8 @@
       display: inline-flex;
       background: var(--card-inner);
       padding: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+      border-radius: 0;
+      border: 3px solid var(--border);
       gap: 4px;
       margin-bottom: 14px;
       max-width: 100%;
@@ -918,7 +919,7 @@
       border: none;
       background: transparent;
       padding: 8px 16px;
-      border-radius: 9px;
+      border-radius: 0;
       font-size: 13px;
       font-weight: 600;
       color: var(--text-muted);
@@ -931,7 +932,7 @@
     }
     .media-source-tab:hover {
       color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--neo-soft);
     }
     [data-theme="light"] .media-source-tab:hover {
       background: rgba(0, 0, 0, 0.04);
@@ -940,13 +941,13 @@
       background: var(--card-bg);
       color: var(--accent);
       font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--neo-small-shadow);
     }
 
     /* Modern Drag & Drop Zone Box */
     .file-dropzone {
-      border: 2px dashed var(--input-border);
-      border-radius: 16px;
+      border: 3px dashed var(--input-border);
+      border-radius: 0;
       padding: 24px 18px;
       text-align: center;
       background: var(--input-bg);
@@ -962,22 +963,22 @@
     }
     .file-dropzone:hover {
       border-color: var(--accent);
-      background: rgba(79, 70, 229, 0.03);
+      background: var(--neo-soft);
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+      box-shadow: var(--neo-small-shadow);
     }
     .file-dropzone.drag-over {
       border-style: solid;
       border-color: var(--accent);
-      background: rgba(79, 70, 229, 0.08) !important;
+      background: var(--neo-soft);
       transform: scale(1.01);
-      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
+      box-shadow: var(--neo-small-shadow);
     }
     .dropzone-icon-wrap {
       width: 48px;
       height: 48px;
-      border-radius: 14px;
-      background: rgba(79, 70, 229, 0.12);
+      border-radius: 0;
+      background: var(--neo-soft);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1009,11 +1010,11 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #10b981;
+      background: var(--neo-success-bg);
+      border: 3px solid var(--neo-success);
+      color: var(--neo-success);
       padding: 6px 14px;
-      border-radius: 20px;
+      border-radius: 0;
       margin-top: 10px;
       font-size: 12.5px;
       font-weight: 700;
@@ -1023,7 +1024,7 @@
     .dropzone-clear-btn {
       background: none;
       border: none;
-      color: #ef4444;
+      color: var(--neo-danger);
       cursor: pointer;
       font-size: 14px;
       padding: 0 4px;
@@ -1040,21 +1041,21 @@
       width: 100%;
       max-width: 250px;
       aspect-ratio: 4 / 5;
-      border-radius: 16px;
+      border-radius: 0;
       overflow: hidden;
-      border: 2px solid var(--border);
+      border: 3px solid var(--border);
       background: var(--card-inner);
       margin: 14px auto 0;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      box-shadow: var(--neo-small-shadow);
       transition: border-color 0.25s, box-shadow 0.25s;
     }
     .img-preview-box:hover {
       border-color: var(--accent);
-      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
+      box-shadow: var(--neo-small-shadow);
     }
     .img-preview-box img {
       width: 100%;
@@ -1086,41 +1087,41 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(8px);
+      background: var(--neo-soft);
+      backdrop-filter: none;
       color: #fff;
       font-size: 11px;
       font-weight: 700;
       padding: 4px 10px;
-      border-radius: 20px;
+      border-radius: 0;
       letter-spacing: 0.2px;
       pointer-events: none;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 3px solid var(--neo-border);
       display: flex;
       align-items: center;
       gap: 5px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--neo-small-shadow);
     }
 
     /* NOTIFIKASI ALERTS STANDAR */
     .alert {
       padding: 14px 18px;
-      border-radius: 12px;
+      border-radius: 0;
       font-size: 14px;
       margin-bottom: 22px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    [data-theme="light"] .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
-    [data-theme="dark"] .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
-    [data-theme="light"] .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-    [data-theme="dark"] .alert-error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+    [data-theme="light"] .alert-success { background: var(--neo-success-bg); border: 3px solid var(--neo-success); color: var(--neo-success); }
+    [data-theme="dark"] .alert-success { background: var(--neo-success-bg); border: 3px solid var(--neo-success); color: var(--neo-success); }
+    [data-theme="light"] .alert-error { background: var(--neo-danger-bg); border: 3px solid var(--neo-danger); color: var(--neo-danger); }
+    [data-theme="dark"] .alert-error { background: var(--neo-danger-bg); border: 3px solid var(--neo-danger); color: var(--neo-danger); }
 
     .badge {
       display: inline-block;
       padding: 4px 10px;
-      border-radius: 7px;
+      border-radius: 0;
       font-size: 11.5px;
       font-weight: 700;
       letter-spacing: 0.3px;
@@ -1131,25 +1132,25 @@
       padding: 24px;
       font-size: 13px;
       color: var(--text-muted);
-      border-top: 1px solid var(--border);
+      border-top: 3px solid var(--border);
       background: var(--card-bg);
       margin-top: auto;
     }
 
     /* CUSTOM SWEETALERT STYLING SESUAI TEMA */
     .swal2-popup {
-      border-radius: 20px !important;
+      border-radius: 0;
       font-family: inherit !important;
       padding: 24px !important;
-      border: 1px solid var(--border) !important;
+      border: 3px solid var(--border) !important;
     }
     [data-theme="dark"] .swal2-popup {
-      background: #151d30 !important;
-      color: #f8fafc !important;
+      background: var(--neo-surface);
+      color: var(--neo-info) !important;
     }
     [data-theme="light"] .swal2-popup {
-      background: #ffffff !important;
-      color: #0f172a !important;
+      background: var(--neo-surface);
+      color: var(--neo-info) !important;
     }
 
     @media (max-width: 991px) {
@@ -1162,8 +1163,9 @@
     }
   </style>
   {% block extra_css %}{% endblock %}
+  <link rel="stylesheet" href="{% aset 'css/internal-neo.css' %}">
 </head>
-<body>
+<body class="neo-internal neo-user">
 
   <div class="dashboard-layout">
 
@@ -1203,10 +1205,10 @@
           <span class="sidebar-icon">📊</span>
           <span>Beranda &amp; Statistik</span>
         </a>
-        <a href="{% url 'undangan:dashboard_ai' %}" class="sidebar-item {% if tab_aktif == 'ai' %}active{% endif %}" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.12) 100%); border: 1px solid rgba(99, 102, 241, 0.25);">
+        <a href="{% url 'undangan:dashboard_ai' %}" class="sidebar-item {% if tab_aktif == 'ai' %}active{% endif %}" style="background: var(--neo-soft); border: 3px solid var(--neo-border);">
           <span class="sidebar-icon">✨</span>
           <span style="font-weight: 700;">Buat via AI (PDF)</span>
-          <span class="badge" style="margin-left: auto; background: var(--accent); color: #fff; font-size: 9.5px; padding: 2px 6px;">NEW</span>
+          <span class="badge" style="margin-left: auto; background: var(--neo-primary); color: #fff; font-size: 9.5px; padding: 2px 6px;">NEW</span>
         </a>
         <a href="{% url 'undangan:dashboard_pengaturan' %}" class="sidebar-item {% if tab_aktif == 'pengaturan' %}active{% endif %}">
           <span class="sidebar-icon">⚙️</span>
@@ -1313,7 +1315,7 @@
         <!-- BANNER STATUS LANGGANAN & TRIAL -->
         {% if not undangan.is_online_aktif %}
           {% if undangan.is_masa_tenggang %}
-            <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-left: 4px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="background: var(--neo-warning-bg); border: 3px solid var(--neo-warning); border-left: 4px solid var(--accent); border-radius: 0; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 24px;">⚠️</span>
                 <div>
@@ -1326,7 +1328,7 @@
               </a>
             </div>
           {% elif undangan.is_siap_dibersihkan %}
-            <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-left: 4px solid var(--danger); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="background: var(--neo-danger-bg); border: 3px solid var(--neo-danger); border-left: 4px solid var(--danger); border-radius: 0; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 24px;">🛑</span>
                 <div>
@@ -1339,7 +1341,7 @@
               </a>
             </div>
           {% else %}
-            <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="background: var(--neo-danger-bg); border: 3px solid var(--neo-danger); border-radius: 0; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 24px;">⚠️</span>
                 <div>
@@ -1353,7 +1355,7 @@
             </div>
           {% endif %}
         {% elif undangan.status_langganan == 'trial' %}
-          <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="background: var(--neo-warning-bg); border: 3px solid var(--neo-warning); border-radius: 0; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 10px;">
               <span style="font-size: 20px;">⏱️</span>
               <div>
@@ -1366,10 +1368,10 @@
             </a>
           </div>
         {% elif undangan.status_langganan == 'menunggu' %}
-          <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+          <div style="background: var(--neo-soft); border: 3px solid var(--neo-border); border-radius: 0; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
             <span style="font-size: 20px;">⏳</span>
             <div>
-              <b style="color: #3b82f6; font-size: 13.5px;">Bukti Pembayaran Sedang Diverifikasi Admin</b>
+              <b style="color: var(--neo-info); font-size: 13.5px;">Bukti Pembayaran Sedang Diverifikasi Admin</b>
               <div style="font-size: 12px; color: var(--text-muted);">Undangan Anda akan segera diaktifkan begitu verifikasi oleh admin selesai.</div>
             </div>
           </div>
@@ -1649,7 +1651,7 @@
               html: `
                 <div style="text-align: left; font-size: 13.5px; line-height: 1.6;">
                   Terdapat kolom wajib yang masih kosong:<br>
-                  <ul style="margin: 8px 0 12px 20px; color: #ef4444; font-weight: 700;">
+                  <ul style="margin: 8px 0 12px 20px; color: var(--neo-danger); font-weight: 700;">
                     ${invalidMessages.slice(0, 4).map(m => `<li>${m}</li>`).join('')}
                     ${invalidMessages.length > 4 ? `<li>...dan ${invalidMessages.length - 4} kolom lainnya</li>` : ''}
                   </ul>

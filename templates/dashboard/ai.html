@@ -6,9 +6,9 @@
 {% block extra_css %}
 <style>
   .ai-hero-banner {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(236, 72, 153, 0.08) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.25);
-    border-radius: 18px;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    border-radius: 0;
     padding: 26px 28px;
     margin-bottom: 24px;
     position: relative;
@@ -18,21 +18,21 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    background: var(--neo-primary);
     color: #ffffff;
     font-size: 11.5px;
     font-weight: 800;
     padding: 5px 14px;
-    border-radius: 20px;
+    border-radius: 0;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: var(--neo-small-shadow);
     margin-bottom: 12px;
   }
 
   .pdf-drop-box {
-    border: 2px dashed rgba(99, 102, 241, 0.4);
-    border-radius: 16px;
+    border: 3px dashed var(--neo-border);
+    border-radius: 0;
     background: var(--input-bg);
     padding: 36px 20px;
     text-align: center;
@@ -42,15 +42,15 @@
   }
   .pdf-drop-box:hover, .pdf-drop-box.drag-over {
     border-color: var(--accent);
-    background: rgba(99, 102, 241, 0.05);
+    background: var(--neo-soft);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+    box-shadow: var(--neo-small-shadow);
   }
   .pdf-drop-icon {
     width: 64px;
     height: 64px;
-    border-radius: 18px;
-    background: rgba(99, 102, 241, 0.12);
+    border-radius: 0;
+    background: var(--neo-soft);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -66,7 +66,7 @@
   .step-badge {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    border-radius: 0;
     background: var(--accent);
     color: #fff;
     display: inline-flex;
@@ -78,8 +78,8 @@
 
   .preview-section-box {
     background: var(--card-inner);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    border: 3px solid var(--border);
+    border-radius: 0;
     padding: 18px;
     margin-bottom: 16px;
   }
@@ -91,14 +91,14 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 3px solid var(--border);
     padding-bottom: 8px;
   }
 
   .chip-tag {
     background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border: 3px solid var(--border);
+    border-radius: 0;
     padding: 6px 12px;
     font-size: 12.5px;
     display: inline-flex;
@@ -151,7 +151,7 @@
   </div>
 {% endif %}
 
-<div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px;">
 
   <!-- KOTAK FORM UPLOAD PDF -->
   <div class="card">
@@ -180,7 +180,7 @@
         </div>
 
         <div id="file-info-badge" style="display: none; margin-top: 16px;">
-          <span style="display: inline-flex; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent); color: var(--accent); font-weight: 700; padding: 6px 16px; border-radius: 20px; font-size: 13px;">
+          <span style="display: inline-flex; align-items: center; gap: 8px; background: var(--neo-soft); border: 3px solid var(--accent); color: var(--accent); font-weight: 700; padding: 6px 16px; border-radius: 0; font-size: 13px;">
             📄 <span id="file-name-text">undangan.pdf</span> (<span id="file-size-text">0 KB</span>)
           </span>
         </div>
@@ -200,7 +200,7 @@
 
   <!-- HASIL ANALISIS AI (PREVIEW SEBELUM DITERAPKAN) -->
   <div class="card" id="card-hasil-ai" style="display: {% if hasil_ekstraksi %}block{% else %}none{% endif %};">
-    <div class="card-header" style="background: rgba(16, 185, 129, 0.08); border-radius: 12px 12px 0 0; padding: 14px 18px; margin: -22px -22px 20px; border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+    <div class="card-header" style="background: var(--neo-success-bg); border-radius: 0; padding: 14px 18px; margin: -22px -22px 20px; border-bottom: 3px solid var(--neo-success);">
       <div class="card-title" style="color: var(--success);">
         <span>🎉</span> Hasil Analisis AI Berhasil Ditemukan!
       </div>
@@ -218,19 +218,19 @@
       <div class="preview-section-title">
         <span>💍</span> Informasi Umum &amp; Tema Undangan
       </div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 13px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; font-size: 13px;">
         <div><b>Judul:</b> <span id="res-judul" style="color: var(--accent); font-weight: 700;">-</span></div>
         <div><b>Hashtag:</b> <span id="res-hashtag">-</span></div>
-        <div><b>Rekomendasi Tema:</b> <span id="res-tema" class="badge" style="background: rgba(99, 102, 241, 0.15); color: var(--accent);">-</span></div>
+        <div><b>Rekomendasi Tema:</b> <span id="res-tema" class="badge" style="background: var(--neo-soft); color: var(--accent);">-</span></div>
       </div>
-      <div style="margin-top: 10px; font-size: 12.5px; color: var(--text-muted); background: var(--card-bg); padding: 10px; border-radius: 8px;">
+      <div style="margin-top: 10px; font-size: 12.5px; color: var(--text-muted); background: var(--card-bg); padding: 10px; border-radius: 0;">
         <b>Kutipan / Doa:</b> <i id="res-quote">"-"</i> <br>
         <span style="font-size: 11.5px; color: var(--accent);" id="res-sumber-quote"></span>
       </div>
     </div>
 
     <!-- 2. MEMPELAI PRIA & WANITA -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 16px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-bottom: 16px;">
       <div class="preview-section-box" style="margin-bottom: 0;">
         <div class="preview-section-title">
           <span>🤵</span> Mempelai Pria
@@ -285,7 +285,7 @@
       {% csrf_token %}
       <input type="hidden" name="riwayat_id" id="input-riwayat-id" value="{{ riwayat_id|default:'' }}">
       
-      <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+      <div style="background: var(--neo-soft); border: 3px solid var(--neo-border); border-radius: 0; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
         <div>
           <b style="color: var(--text); font-size: 14px;">Siap menerapkan data di atas ke website undangan Anda?</b>
           <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
@@ -332,15 +332,15 @@
               <td>{{ r.durasi_detik }} detik</td>
               <td>
                 {% if r.status == 'diterapkan' %}
-                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                  <span class="badge" style="background: var(--neo-success-bg); color: var(--success);">
                     Sudah Diterapkan
                   </span>
                 {% elif r.status == 'sukses' %}
-                  <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                  <span class="badge" style="background: var(--neo-soft); color: var(--neo-info);">
                     Sukses Ekstrak
                   </span>
                 {% else %}
-                  <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);" title="{{ r.pesan_error }}">
+                  <span class="badge" style="background: var(--neo-danger-bg); color: var(--danger);" title="{{ r.pesan_error }}">
                     Gagal
                   </span>
                 {% endif %}

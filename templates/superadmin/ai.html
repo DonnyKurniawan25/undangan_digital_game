@@ -7,24 +7,24 @@
 <style>
   .ai-grid-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
     gap: 16px;
     margin-bottom: 24px;
   }
   .stat-card-ai {
     background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    border: 3px solid var(--border);
+    border-radius: 0;
     padding: 18px 20px;
     display: flex;
     align-items: center;
     gap: 16px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--neo-small-shadow);
   }
   .stat-icon-wrap {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,9 +44,9 @@
   }
 
   .active-provider-hero {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(168, 85, 247, 0.09) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.35);
-    border-radius: 18px;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    border-radius: 0;
     padding: 24px;
     margin-bottom: 24px;
     position: relative;
@@ -56,10 +56,10 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(99, 102, 241, 0.22);
+    background: var(--neo-soft);
     color: var(--accent);
     padding: 4px 12px;
-    border-radius: 20px;
+    border-radius: 0;
     font-size: 11.5px;
     font-weight: 800;
     text-transform: uppercase;
@@ -69,11 +69,11 @@
   .status-dot {
     width: 9px;
     height: 9px;
-    border-radius: 50%;
+    border-radius: 0;
     display: inline-block;
   }
-  .status-dot.sukses { background: var(--success); box-shadow: 0 0 8px var(--success); }
-  .status-dot.gagal { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+  .status-dot.sukses { background: var(--success); box-shadow: var(--neo-small-shadow); }
+  .status-dot.gagal { background: var(--danger); box-shadow: var(--neo-small-shadow); }
   .status-dot.belum { background: var(--warning); }
 
   /* ============================================================
@@ -83,8 +83,8 @@
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(4, 8, 16, 0.82);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     z-index: 1000;
     display: none;
     align-items: center;
@@ -104,21 +104,21 @@
   }
 
   .modal-card {
-    background: linear-gradient(180deg, #131b2e 0%, #0d1322 100%);
-    border: 1px solid rgba(99, 102, 241, 0.35);
-    border-radius: 22px;
+    background: var(--neo-primary);
+    border: 3px solid var(--neo-border);
+    border-radius: 0;
     width: 100%;
     max-width: 680px;
     max-height: 92vh;
     overflow-y: auto;
     padding: 26px 30px;
-    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.85), 0 0 50px rgba(99, 102, 241, 0.18);
+    box-shadow: var(--neo-small-shadow);
     animation: modalPop 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     scrollbar-width: thin;
     scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
   }
   .modal-card::-webkit-scrollbar { width: 6px; }
-  .modal-card::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.35); border-radius: 10px; }
+  .modal-card::-webkit-scrollbar-thumb { background: var(--neo-soft); border-radius: 0; }
 
   .ai-modal-header {
     display: flex;
@@ -126,39 +126,39 @@
     align-items: center;
     margin-bottom: 22px;
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 3px solid var(--neo-border);
   }
   .ai-modal-badge-icon {
     width: 44px;
     height: 44px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    border-radius: 0;
+    background: var(--neo-primary);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 22px;
-    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.4);
+    box-shadow: var(--neo-small-shadow);
     flex-shrink: 0;
   }
   .ai-modal-heading {
     font-size: 19px;
     font-weight: 800;
-    color: #f8fafc;
+    color: var(--neo-info);
     letter-spacing: -0.3px;
   }
   .ai-modal-subheading {
     font-size: 12.5px;
-    color: #94a3b8;
+    color: var(--neo-muted);
     margin-top: 2px;
   }
   .ai-modal-close-btn {
     width: 36px;
     height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
+    border-radius: 0;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    color: var(--neo-muted);
     font-size: 18px;
     display: flex;
     align-items: center;
@@ -167,9 +167,9 @@
     transition: all 0.2s ease;
   }
   .ai-modal-close-btn:hover {
-    background: rgba(239, 68, 68, 0.18);
-    border-color: rgba(239, 68, 68, 0.4);
-    color: #f87171;
+    background: var(--neo-danger-bg);
+    border-color: var(--neo-danger);
+    color: var(--neo-danger);
     transform: rotate(90deg);
   }
 
@@ -177,7 +177,7 @@
   .preset-section-label {
     font-size: 11.5px;
     font-weight: 800;
-    color: #818cf8;
+    color: var(--neo-info);
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 10px;
@@ -195,9 +195,9 @@
     .preset-grid { grid-template-columns: repeat(2, 1fr); }
   }
   .preset-chip {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    border-radius: 12px;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    border-radius: 0;
     padding: 10px 10px;
     text-align: center;
     cursor: pointer;
@@ -210,14 +210,14 @@
     user-select: none;
   }
   .preset-chip:hover {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.4);
+    background: var(--neo-soft);
+    border-color: var(--neo-border);
     transform: translateY(-2px);
   }
   .preset-chip.active {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.18) 100%);
-    border: 1.5px solid #6366f1;
-    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    box-shadow: var(--neo-small-shadow);
   }
   .preset-chip-icon {
     font-size: 18px;
@@ -225,17 +225,17 @@
   .preset-chip-name {
     font-size: 12px;
     font-weight: 700;
-    color: #f1f5f9;
+    color: var(--neo-info);
   }
   .preset-chip.active .preset-chip-name {
-    color: #c7d2fe;
+    color: var(--neo-info);
   }
   .preset-chip-sub {
     font-size: 10px;
-    color: #64748b;
+    color: var(--neo-muted);
   }
   .preset-chip.active .preset-chip-sub {
-    color: #a5b4fc;
+    color: var(--neo-info);
   }
 
   /* FORM GROUP & LABELS */
@@ -251,7 +251,7 @@
   .ai-label-text {
     font-size: 13px;
     font-weight: 700;
-    color: #e2e8f0;
+    color: var(--neo-info);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -260,10 +260,10 @@
     font-size: 10px;
     font-weight: 800;
     padding: 2px 7px;
-    border-radius: 6px;
-    background: rgba(239, 68, 68, 0.15);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 0;
+    background: var(--neo-danger-bg);
+    color: var(--neo-danger);
+    border: 3px solid var(--neo-danger);
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
@@ -271,9 +271,9 @@
     font-size: 10px;
     font-weight: 700;
     padding: 2px 7px;
-    border-radius: 6px;
-    background: rgba(148, 163, 184, 0.1);
-    color: #94a3b8;
+    border-radius: 0;
+    background: var(--neo-soft);
+    color: var(--neo-muted);
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
@@ -281,12 +281,12 @@
   /* INPUT & SELECT CONTROLS */
   .ai-field {
     width: 100%;
-    background: rgba(11, 16, 30, 0.9) !important;
-    border: 1px solid rgba(148, 163, 184, 0.22) !important;
-    border-radius: 12px !important;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border) !important;
+    border-radius: 0;
     padding: 12px 16px !important;
     font-size: 13.5px !important;
-    color: #f8fafc !important;
+    color: var(--neo-info) !important;
     font-weight: 500 !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     outline: none !important;
@@ -294,16 +294,16 @@
     font-family: inherit !important;
   }
   .ai-field:hover {
-    border-color: rgba(99, 102, 241, 0.45) !important;
-    background: rgba(15, 23, 42, 0.95) !important;
+    border-color: var(--neo-border) !important;
+    background: var(--neo-soft);
   }
   .ai-field:focus {
-    border-color: #6366f1 !important;
-    background: rgba(99, 102, 241, 0.08) !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.28) !important;
+    border-color: var(--neo-border) !important;
+    background: var(--neo-soft);
+    box-shadow: var(--neo-small-shadow);
   }
   .ai-field::placeholder {
-    color: #64748b !important;
+    color: var(--neo-muted) !important;
   }
 
   .ai-select {
@@ -316,22 +316,22 @@
     cursor: pointer;
   }
   .ai-select option {
-    background: #0f172a;
-    color: #f8fafc;
+    background: var(--neo-surface);
+    color: var(--neo-info);
     padding: 8px;
   }
 
   .ai-hint-box {
     font-size: 11.5px;
-    color: #94a3b8;
+    color: var(--neo-muted);
     margin-top: 5px;
     line-height: 1.45;
   }
   .ai-hint-box code {
-    background: rgba(99, 102, 241, 0.12);
-    color: #c7d2fe;
+    background: var(--neo-soft);
+    color: var(--neo-info);
     padding: 2px 6px;
-    border-radius: 5px;
+    border-radius: 0;
     font-size: 11px;
     font-family: monospace;
   }
@@ -347,7 +347,7 @@
     right: 12px;
     background: none;
     border: none;
-    color: #94a3b8;
+    color: var(--neo-muted);
     cursor: pointer;
     font-size: 16px;
     padding: 4px;
@@ -357,15 +357,15 @@
     transition: color 0.15s, transform 0.15s;
   }
   .btn-toggle-eye:hover {
-    color: #c7d2fe;
+    color: var(--neo-info);
     transform: scale(1.1);
   }
 
   /* PARAMS BOX */
   .ai-params-box {
-    background: rgba(11, 16, 30, 0.6);
-    border: 1px solid rgba(148, 163, 184, 0.15);
-    border-radius: 14px;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    border-radius: 0;
     padding: 14px 16px;
     margin-bottom: 18px;
   }
@@ -386,9 +386,9 @@
     margin-bottom: 22px;
   }
   .ai-switch-card {
-    background: rgba(15, 23, 42, 0.65);
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    border-radius: 14px;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    border-radius: 0;
     padding: 12px 16px;
     display: flex;
     align-items: center;
@@ -399,12 +399,12 @@
     user-select: none;
   }
   .ai-switch-card:hover {
-    background: rgba(99, 102, 241, 0.08);
-    border-color: rgba(99, 102, 241, 0.35);
+    background: var(--neo-soft);
+    border-color: var(--neo-border);
   }
   .ai-switch-card.active {
-    background: rgba(99, 102, 241, 0.12);
-    border-color: rgba(99, 102, 241, 0.45);
+    background: var(--neo-soft);
+    border-color: var(--neo-border);
   }
 
   /* Modern Switch Slider */
@@ -424,10 +424,10 @@
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(148, 163, 184, 0.25);
+    background-color: var(--neo-soft);
     transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+    border: 3px solid var(--neo-border);
   }
   .switch-slider:before {
     position: absolute;
@@ -436,15 +436,15 @@
     width: 18px;
     left: 2px;
     bottom: 2px;
-    background-color: #ffffff;
+    background-color: var(--neo-surface);
     transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 0;
+    box-shadow: var(--neo-small-shadow);
   }
   .switch-toggle input:checked + .switch-slider {
-    background-color: #6366f1;
-    border-color: #4f46e5;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    background-color: var(--neo-surface);
+    border-color: var(--neo-border);
+    box-shadow: var(--neo-small-shadow);
   }
   .switch-toggle input:checked + .switch-slider:before {
     transform: translateX(20px);
@@ -457,41 +457,41 @@
     align-items: center;
     gap: 12px;
     padding-top: 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 3px solid var(--neo-border);
   }
   .btn-ghost-cancel {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #cbd5e1;
+    background: var(--neo-soft);
+    border: 3px solid var(--neo-border);
+    color: var(--neo-info);
     font-size: 13.5px;
     font-weight: 600;
     padding: 10px 18px;
-    border-radius: 12px;
+    border-radius: 0;
     cursor: pointer;
     transition: all 0.2s ease;
   }
   .btn-ghost-cancel:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--neo-soft);
     color: #fff;
   }
   .btn-save-glow {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    background: var(--neo-primary);
     border: none;
     color: #ffffff;
     font-size: 14px;
     font-weight: 800;
     padding: 11px 24px;
-    border-radius: 12px;
+    border-radius: 0;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 6px 22px rgba(99, 102, 241, 0.45);
+    box-shadow: var(--neo-small-shadow);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-save-glow:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.6);
+    box-shadow: var(--neo-small-shadow);
   }
   .btn-save-glow:active {
     transform: translateY(0);
@@ -510,7 +510,7 @@
     </p>
   </div>
   <div style="display: flex; gap: 10px;">
-    <button type="button" class="btn btn-primary" onclick="bukaModalAI()" style="box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);">
+    <button type="button" class="btn btn-primary" onclick="bukaModalAI()" style="box-shadow: var(--neo-small-shadow);">
       <span>➕</span> Tambah Konfigurasi AI
     </button>
   </div>
@@ -519,7 +519,7 @@
 <!-- STATISTIK KILAT -->
 <div class="ai-grid-stats">
   <div class="stat-card-ai">
-    <div class="stat-icon-wrap" style="background: rgba(99, 102, 241, 0.15); color: var(--accent);">
+    <div class="stat-icon-wrap" style="background: var(--neo-soft); color: var(--accent);">
       ⚡
     </div>
     <div>
@@ -535,7 +535,7 @@
   </div>
 
   <div class="stat-card-ai">
-    <div class="stat-icon-wrap" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+    <div class="stat-icon-wrap" style="background: var(--neo-success-bg); color: var(--success);">
       📡
     </div>
     <div>
@@ -551,7 +551,7 @@
   </div>
 
   <div class="stat-card-ai">
-    <div class="stat-icon-wrap" style="background: rgba(245, 158, 11, 0.15); color: var(--gold);">
+    <div class="stat-icon-wrap" style="background: var(--neo-warning-bg); color: var(--gold);">
       📄
     </div>
     <div>
@@ -563,7 +563,7 @@
   </div>
 
   <div class="stat-card-ai">
-    <div class="stat-icon-wrap" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+    <div class="stat-icon-wrap" style="background: var(--neo-soft); color: var(--neo-accent-ink);">
       🛡️
     </div>
     <div>
@@ -609,14 +609,14 @@
           {{ ai_aktif.nama }} <span style="font-size: 15px; color: var(--text-muted); font-weight: 600;">({{ ai_aktif.get_provider_display }})</span>
         </h2>
         <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
-          <div><b>Model:</b> <code style="background: var(--card-inner); padding: 2px 8px; border-radius: 6px; color: var(--accent);">{{ ai_aktif.model }}</code></div>
+          <div><b>Model:</b> <code style="background: var(--card-inner); padding: 2px 8px; border-radius: 0; color: var(--accent);">{{ ai_aktif.model }}</code></div>
           <div><b>Endpoint:</b> <code>{{ ai_aktif.base_url|default:"(Alamat Bawaan Provider)" }}</code></div>
           <div><b>API Key:</b> {{ ai_aktif.api_key_tersamar }}</div>
           <div><b>Max Tokens:</b> {{ ai_aktif.max_tokens }}</div>
           <div><b>Temperature:</b> {{ ai_aktif.temperature }}</div>
         </div>
         {% if ai_aktif.pesan_tes %}
-          <div style="margin-top: 12px; font-size: 12.5px; background: var(--card-inner); padding: 8px 12px; border-radius: 8px; border-left: 3px solid {% if ai_aktif.status_tes == 'berhasil' %}var(--success){% else %}var(--danger){% endif %};">
+          <div style="margin-top: 12px; font-size: 12.5px; background: var(--card-inner); padding: 8px 12px; border-radius: 0; border-left: 3px solid {% if ai_aktif.status_tes == 'berhasil' %}var(--success){% else %}var(--danger){% endif %};">
             <b>Hasil Tes Terakhir:</b> {{ ai_aktif.pesan_tes }}
             <span style="color: var(--text-muted); font-size: 11.5px; margin-left: 8px;">({{ ai_aktif.terakhir_dites|date:"d M Y H:i" }})</span>
           </div>
@@ -650,8 +650,8 @@
   </div>
   <form method="POST" action="{% url 'undangan:superadmin_ai_pengaturan_global' %}">
     {% csrf_token %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 18px;">
-      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px; margin-bottom: 18px;">
+      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 0; border: 3px solid var(--border);">
         <input type="checkbox" id="ai_aktif" name="ai_aktif" value="1" {% if pengaturan.ai_aktif %}checked{% endif %} style="width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent);">
         <label for="ai_aktif" style="font-size: 13.5px; cursor: pointer;">
           <b style="color: var(--text);">Aktifkan Fitur AI di Dashboard Pengguna</b>
@@ -661,7 +661,7 @@
         </label>
       </div>
 
-      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
+      <div style="display: flex; align-items: flex-start; gap: 10px; background: var(--card-inner); padding: 14px; border-radius: 0; border: 3px solid var(--border);">
         <input type="checkbox" id="ai_khusus_berbayar" name="ai_khusus_berbayar" value="1" {% if pengaturan.ai_khusus_berbayar %}checked{% endif %} style="width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent);">
         <label for="ai_khusus_berbayar" style="font-size: 13.5px; cursor: pointer;">
           <b style="color: var(--text);">Hanya untuk Undangan Aktif Berbayar</b>
@@ -671,7 +671,7 @@
         </label>
       </div>
 
-      <div style="background: var(--card-inner); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
+      <div style="background: var(--card-inner); padding: 14px; border-radius: 0; border: 3px solid var(--border);">
         <label for="ai_batas_harian" style="font-size: 13px; font-weight: 700; color: var(--text); display: block; margin-bottom: 6px;">
           Batas Analisis Sukses / User / Hari
         </label>
@@ -716,10 +716,10 @@
       </thead>
       <tbody>
         {% for k in daftar_ai %}
-          <tr style="{% if k.is_aktif %}background: rgba(99, 102, 241, 0.05);{% endif %}">
+          <tr style="{% if k.is_aktif %}background: var(--neo-soft);{% endif %}">
             <td>
               {% if k.is_aktif %}
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">
+                <span class="badge" style="background: var(--neo-success-bg); color: var(--success); border: 3px solid var(--neo-success);">
                   AKTIF UTAMA
                 </span>
               {% else %}
@@ -732,7 +732,7 @@
               <b style="color: var(--text); font-size: 14px;">{{ k.nama }}</b>
             </td>
             <td>
-              <span class="badge" style="background: rgba(99, 102, 241, 0.12); color: var(--accent);">
+              <span class="badge" style="background: var(--neo-soft); color: var(--accent);">
                 {{ k.get_provider_display }}
               </span>
             </td>
@@ -841,15 +841,15 @@
             <td>{{ r.durasi_detik }} detik</td>
             <td>
               {% if r.status == 'diterapkan' %}
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                <span class="badge" style="background: var(--neo-success-bg); color: var(--success);">
                   DITERAPKAN
                 </span>
               {% elif r.status == 'sukses' %}
-                <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                <span class="badge" style="background: var(--neo-soft); color: var(--neo-info);">
                   SUKSES EKSTRAK
                 </span>
               {% else %}
-                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);" title="{{ r.pesan_error }}">
+                <span class="badge" style="background: var(--neo-danger-bg); color: var(--danger);" title="{{ r.pesan_error }}">
                   GAGAL
                 </span>
               {% endif %}
@@ -1010,28 +1010,28 @@
 
       <!-- Parameter AI Box (Temperature, Max Tokens, Timeout) -->
       <div class="ai-params-box">
-        <div style="font-size: 12px; font-weight: 700; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+        <div style="font-size: 12px; font-weight: 700; color: var(--neo-info); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
           <span>⚙️</span> Parameter Generasi AI
         </div>
         <div class="ai-params-grid">
           <div>
             <div class="ai-label-row" style="margin-bottom: 4px;">
-              <span style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Temperature</span>
-              <span style="font-size: 10.5px; color: #818cf8; font-family: monospace;">0.0 - 1.0</span>
+              <span style="font-size: 12px; color: var(--neo-info); font-weight: 600;">Temperature</span>
+              <span style="font-size: 10.5px; color: var(--neo-info); font-family: monospace;">0.0 - 1.0</span>
             </div>
             <input type="number" step="0.05" min="0" max="1" name="temperature" id="ai-temperature" class="ai-field" value="0.2">
           </div>
           <div>
             <div class="ai-label-row" style="margin-bottom: 4px;">
-              <span style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Max Tokens</span>
-              <span style="font-size: 10.5px; color: #818cf8; font-family: monospace;">Tokens</span>
+              <span style="font-size: 12px; color: var(--neo-info); font-weight: 600;">Max Tokens</span>
+              <span style="font-size: 10.5px; color: var(--neo-info); font-family: monospace;">Tokens</span>
             </div>
             <input type="number" name="max_tokens" id="ai-max-tokens" class="ai-field" value="4096">
           </div>
           <div>
             <div class="ai-label-row" style="margin-bottom: 4px;">
-              <span style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Timeout</span>
-              <span style="font-size: 10.5px; color: #818cf8; font-family: monospace;">Detik</span>
+              <span style="font-size: 12px; color: var(--neo-info); font-weight: 600;">Timeout</span>
+              <span style="font-size: 10.5px; color: var(--neo-info); font-family: monospace;">Detik</span>
             </div>
             <input type="number" name="timeout_detik" id="ai-timeout" class="ai-field" value="120">
           </div>
@@ -1043,12 +1043,12 @@
         <!-- Switch 1: Jadikan Aktif -->
         <div class="ai-switch-card" id="card-switch-aktif" onclick="klikCardSwitch('ai-is-aktif')">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(99, 102, 241, 0.15); color: #818cf8; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+            <div style="width: 36px; height: 36px; border-radius: 0; background: var(--neo-soft); color: var(--neo-info); display: flex; align-items: center; justify-content: center; font-size: 18px;">
               ⚡
             </div>
             <div>
-              <b style="color: #f8fafc; font-size: 13.5px;">Jadikan Provider Aktif Utama</b>
-              <div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+              <b style="color: var(--neo-info); font-size: 13.5px;">Jadikan Provider Aktif Utama</b>
+              <div style="color: var(--neo-muted); font-size: 11.5px; margin-top: 2px;">
                 Aplikasi akan langsung menggunakan konfigurasi ini untuk seluruh proses pembacaan PDF pengguna.
               </div>
             </div>
@@ -1062,12 +1062,12 @@
         <!-- Switch 2: Ekstraksi Teks Lengkap PDF -->
         <div class="ai-switch-card active" id="card-switch-pdf" onclick="klikCardSwitch('ai-kirim-pdf')">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #34d399; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+            <div style="width: 36px; height: 36px; border-radius: 0; background: var(--neo-success-bg); color: var(--neo-success); display: flex; align-items: center; justify-content: center; font-size: 18px;">
               📑
             </div>
             <div>
-              <b style="color: #f8fafc; font-size: 13.5px;">Ekstraksi Teks Lengkap Dokumen PDF</b>
-              <div style="color: #94a3b8; font-size: 11.5px; margin-top: 2px;">
+              <b style="color: var(--neo-info); font-size: 13.5px;">Ekstraksi Teks Lengkap Dokumen PDF</b>
+              <div style="color: var(--neo-muted); font-size: 11.5px; margin-top: 2px;">
                 Memindai teks pada setiap halaman PDF undangan agar tidak ada detail informasi yang terlewat.
               </div>
             </div>
@@ -1304,7 +1304,7 @@
         Swal.fire({
           icon: 'success',
           title: 'Koneksi Berhasil! ⚡',
-          html: `<div style="text-align: left; background: var(--card-inner); padding: 12px; border-radius: 8px; font-size: 13px;">
+          html: `<div style="text-align: left; background: var(--card-inner); padding: 12px; border-radius: 0; font-size: 13px;">
                   <p><b>Status:</b> Terhubung dengan sempurna</p>
                   <p><b>Latensi:</b> <span style="color: var(--success); font-weight: 800;">${data.latensi_ms} ms</span></p>
                   <p style="margin-top: 6px; font-size: 12px; color: var(--text-muted);">${data.pesan}</p>
@@ -1317,7 +1317,7 @@
         Swal.fire({
           icon: 'error',
           title: 'Koneksi Gagal ⚠️',
-          html: `<div style="text-align: left; background: var(--card-inner); padding: 12px; border-radius: 8px; font-size: 13px;">
+          html: `<div style="text-align: left; background: var(--card-inner); padding: 12px; border-radius: 0; font-size: 13px;">
                   <p><b>Pesan Kesalahan:</b></p>
                   <pre style="color: var(--danger); font-size: 11.5px; white-space: pre-wrap; word-break: break-all; margin-top: 6px;">${data.pesan}</pre>
                  </div>`,

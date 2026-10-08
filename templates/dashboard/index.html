@@ -13,16 +13,16 @@
 </div>
 
 <!-- KOTAK TAUTAN UTAMA & QUICK SHARE -->
-<div class="card" style="background: var(--banner-bg); border: 1px solid var(--banner-border);">
+<div class="card" style="background: var(--banner-bg); border: 3px solid var(--banner-border);">
   <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
     <div>
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
         {% if undangan.status_langganan == 'aktif' %}
-          <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">
+          <span class="badge" style="background: var(--neo-success-bg); color: var(--success); border: 3px solid var(--neo-success);">
             🟢 Tautan Langsung Aktif (jelajah.biz.id/{{ undangan.slug }}/)
           </span>
         {% else %}
-          <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent); border: 1px solid rgba(245, 158, 11, 0.3);">
+          <span class="badge" style="background: var(--neo-warning-bg); color: var(--accent); border: 3px solid var(--neo-warning);">
             ⏳ Tautan Uji Coba 1 Bulan (jelajah.biz.id/trial/{{ undangan.slug }}/)
           </span>
         {% endif %}
@@ -44,16 +44,16 @@
 </div>
 
 <!-- BANNER FITUR BARU: AI GENERATOR DARI PDF -->
-<div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%); border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 24px;">
+<div class="card" style="background: var(--neo-soft); border: 3px solid var(--neo-border); margin-bottom: 24px;">
   <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
     <div style="display: flex; align-items: flex-start; gap: 14px; max-width: 700px;">
-      <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; color: #fff;">
+      <div style="width: 44px; height: 44px; border-radius: 0; background: var(--neo-primary); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; color: #fff;">
         ✨
       </div>
       <div>
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
           <b style="font-size: 15px; color: var(--text);">Fitur Baru: Buat Undangan Otomatis dari PDF via AI 🚀</b>
-          <span class="badge" style="background: var(--accent); color: #fff; font-size: 10px;">TERBARU</span>
+          <span class="badge" style="background: var(--neo-primary); color: #fff; font-size: 10px;">TERBARU</span>
         </div>
         <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
           Punya brosur undangan PDF dari Canva / Word? Cukup unggah berkas PDF-nya, AI akan otomatis membaca nama kedua mempelai, orang tua, susunan acara (Akad &amp; Resepsi), lokasi, dan rekening hadiah tanpa Anda harus mengetik dari awal!
@@ -69,13 +69,13 @@
 </div>
 
 <!-- STATISTIK KILAT -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; margin-bottom: 24px;">
   <div class="card" style="margin-bottom: 0;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Total Tamu Terdaftar</span>
       <span style="font-size: 20px;">👥</span>
     </div>
-    <div style="font-size: 28px; font-weight: 800; color: #60a5fa;">{{ total_tamu }}</div>
+    <div style="font-size: 28px; font-weight: 800; color: var(--neo-info);">{{ total_tamu }}</div>
     <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
       {{ tamu_buka }} tamu telah membuka undangan
     </div>
@@ -86,7 +86,7 @@
       <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Konfirmasi Hadir</span>
       <span style="font-size: 20px;">🎉</span>
     </div>
-    <div style="font-size: 28px; font-weight: 800; color: #34d399;">{{ total_hadir }}</div>
+    <div style="font-size: 28px; font-weight: 800; color: var(--neo-success);">{{ total_hadir }}</div>
     <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
       Estimasi {{ total_orang_hadir }} orang akan datang
     </div>
@@ -97,7 +97,7 @@
       <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Masih Ragu / Berhalangan</span>
       <span style="font-size: 20px;">⏳</span>
     </div>
-    <div style="font-size: 28px; font-weight: 800; color: #fbbf24;">{{ total_ragu }} <span style="font-size: 16px; color: #f87171; font-weight: 600;">/ {{ total_tidak }}</span></div>
+    <div style="font-size: 28px; font-weight: 800; color: var(--neo-warning);">{{ total_ragu }} <span style="font-size: 16px; color: var(--neo-danger); font-weight: 600;">/ {{ total_tidak }}</span></div>
     <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
       {{ total_ragu }} ragu &bull; {{ total_tidak }} tidak hadir
     </div>
@@ -108,7 +108,7 @@
       <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">Koleksi Galeri Foto</span>
       <span style="font-size: 20px;">🖼️</span>
     </div>
-    <div style="font-size: 28px; font-weight: 800; color: #c084fc;">{{ galeri_count }}</div>
+    <div style="font-size: 28px; font-weight: 800; color: var(--neo-accent-ink);">{{ galeri_count }}</div>
     <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
       Foto prewedding di papan lukis game
     </div>
@@ -116,14 +116,14 @@
 </div>
 
 <!-- GRID PANDUAN CEPAT & UCAPAN TERBARU -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 20px;">
   <!-- Panduan Langkah Cepat -->
   <div class="card">
     <div class="card-header">
       <h2 class="card-title">🚀 Langkah Lengkap Pembuatan</h2>
     </div>
     <div style="display: flex; flex-direction: column; gap: 12px;">
-      <a href="{% url 'undangan:dashboard_pengaturan' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+      <a href="{% url 'undangan:dashboard_pengaturan' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 0;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 18px;">⚙️</span>
           <div>
@@ -134,7 +134,7 @@
         <span style="color: var(--accent); font-weight: 700;">&rarr;</span>
       </a>
 
-      <a href="{% url 'undangan:dashboard_mempelai' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+      <a href="{% url 'undangan:dashboard_mempelai' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 0;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 18px;">👰🤵</span>
           <div>
@@ -145,7 +145,7 @@
         <span style="color: var(--accent); font-weight: 700;">&rarr;</span>
       </a>
 
-      <a href="{% url 'undangan:dashboard_galeri' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+      <a href="{% url 'undangan:dashboard_galeri' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 0;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 18px;">📸</span>
           <div>
@@ -156,7 +156,7 @@
         <span style="color: var(--accent); font-weight: 700;">&rarr;</span>
       </a>
 
-      <a href="{% url 'undangan:dashboard_tamu' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 10px;">
+      <a href="{% url 'undangan:dashboard_tamu' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--card-inner); border-radius: 0;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 18px;">💌</span>
           <div>
@@ -178,7 +178,7 @@
     {% if ucapan_terbaru %}
       <div style="display: flex; flex-direction: column; gap: 10px;">
         {% for u in ucapan_terbaru %}
-          <div style="padding: 10px 12px; background: var(--card-inner); border-radius: 10px; border-left: 3px solid {% if u.kehadiran == 'hadir' %}#10b981{% elif u.kehadiran == 'tidak' %}#ef4444{% else %}#f59e0b{% endif %};">
+          <div style="padding: 10px 12px; background: var(--card-inner); border-radius: 0; border-left: 3px solid {% if u.kehadiran == 'hadir' %}#10b981{% elif u.kehadiran == 'tidak' %}#ef4444{% else %}#f59e0b{% endif %};">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <b style="font-size: 13px;">{{ u.nama }}</b>
               <span style="font-size: 11px; color: var(--text-muted);">{{ u.get_kehadiran_display }}</span>

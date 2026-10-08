@@ -15,20 +15,20 @@
 </div>
 
 <!-- KARTU TAMBAH FOTO BARU -->
-<div class="card" style="border-color: rgba(245, 158, 11, 0.3);">
+<div class="card" style="border-color: var(--neo-warning);">
   <div class="card-header">
     <h2 class="card-title">➕ Tambah Foto ke Galeri</h2>
     {% if undangan.status_langganan == 'aktif' %}
-      <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">Bebas: Upload atau Link</span>
+      <span class="badge" style="background: var(--neo-success-bg); color: var(--neo-success);">Bebas: Upload atau Link</span>
     {% else %}
-      <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🔗 Hanya Link (Uji Coba)</span>
+      <span class="badge" style="background: var(--neo-warning-bg); color: var(--neo-warning);">🔗 Hanya Link (Uji Coba)</span>
     {% endif %}
   </div>
 
   {% if undangan.status_langganan != 'aktif' %}
-    <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+    <div style="background: var(--neo-warning-bg); border: 3px dashed var(--neo-warning); border-radius: 0; padding: 14px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
       <span style="font-size: 22px;">💡</span>
-      <div style="flex: 1; min-width: 200px;">
+      <div style="flex: 1; min-width: min(100%, 200px);">
         <b style="color: var(--accent); font-size: 13px;">Masa Uji Coba: Hanya Tautan Link</b>
         <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
           Selama masa uji coba, Anda hanya dapat menambahkan foto melalui tautan link URL (Google Drive, Imgur, dll). Fitur upload file langsung ke server tersedia setelah <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 700;">aktivasi pembayaran</a>.
@@ -54,7 +54,7 @@
 
     <input type="hidden" name="sumber" id="sumber_media" value="{% if undangan.status_langganan == 'aktif' %}upload{% else %}link{% endif %}">
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 20px;">
       <div>
         {% if undangan.status_langganan == 'aktif' %}
           <!-- AREA METODE 1: UPLOAD BERKAS (KHUSUS BERBAYAR) -->
@@ -73,7 +73,7 @@
         <!-- AREA METODE 2: TEMPEL LINK URL -->
         <div id="area-link" style="{% if undangan.status_langganan == 'aktif' %}display: none;{% endif %}">
           <label class="form-label" for="gambar_url">Tautan Gambar Eksternal (URL)</label>
-          <input type="text" id="gambar_url" name="gambar_url" class="form-input" placeholder="https://images.unsplash.com/... atau link Google Drive" oninput="previewUrlMedia(this.value, 'img-preview', 'img-preview-empty')">
+          <input type="text" id="gambar_url" name="gambar_url" class="form-input" placeholder="https://.../foto.jpg" oninput="previewUrlMedia(this.value, 'img-preview', 'img-preview-empty')">
           <div class="form-help">
             💡 <b>Tips:</b> Anda bisa menempel link Google Drive (pastikan hak akses disetel "Siapa saja yang memiliki link"). Sistem akan otomatis mengubahnya menjadi tampilan langsung!
           </div>
@@ -82,7 +82,7 @@
         <div class="form-grid" style="margin-top: 16px;">
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label" for="keterangan">Keterangan / Caption Foto (Opsional)</label>
-            <input type="text" id="keterangan" name="keterangan" class="form-input" placeholder="Contoh: Momen prewedding di Bromo">
+            <input type="text" id="keterangan" name="keterangan" class="form-input" placeholder="Contoh: Foto prewedding">
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label" for="urutan">Urutan Tampil</label>
@@ -123,11 +123,11 @@
   </div>
 
   {% if galeri_list %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 20px;">
       {% for foto in galeri_list %}
         <div class="card" style="padding: 12px; margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <div style="width: 100%; height: 180px; border-radius: 10px; overflow: hidden; background: var(--card-inner); position: relative;">
+            <div style="width: 100%; height: 180px; border-radius: 0; overflow: hidden; background: var(--card-inner); position: relative;">
               <img src="{{ foto.url_tampil }}" alt="{{ foto.keterangan|default:'Foto prewedding' }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
               
               <!-- Badge Sumber Media -->
@@ -139,7 +139,7 @@
                 {% endif %}
               </div>
 
-              <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px;">
+              <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 0;">
                 #{{ foto.urutan }}
               </div>
             </div>
@@ -154,7 +154,7 @@
             </div>
           </div>
 
-          <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <div style="margin-top: 14px; padding-top: 10px; border-top: 3px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
             <a href="{{ foto.url_tampil }}" target="_blank" rel="noopener" style="font-size: 12px; color: var(--accent); font-weight: 600;">
               Perbesar Foto &rarr;
             </a>

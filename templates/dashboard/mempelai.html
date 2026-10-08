@@ -15,9 +15,9 @@
 </div>
 
 {% if undangan.status_langganan != 'aktif' %}
-  <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+  <div style="background: var(--neo-warning-bg); border: 3px dashed var(--neo-warning); border-radius: 0; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
     <span style="font-size: 22px;">💡</span>
-    <div style="flex: 1; min-width: 200px;">
+    <div style="flex: 1; min-width: min(100%, 200px);">
       <b style="color: var(--accent); font-size: 13px;">Masa Uji Coba: Foto Hanya via Link URL</b>
       <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
         Selama masa uji coba, gunakan tautan link URL gambar (Google Drive, Imgur, dll) untuk menampilkan foto mempelai. Fitur upload file langsung ke server tersedia setelah <a href="{% url 'undangan:dashboard_pembayaran' %}" style="color: var(--accent); font-weight: 700;">aktivasi pembayaran</a>.
@@ -29,12 +29,12 @@
 <form method="POST" enctype="multipart/form-data">
   {% csrf_token %}
 
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 24px;">
     <!-- MEMPELAI PRIA -->
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">🤵 Mempelai Pria</h2>
-        <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">Groom</span>
+        <span class="badge" style="background: var(--neo-soft); color: var(--neo-info);">Groom</span>
       </div>
 
       <div class="form-group">
@@ -73,7 +73,7 @@
       </div>
 
       <!-- FOTO MEMPELAI PRIA -->
-      <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
+      <div style="margin-top: 18px; padding-top: 16px; border-top: 3px solid var(--border);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
           <label class="form-label" style="color: var(--accent); margin-bottom: 0; font-weight: 700;">📷 Foto Mempelai Pria</label>
           <span style="font-size: 11.5px; color: var(--text-muted);">Format foto potret</span>
@@ -98,7 +98,7 @@
 
           <!-- METODE 2: TEMPEL LINK URL ONLINE -->
           <div id="box-pria-link" style="display: none;">
-            <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
+            <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://.../foto.jpg" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
             <div class="form-help">
               💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
             </div>
@@ -106,7 +106,7 @@
         {% else %}
           <!-- TRIAL: HANYA LINK URL -->
           <div>
-            <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
+            <input type="text" id="pria_foto_url" name="pria_foto_url" class="form-input" value="{{ pria.foto_url }}" placeholder="https://.../foto.jpg" oninput="previewUrlMedia(this.value, 'preview-pria', 'preview-pria-empty')">
             <div class="form-help">
               💡 Tempel link gambar dari Google Drive, Imgur, atau URL langsung. Link Google Drive publik otomatis dikonversi.
             </div>
@@ -135,7 +135,7 @@
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">👰 Mempelai Wanita</h2>
-        <span class="badge" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">Bride</span>
+        <span class="badge" style="background: var(--neo-soft); color: var(--neo-accent-ink);">Bride</span>
       </div>
 
       <div class="form-group">
@@ -174,7 +174,7 @@
       </div>
 
       <!-- FOTO MEMPELAI WANITA -->
-      <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);">
+      <div style="margin-top: 18px; padding-top: 16px; border-top: 3px solid var(--border);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
           <label class="form-label" style="color: var(--accent); margin-bottom: 0; font-weight: 700;">📷 Foto Mempelai Wanita</label>
           <span style="font-size: 11.5px; color: var(--text-muted);">Format foto potret</span>
@@ -199,7 +199,7 @@
 
           <!-- METODE 2: TEMPEL LINK URL ONLINE -->
           <div id="box-wanita-link" style="display: none;">
-            <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
+            <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://.../foto.jpg" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
             <div class="form-help">
               💡 Tautan Google Drive publik akan otomatis dikonversi menjadi gambar langsung.
             </div>
@@ -207,7 +207,7 @@
         {% else %}
           <!-- TRIAL: HANYA LINK URL -->
           <div>
-            <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://drive.google.com/... atau link gambar" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
+            <input type="text" id="wanita_foto_url" name="wanita_foto_url" class="form-input" value="{{ wanita.foto_url }}" placeholder="https://.../foto.jpg" oninput="previewUrlMedia(this.value, 'preview-wanita', 'preview-wanita-empty')">
             <div class="form-help">
               💡 Tempel link gambar dari Google Drive, Imgur, atau URL langsung. Link Google Drive publik otomatis dikonversi.
             </div>

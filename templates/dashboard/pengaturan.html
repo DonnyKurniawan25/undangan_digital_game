@@ -27,17 +27,17 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <label class="form-label" for="slug" style="margin-bottom: 0;">Domain / Tautan Unik Undangan</label>
           {% if undangan.status_langganan == 'aktif' %}
-            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); font-size: 10px;">
+            <span class="badge" style="background: var(--neo-success-bg); color: var(--success); font-size: 10px;">
               🟢 Kustom Domain Terbuka
             </span>
           {% else %}
-            <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); font-size: 10px;">
+            <span class="badge" style="background: var(--neo-warning-bg); color: var(--warning); font-size: 10px;">
               🔒 Terkunci (Masa Uji Coba)
             </span>
           {% endif %}
         </div>
 
-        <div style="display: flex; align-items: center; gap: 6px;">
+        <div class="neo-slug-field" style="display: flex; align-items: center; gap: 6px;">
           <span style="color: var(--text-muted); font-size: 13px; font-family: monospace; white-space: nowrap;">
             jelajah.biz.id/{% if undangan.status_langganan != 'aktif' %}trial/{% endif %}
           </span>
@@ -94,7 +94,7 @@
     </div>
 
     <!-- Musik Pengiring -->
-    <div class="form-group" style="padding: 16px; background: var(--card-inner); border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;">
+    <div class="form-group" style="padding: 16px; background: var(--card-inner); border-radius: 0; border: 3px solid var(--border); margin-top: 10px;">
       <label class="form-label" style="color: var(--accent); font-size: 14px;">🎵 Musik Latar Belakang (.mp3)</label>
       <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
         Musik akan diputar secara otomatis saat tamu menekan tombol "Buka Undangan".
@@ -117,9 +117,9 @@
               <div id="badge-musik" class="dropzone-badge" style="display: none;"></div>
             </div>
             {% if undangan.musik %}
-              <div style="margin-top: 8px; font-size: 12px; color: #34d399;">
+              <div style="margin-top: 8px; font-size: 12px; color: var(--neo-success);">
                 ✅ Musik aktif saat ini: <code>{{ undangan.musik.name }}</code>
-                <label style="display: block; margin-top: 6px; color: #f87171; cursor: pointer;">
+                <label style="display: block; margin-top: 6px; color: var(--neo-danger); cursor: pointer;">
                   <input type="checkbox" name="hapus_musik" value="1"> Hapus file musik ini (kembali ke musik bawaan)
                 </label>
               </div>
@@ -128,7 +128,7 @@
         {% else %}
           <div>
             <label class="form-label" style="color: var(--text-muted);">Opsi 1: Unggah Berkas Musik 🔒</label>
-            <div style="background: rgba(245, 158, 11, 0.06); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px; text-align: center;">
+            <div style="background: var(--neo-warning-bg); border: 3px dashed var(--neo-warning); border-radius: 0; padding: 20px; text-align: center;">
               <span style="font-size: 24px; display: block; margin-bottom: 6px;">🔒</span>
               <b style="font-size: 12.5px; color: var(--text-muted);">Upload file musik tersedia setelah aktivasi pembayaran</b>
               <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Gunakan opsi tautan audio online di sebelah kanan.</div>
@@ -138,7 +138,7 @@
 
         <div>
           <label class="form-label">{% if undangan.status_langganan == 'aktif' %}Opsi 2: {% endif %}Tautan Audio Online (URL)</label>
-          <input type="url" name="musik_url" class="form-input" value="{{ undangan.musik_url }}" placeholder="https://example.com/lagu.mp3">
+          <input type="url" name="musik_url" class="form-input" value="{{ undangan.musik_url }}" placeholder="https://.../lagu.mp3">
           <div class="form-help">Gunakan opsi ini jika file audio sudah Anda simpan di cloud hosting.</div>
         </div>
       </div>
