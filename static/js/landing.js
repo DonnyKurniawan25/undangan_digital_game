@@ -110,9 +110,8 @@
     var navLinks = document.getElementById("nav-links");
     if (!toggleBtn || !navLinks) return;
 
-    function toggleMenu() {
-      var isOpen = navLinks.classList.contains("open");
-      if (isOpen) {
+    function setMenu(isOpen) {
+      if (!isOpen) {
         navLinks.classList.remove("open");
         toggleBtn.classList.remove("open");
         document.body.style.overflow = "";
@@ -121,27 +120,31 @@
         toggleBtn.classList.add("open");
         document.body.style.overflow = "hidden";
       }
+      toggleBtn.setAttribute("aria-expanded", String(isOpen));
+      toggleBtn.setAttribute("aria-label", isOpen ? "Tutup menu navigasi" : "Buka menu navigasi");
     }
 
-    toggleBtn.addEventListener("click", toggleMenu);
-
-    // Close on navigation link click
-    var links = navLinks.querySelectorAll("a");
-    links.forEach(function (link) {
-      link.addEventListener("click", function () {
-        navLinks.classList.remove("open");
-        toggleBtn.classList.remove("open");
-        document.body.style.overflow = "";
-      });
+    toggleBtn.addEventListener("click", function () {
+      setMenu(!navLinks.classList.contains("open"));
     });
 
-    // Close when clicking outside
+    navLinks.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () { setMenu(false); });
+    });
+
     document.addEventListener("click", function (e) {
       if (navLinks.classList.contains("open") && !navLinks.contains(e.target) && !toggleBtn.contains(e.target)) {
-        navLinks.classList.remove("open");
-        toggleBtn.classList.remove("open");
-        document.body.style.overflow = "";
+        setMenu(false);
       }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && navLinks.classList.contains("open")) {
+        setMenu(false);
+        toggleBtn.focus();
+      }
+    });
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 980 && navLinks.classList.contains("open")) setMenu(false);
     });
   }
 
