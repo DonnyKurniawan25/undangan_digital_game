@@ -1,15 +1,16 @@
-{% load static %}<!DOCTYPE html>
+{% load static aset %}<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f3ee">
   <title>Masuk — Jelajah Undangan</title>
   <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/favicon.png' %}">
   <link rel="apple-touch-icon" href="{% static 'img/logo_icon.png' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- SweetAlert2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -180,21 +181,24 @@
       border: 1px solid var(--border) !important;
     }
   </style>
+  <link rel="stylesheet" href="{% aset 'css/auth-clay.css' %}">
 </head>
-<body>
+<body class="clay-auth">
+  <main class="auth-layout">
+    {% include 'auth/clay_story.html' with auth_mode='login' %}
 
   <div class="auth-card">
     <a href="{% url 'undangan:landing' %}" class="auth-brand">
-      <img src="{% static 'img/logo_icon.png' %}" alt="Logo" style="width: 44px; height: 44px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35); border: 1.5px solid rgba(245, 158, 11, 0.4);">
+      <img src="{% aset 'img/logo_icon.png' %}" alt="Logo Jelajah Undangan" width="45" height="45">
       <h1>Jelajah<span>Undangan</span></h1>
     </a>
 
-    <h2 class="auth-title">Masuk ke Akun</h2>
-    <p class="auth-desc">Kelola Jelajah Undangan pernikahan Anda dan pantau konfirmasi kehadiran tamu.</p>
+    <h2 class="auth-title">Selamat datang kembali.</h2>
+    <p class="auth-desc">Masuk untuk melanjutkan undangan dan melihat kabar dari para tamu.</p>
 
     {% if messages %}
       {% for msg in messages %}
-        <div class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+        <div role="alert" class="alert {% if msg.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
           {{ msg }}
         </div>
       {% endfor %}
@@ -204,12 +208,12 @@
       {% csrf_token %}
       <div class="form-group">
         <label class="form-label required" for="username">Username atau Email</label>
-        <input type="text" id="username" name="username" class="form-input" required placeholder="Masukkan username atau email" autofocus>
+        <input type="text" id="username" name="username" class="form-input" required placeholder="Username atau email" autocomplete="username" autofocus>
       </div>
 
       <div class="form-group">
         <label class="form-label required" for="password">Kata Sandi</label>
-        <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••">
+        <input type="password" id="password" name="password" class="form-input" required placeholder="Kata sandi akun kalian" autocomplete="current-password">
       </div>
 
       <button type="submit" class="btn-submit">Masuk ke Dashboard</button>
@@ -222,6 +226,7 @@
       </div>
     </div>
   </div>
+  </main>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {

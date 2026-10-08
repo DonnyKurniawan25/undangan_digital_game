@@ -1,0 +1,32 @@
+{% load aset %}
+<aside class="auth-story" aria-labelledby="auth-story-title">
+  <a href="{% url 'undangan:landing' %}" class="auth-back">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M5 12h14"/></svg>
+    Kembali ke beranda
+  </a>
+  <div class="auth-story-copy">
+    <span class="auth-kicker">CERITA KALIAN · DUNIA PIXEL ART</span>
+    {% if auth_mode == 'login' %}
+      <h2 id="auth-story-title">Lanjutkan cerita.<br><span>Siapkan hari bahagia.</span></h2>
+      <p>Undangan, detail acara, dan doa dari orang tersayang. Semuanya bisa kalian kelola dari satu tempat.</p>
+    {% else %}
+      <h2 id="auth-story-title">Cerita bahagia kalian,<br><span>dimulai di sini.</span></h2>
+      <p>Pilih dunia favorit kalian, isi detail hari istimewa, lalu ajak orang tersayang ikut berpetualang.</p>
+    {% endif %}
+  </div>
+  <div class="auth-scene" aria-hidden="true">
+    <span class="auth-clay-orb"></span>
+    <span class="auth-clay-heart"></span>
+    <div class="auth-scene-frame">
+      <img src="{% aset 'img/preview_game.png' %}" alt="" width="960" height="600" class="auth-preview">
+    </div>
+    <div class="auth-scene-caption">
+      <img src="{% aset 'img/icon_joystick.png' %}" alt="" width="30" height="30">
+      <span>Undangan yang bisa dimainkan</span>
+    </div>
+  </div>
+  <div class="auth-perks">
+    <span>6 tema Nusantara</span>
+    <span>Tanpa instal aplikasi</span>
+  </div>
+</aside>
